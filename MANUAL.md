@@ -1,6 +1,6 @@
 # Lab Ledger — manual
 
-*Version 1.0*
+*Version 1.1*
 
 Lab Ledger is the studio's finance tool: cash, monthly results, sales, instructor pay and a 3-month forecast. It is one web page (`index.html`) hosted on GitHub Pages. **The code contains no data.** Your numbers live on each device and travel between devices only as an encrypted file in the studio's GitHub account.
 
@@ -67,13 +67,23 @@ Every bank line gets a category automatically. To change one: **Transactions** �
 - **Download backup** (Settings) creates an unencrypted file: keep it private. With sync on, GitHub keeps every earlier version of the encrypted file.
 - Removing the home-screen app or clearing browser data deletes the data on that device. Sync brings it back.
 
-## 6. Updating the app
+## 6. New in 1.1
+
+- **Schedule page**: instructors fill in a Google Form, you import the answers, the app proposes next month's classes (unpaid instructors first, the usual person keeps their slot, nobody over their max). Change anything by tapping, then export for the team (PDF or WhatsApp text). Help → *Schedule: how it works* has the form setup.
+- **Face ID / Touch ID** with a PIN as backup: Settings → App lock (set up on each device).
+- **Forecast** in the Cash flow table (shaded columns), **instructor bars** (classes and how full), **What to work on** (ideas from the sales and class data).
+- **Light / dark** switch (top right), **Help** page (the ? top right), brand colours.
+- Instructors: **+ Add instructor**, **Paid from** (start unpaid, invoice later), **Teaches** (which classes the schedule proposes them for).
+- Update files: a `.json` update dropped into Import adds studio-specific settings once (rules, instructors, weekly classes). Applying it twice does nothing.
+
+## 7. Updating the app
 
 Upload the new `index.html` to the repository (**Add file → Upload files → Commit changes**) and wait for the green tick under **Actions**. Data carries over.
 
-## 7. For a developer or AI assistant
+## 8. For a developer or AI assistant
 
-- Single self-contained `index.html`, vanilla JS, no build step needed at runtime. Blocks in order: parsers (Erste/Sparkasse statement PDF via pdf.js text positions, George CSV/JSON best effort, Eversports CSVs), core (data model, categories and rules, imports, monthly aggregation, forecast), sync (Gist, AES-GCM + PBKDF2, gzip), UI.
+- Single self-contained `index.html`, vanilla JS, no build step needed at runtime. Blocks in order: parsers (Erste/Sparkasse statement PDF via pdf.js text positions, George CSV/JSON best effort, Eversports CSVs, Google Form availability), core (data model, categories and rules, imports, monthly aggregation, forecast per category, insights, update files), schedule (weekly slots, availability, proposal), sync (Gist, AES-GCM + PBKDF2, gzip), lock (WebAuthn platform passkey + PBKDF2 PIN, per device), UI.
+- Test every release on iPhone SE / 16 / Pro Max and MacBook Air 13 / Pro 14 / Pro 16, light and dark, no horizontal scroll.
 - Storage key `labledger:data:v1`; amounts in integer cents; dates ISO; every record has `updatedAt`; sync merges per record, newest wins. Bump `SCHEMA` and extend `migrate()` when the shape changes.
 - **Never write personal data into the code.** Studio-specific rules, instructors and rates live in the data (`settings`).
 - Bank de-duplication is by date + amount as a multiset; classes replace everything in the imported date range.

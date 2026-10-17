@@ -5,56 +5,67 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; worker-src blob:; connect-src https://api.github.com https://gist.githubusercontent.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; base-uri 'none'; form-action 'none'">
-<meta name="theme-color" content="#F5F0EA" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#161614" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F4F0F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1B1B1B" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Lab Ledger">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A1A18'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Georgia' font-style='italic' font-size='36' fill='%23EBD3C7'%3EL%3C/text%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231A1A18'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Georgia' font-style='italic' font-size='36' fill='%23EBD3C7'%3EL%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233B0A0A'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Georgia' font-style='italic' font-size='36' fill='%23EBD3C7'%3EL%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%233B0A0A'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Georgia' font-style='italic' font-size='36' fill='%23EBD3C7'%3EL%3C/text%3E%3C/svg%3E">
 <title>Lab Ledger</title>
+<script>try{var t=JSON.parse(localStorage.getItem('labledger:ui:v1')||'{}').theme;if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #F5F0EA; --surface: #FFFDFB; --surface2: #F0E8E0; --ink: #1A1A18; --ink2: #55514B; --muted: #8A847C;
-  --line: #E4DBD1; --accent: #B65F3C; --accent-ink: #fff; --blush: #EBD3C7;
-  --in: #1F6FA8; --out: #C8693F; --pos: #2E6B4A; --neg: #B2402E; --warn: #9A6200;
-  --grid: #ECE4DB; --shadow: 0 1px 2px rgba(26,26,24,.05), 0 4px 16px rgba(26,26,24,.04);
+  /* brand: #252525 charcoal · #3B0A0A oxblood · #F4F0F0 · #E9E8E7 */
+  --bg: #F4F0F0; --surface: #FFFFFF; --surface2: #E9E8E7; --ink: #252525; --ink2: #4D4949; --muted: #807A79;
+  --line: #E2DCDB; --accent: #3B0A0A; --accent-ink: #F4F0F0; --blush: #EEDFDC; --link: #7A2A20;
+  --hero: #3B0A0A; --hero-ink: #F4F0F0;
+  --in: #1F6FA8; --out: #A63F2E; --pos: #2E6B4A; --neg: #A8321F; --warn: #8E5A00;
+  --seq0: #D9D4D3; --seq1: #F1DCD7; --seq2: #E2B1A7; --seq3: #C77D6F; --seq4: #9A4437; --seq5: #5C1A12;
+  --grid: #EAE5E4; --shadow: 0 1px 2px rgba(37,37,37,.05), 0 4px 16px rgba(37,37,37,.04);
   --serif: 'Cormorant Garamond', Georgia, serif; --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #161614; --surface: #201F1C; --surface2: #2A2925; --ink: #EFE9E2; --ink2: #C3BDB5; --muted: #8E887F;
-    --line: #34322D; --accent: #D9845A; --accent-ink: #1A1A18; --blush: #3A2C25;
-    --in: #4A92D4; --out: #CF6D3C; --pos: #6FBF8E; --neg: #EE7A63; --warn: #E3B04B; --grid: #2C2B27;
-    --shadow: none; color-scheme: dark;
+    --bg: #1B1B1B; --surface: #252525; --surface2: #2F2E2E; --ink: #F4F0F0; --ink2: #CFC9C8; --muted: #918B8A;
+    --line: #3A3737; --accent: #E3B8AF; --accent-ink: #252525; --blush: #3A2523; --link: #E8B4AA;
+    --hero: #3B0A0A; --hero-ink: #F4F0F0;
+    --in: #4C94CC; --out: #D06A55; --pos: #74C394; --neg: #F08A76; --warn: #E3B04B;
+    --seq0: #4A4747; --seq1: #4E2A26; --seq2: #723A32; --seq3: #9E5145; --seq4: #C9776A; --seq5: #EDB3A8;
+    --grid: #333131; --shadow: none; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #161614; --surface: #201F1C; --surface2: #2A2925; --ink: #EFE9E2; --ink2: #C3BDB5; --muted: #8E887F;
-  --line: #34322D; --accent: #D9845A; --accent-ink: #1A1A18; --blush: #3A2C25;
-  --in: #4A92D4; --out: #CF6D3C; --pos: #6FBF8E; --neg: #EE7A63; --warn: #E3B04B; --grid: #2C2B27;
-  --shadow: none; color-scheme: dark;
+  --bg: #1B1B1B; --surface: #252525; --surface2: #2F2E2E; --ink: #F4F0F0; --ink2: #CFC9C8; --muted: #918B8A;
+  --line: #3A3737; --accent: #E3B8AF; --accent-ink: #252525; --blush: #3A2523; --link: #E8B4AA;
+  --hero: #3B0A0A; --hero-ink: #F4F0F0;
+  --in: #4C94CC; --out: #D06A55; --pos: #74C394; --neg: #F08A76; --warn: #E3B04B;
+  --seq0: #4A4747; --seq1: #4E2A26; --seq2: #723A32; --seq3: #9E5145; --seq4: #C9776A; --seq5: #EDB3A8;
+  --grid: #333131; --shadow: none; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 var(--sans); font-feature-settings: 'tnum' 1, 'cv11' 1; }
-a { color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+a { color: var(--link); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
 header.top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
 .top-in { max-width: 1180px; margin: 0 auto; padding: 14px 16px 0; }
 .brand { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .brand h1 { margin: 0; font: italic 500 28px/1.1 var(--serif); letter-spacing: .01em; }
 .brand h1 span { font: 600 11px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-style: normal; margin-left: 10px; }
+.hdr-r { display: flex; align-items: center; gap: 8px; }
+.iconbtn svg { display: block; }
+.iconbtn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 15px/1 var(--sans); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
 .sync { font-size: 12px; padding: 4px 10px; border-radius: 99px; background: var(--surface2); color: var(--ink2); white-space: nowrap; }
 .sync::before { content: '●'; margin-right: 6px; }
 .sync.ok::before { color: var(--pos); } .sync.busy::before { color: var(--warn); } .sync.err::before { color: var(--neg); } .sync.off::before { color: var(--muted); }
 nav#nav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; margin-top: 10px; }
 nav#nav::-webkit-scrollbar { display: none; }
 .tab { border: 0; background: none; color: var(--ink2); font: 500 14px var(--sans); padding: 10px 12px 12px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; }
-.tab.on { color: var(--ink); border-bottom-color: var(--accent); }
+.tab.on { color: var(--ink); border-bottom-color: var(--ink); }
 .tab .dot { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 9px; background: var(--accent); color: var(--accent-ink); font-size: 11px; line-height: 18px; text-align: center; }
 main { max-width: 1180px; margin: 0 auto; padding: 20px 16px 60px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 18px 16px; margin-bottom: 16px; box-shadow: var(--shadow); min-width: 0; }
@@ -62,8 +73,9 @@ h2 { font: 600 15px/1.3 var(--sans); margin: 0 0 12px; letter-spacing: .005em; }
 h2.mt, .mt { margin-top: 18px; }
 .tiles { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
 .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); min-width: 0; }
-.tile.hero { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.tile.hero .label, .tile.hero .sub { color: color-mix(in srgb, var(--bg) 75%, var(--ink)); }
+.tile.hero { background: var(--hero); color: var(--hero-ink); border-color: var(--hero); }
+.tile.hero .label, .tile.hero .sub { color: color-mix(in srgb, var(--hero-ink) 72%, var(--hero)); }
+.tile.hero .okc { color: #BFE3C9; }
 .tile.hero .q { color: inherit; border-color: currentColor; }
 .label { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 4px; }
 .big { font: 500 34px/1.15 var(--serif); margin: 6px 0 4px; letter-spacing: -.01em; white-space: nowrap; }
@@ -117,7 +129,8 @@ table.t { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .tag { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 99px; background: var(--surface2); color: var(--ink2); vertical-align: 1px; }
 /* controls */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 500 14px var(--sans); padding: 9px 14px; border-radius: 10px; cursor: pointer; }
-.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn:disabled { opacity: .45; cursor: default; }
 .btn.ghost { background: none; color: var(--ink2); }
 .btn.sm { padding: 4px 10px; font-size: 12.5px; border-radius: 8px; }
 .seg { display: inline-flex; background: var(--surface2); border-radius: 10px; padding: 3px; }
@@ -125,7 +138,8 @@ table.t { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .seg button.on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
 .chips { display: flex; gap: 6px; flex-wrap: wrap; }
 .chip { border: 1px solid var(--line); background: var(--surface); border-radius: 99px; padding: 5px 11px; font: 500 13px var(--sans); color: var(--ink2); cursor: pointer; }
-.chip.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chip.static { cursor: default; }
 .in, select { font: 14px var(--sans); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; max-width: 100%; min-width: 0; }
 .in:disabled { opacity: .45; }
 .in.num { width: 90px; text-align: right; }
@@ -166,17 +180,126 @@ table.t { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 @media (max-width: 980px) { .tiles { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
 td.nw { white-space: nowrap; }
+@media (max-width: 379px) { .srow { grid-template-columns: 42px 1fr; } .srow .cellsel { grid-column: span 2; } }
 @media (max-width: 520px) {
+  .srow { grid-template-columns: 44px 1fr 140px; }
   .hide-sm { display: none; }
   .tiles { grid-template-columns: 1fr; } .big { font-size: 30px; } .tile.hero .big { font-size: 38px; }
   .card { padding: 14px 12px; border-radius: 12px; } .brand h1 { font-size: 24px; } .brand h1 span { display: none; }
+}
+
+/* forecast columns */
+.t .fc { background: color-mix(in srgb, var(--surface2) 55%, transparent); font-style: italic; }
+.t thead th.fc { font-style: normal; }
+.fct { font: 500 10px var(--sans); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); font-style: normal; }
+.t tr.sum td.fc { background: color-mix(in srgb, var(--surface2) 100%, var(--ink) 4%); }
+.q.static { display: inline-flex; align-items: center; justify-content: center; vertical-align: -3px; }
+/* ideas */
+.idea-list { list-style: none; margin: 0; padding: 0; }
+.idea { display: grid; grid-template-columns: 28px 1fr; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+.idea:first-child { border-top: 0; padding-top: 0; }
+.idea p { margin: 3px 0 0; color: var(--ink2); font-size: 14px; }
+.idea .ic { width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; background: var(--surface2); }
+.idea.bad .ic { background: color-mix(in srgb, var(--neg) 16%, transparent); color: var(--neg); }
+.idea.good .ic { background: color-mix(in srgb, var(--pos) 16%, transparent); color: var(--pos); }
+/* instructor bars */
+.ibars { display: grid; gap: 6px; margin: 4px 0 10px; }
+.ibar { display: grid; grid-template-columns: minmax(70px, 120px) 1fr auto; gap: 10px; align-items: center; font-size: 13.5px; cursor: default; }
+.iname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.itrack { height: 14px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.ifill { display: block; height: 100%; border-radius: 0 4px 4px 0; }
+.ival { white-space: nowrap; font-size: 13px; min-width: 120px; text-align: right; }
+.seq0 { background: repeating-linear-gradient(135deg, var(--seq0) 0 4px, transparent 4px 7px); border: 1px solid var(--seq0); }
+.seq1 { background: var(--seq1); } .seq2 { background: var(--seq2); } .seq3 { background: var(--seq3); } .seq4 { background: var(--seq4); } .seq5 { background: var(--seq5); }
+.seqlegend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--ink2); align-items: center; }
+.seqlegend .sw { width: 14px; }
+/* schedule */
+.steps3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stp { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; background: var(--surface2); border-radius: 10px; padding: 12px; }
+.sgrid { table-layout: fixed; }
+.sgrid th, .sgrid td { padding: 4px; vertical-align: top; }
+.sgrid th:first-child { width: 52px; }
+.sgrid .out { background: repeating-linear-gradient(135deg, transparent 0 6px, var(--surface2) 6px 7px); color: var(--muted); }
+.sgrid th.st, .st { font-weight: 600; font-size: 12.5px; color: var(--ink2); white-space: nowrap; }
+.scell { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
+.sn { font-size: 11.5px; color: var(--muted); }
+.cellsel { width: 100%; font-size: 13px; padding: 4px 6px; border-radius: 6px; }
+.cellsel.open { border-color: var(--neg); background: color-mix(in srgb, var(--neg) 8%, var(--surface)); }
+.cellsel.off { color: var(--muted); text-decoration: line-through; }
+.cellsel.man { box-shadow: inset 3px 0 0 var(--accent); }
+.sday { border-top: 1px solid var(--line); padding: 8px 0; }
+.sdh { font-weight: 600; margin-bottom: 4px; }
+.srow { display: grid; grid-template-columns: 46px 1fr 150px; gap: 8px; align-items: center; padding: 3px 0; }
+.srow .sn { font-size: 13px; color: var(--ink2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+details.card > summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+details.card > summary::-webkit-details-marker { display: none; }
+details.card > summary h2 { margin: 0; }
+details.card[open] > summary { margin-bottom: 12px; }
+details.card > summary::after { content: '▾'; color: var(--muted); margin-left: auto; }
+details.card[open] > summary::after { content: '▴'; }
+.slotlist { display: grid; gap: 6px; }
+.slday { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; } .slday > b { width: 40px; }
+.slot { position: relative; font-size: 12.5px; background: var(--surface2); border-radius: 8px; padding: 3px 24px 3px 8px; }
+.slot .x { font-size: 15px; right: 2px; }
+.addslot { display: grid; grid-template-columns: 80px 80px 80px 1fr auto; gap: 6px; margin-top: 12px; }
+#print { position: fixed; inset: 0; z-index: 70; background: var(--bg); overflow: auto; padding: 16px; }
+.pr-bar { position: sticky; top: 0; display: flex; gap: 8px; flex-wrap: wrap; padding: 8px 0 12px; background: var(--bg); }
+.pr-body { background: #fff; color: #252525; padding: 18px; border-radius: 12px; max-width: 1100px; }
+.pr-head h1 { font: italic 500 30px var(--serif); margin: 0; } .pr-head h2 { margin: 2px 0 14px; font-size: 15px; }
+.pr-week { width: 100%; table-layout: fixed; border-collapse: collapse; margin-bottom: 16px; font-size: 12px; page-break-inside: avoid; }
+.pr-week th, .pr-week td { border: 1px solid #ddd; padding: 4px 5px; vertical-align: top; text-align: left; }
+.pr-week thead th { background: #3B0A0A; color: #F4F0F0; }
+.pr-week th:first-child { width: 48px; }
+.pr-week td div { display: flex; flex-direction: column; margin-bottom: 3px; } .pr-week td span { color: #777; font-size: 10.5px; }
+.pr-list p { font-size: 12px; margin: 4px 0; }
+body.printing { overflow: hidden; }
+@media print {
+  body.printing > *:not(#main) { display: none !important; }
+  body.printing #main > *:not(#print) { display: none !important; }
+  body.printing #print { position: static; padding: 0; background: #fff; overflow: visible; }
+  body.printing .pr-bar { display: none; }
+  body.printing .pr-body { padding: 0; max-width: none; }
+  @page { size: A4 landscape; margin: 12mm; }
+}
+/* settings: instructor rows */
+.inslist { display: grid; gap: 8px; }
+.insrow { position: relative; display: grid; grid-template-columns: 1.4fr 1fr .8fr 1fr 1.6fr .5fr; gap: 8px; align-items: end; padding: 10px 30px 10px 10px; border: 1px solid var(--line); border-radius: 10px; }
+.insrow label { display: flex; flex-direction: column; gap: 3px; min-width: 0; font-size: 12px; color: var(--muted); }
+.insrow .in, .insrow select { width: 100%; }
+.insrow .f-teach { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.insrow .f-teach em { font-style: normal; }
+.tchips { display: flex; flex-wrap: wrap; gap: 5px; }
+.tchip { border: 1px solid var(--line); background: var(--surface); color: var(--ink2); border-radius: 99px; padding: 3px 10px; font: 500 12.5px var(--sans); cursor: pointer; }
+.tchip.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.tchip.on.auto { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: var(--ink); border-style: dashed; border-color: var(--accent); }
+.insrow .f-act { align-items: center; }
+.insrow > .x { top: 14px; transform: none; }
+.chk { display: flex; gap: 8px; align-items: center; margin: 10px 0; font-size: 14px; }
+.in.pin { width: 150px; letter-spacing: .2em; }
+/* lock */
+.lockscreen { max-width: 360px; margin: 12vh auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.lockmark { width: 64px; height: 64px; border-radius: 16px; background: var(--hero); color: #EEDFDC; font: italic 500 40px/64px var(--serif); }
+.lockscreen h1 { font: italic 500 32px var(--serif); margin: 6px 0 0; }
+.btn.big-b { width: 100%; padding: 13px; font-size: 15px; }
+.pinrow { display: flex; gap: 8px; width: 100%; } .pinrow .in { flex: 1; width: auto; }
+/* help */
+.ht { font: italic 500 30px var(--serif); margin: 0 0 8px; }
+.help .hb p { margin: 0 0 10px; } .help ul { margin: 6px 0; padding-left: 18px; }
+.help code { font-size: 12.5px; background: var(--surface2); padding: 1px 5px; border-radius: 5px; }
+@media (max-width: 980px) { .insrow { grid-template-columns: 1fr 1fr 1fr; } }
+@media (max-width: 760px) { .steps3 { grid-template-columns: 1fr; } .addslot { grid-template-columns: 1fr 1fr 1fr; } .addslot input[list], .addslot .btn { grid-column: span 3; } }
+@media (max-width: 520px) {
+  .insrow { grid-template-columns: 1fr 1fr; } .insrow .f-name, .insrow .f-bank { grid-column: span 2; } .insrow .f-act { flex-direction: row; gap: 8px; }
+  .ibar { grid-template-columns: 74px 1fr; } .ival { grid-column: 2; text-align: left; min-width: 0; margin-top: -4px; }
+  .brand h1 { font-size: 22px; } .iconbtn { width: 30px; height: 30px; }
+  .sync { font-size: 11px; padding: 4px 8px; }
 }
 
 </style>
 </head>
 <body>
 <header class="top"><div class="top-in">
-  <div class="brand"><h1>Lab Ledger<span>Studio finances</span></h1><span id="syncBadge" class="sync off">Not synced</span></div>
+  <div class="brand"><h1>Lab Ledger<span>Studio finances</span></h1><div class="hdr-r"><span id="syncBadge" class="sync off">Not synced</span><button id="themeBtn" class="iconbtn" data-act="theme" aria-label="Light or dark">◐</button><button class="iconbtn" data-act="page" data-v="help" aria-label="Help">?</button></div></div>
   <nav id="nav" aria-label="Pages"></nav>
 </div></header>
 <main id="main"></main>
@@ -244,6 +367,7 @@ td.nw { white-space: nowrap; }
     if (has('Voucher Code') && has('Paid Invoice Amount')) return 'vouchers';
     if (has('Paid Gross') && has('Product Name')) return 'sales';
     if (has('Trainer') && has('Max. participants') && has('Start time')) return 'classes';
+    if (k.some((x) => /\[[^\]]+\]\s*$/.test(x)) && k.some((x) => /name/i.test(x))) return 'availability';
     // George CSV (best effort): needs a date and an amount column
     const lk = k.map((x) => x.toLowerCase());
     if (lk.some((x) => /buchungsdatum|booking date|valuta|value date/.test(x)) && lk.some((x) => /betrag|amount/.test(x))) return 'georgecsv';
@@ -408,7 +532,7 @@ td.nw { white-space: nowrap; }
 /* Lab Ledger — data model, import merge, categories, monthly aggregation. No DOM. */
 (function (G) {
   'use strict';
-  const APP_VERSION = '1.0';
+  const APP_VERSION = '1.1';
   const SCHEMA = 1;
 
   // ---------- categories ----------
@@ -430,12 +554,13 @@ td.nw { white-space: nowrap; }
     bank:        { label: 'Bank fees', group: 'out' },
     loan_fees:   { label: 'Loan fees', group: 'out' },
     supplies:    { label: 'Studio supplies', group: 'out' },
-    license:     { label: 'Lagree licence & training', group: 'out' },
+    license:     { label: 'Lagree licence', group: 'out' },
     memberships: { label: 'Chamber & fees', group: 'out' },
     travel:      { label: 'Travel', group: 'out' },
     other_out:   { label: 'Other costs', group: 'out' },
     uncat:       { label: 'Not sorted yet', group: 'out' },
     setup:       { label: 'Build-out & setup', group: 'setup' },
+    certification: { label: 'Lagree certification', group: 'setup' },
     vat:         { label: 'VAT & tax office', group: 'tax' },
     owner:       { label: 'Shareholder money', group: 'fin' },
     bank_loan:   { label: 'Bank loan drawdown', group: 'fin' },
@@ -468,6 +593,10 @@ td.nw { white-space: nowrap; }
     { m: 'amazon|ikea|jysk|bauhaus|dm-fil|lidl|spar |billa|hofer|temu|kaufland|zara ?home|deichmann|dehner|blumen|etsy|sklum|kenay|sport-tec|lampenwelt|obi |hornbach|müller|brunos|wolt|colibri|ryzon|sb supply|abraham|sanitino|eufy|dji', c: 'supplies' },
   ];
 
+  const COLLS = ['bank', 'statements', 'sales', 'vouchers', 'classes', 'avail', 'plans'];
+  // Is this instructor paid for a class in month m? ('paid from' lets someone start unpaid and switch to invoices)
+  const paidIn = (ins, m) => !!ins && ins.status === 'paid' && (!ins.paidFrom || m >= ins.paidFrom);
+
   function defaultState() {
     return {
       schema: SCHEMA,
@@ -477,16 +606,19 @@ td.nw { white-space: nowrap; }
         instructors: [],
         rules: [],
         bufferMonths: 3,
+        slots: [],
+        patches: [],
         updatedAt: 0,
       },
-      bank: {}, statements: {}, sales: {}, vouchers: {}, classes: {},
+      bank: {}, statements: {}, sales: {}, vouchers: {}, classes: {}, avail: {}, plans: {},
     };
   }
   function migrate(s) {
     const d = defaultState();
     s = Object.assign(d, s || {});
     s.settings = Object.assign(defaultState().settings, s.settings || {});
-    for (const k of ['bank', 'statements', 'sales', 'vouchers', 'classes']) s[k] = s[k] || {};
+    for (const k of COLLS) s[k] = s[k] || {};
+    s.settings.slots = s.settings.slots || []; s.settings.patches = s.settings.patches || [];
     s.schema = SCHEMA;
     return s;
   }
@@ -683,18 +815,41 @@ td.nw { white-space: nowrap; }
       const ins = findInstructor(state, c.trainer);
       if (ins && ins.status === 'excluded') continue;
       const mm = M(mk(c.date));
-      const paid = ins && ins.status === 'paid';
+      const paid = paidIn(ins, mk(c.date));
       const key = ins ? ins.id : 'x' + slug(c.trainer);
       if (c.date <= today) {
         mm.classes.taught++; mm.classes.attendees += c.present; mm.classes.capacity += c.max;
         const b = (mm.classes.byIns[key] = mm.classes.byIns[key] || { classes: 0, attendees: 0, capacity: 0 });
         b.classes++; b.attendees += c.present; b.capacity += c.max;
-      } else mm.classes.planned++;
+      } else {
+        mm.classes.planned++;
+        const b = (mm.classes.byIns[key] = mm.classes.byIns[key] || { classes: 0, attendees: 0, capacity: 0 });
+        b.planned = (b.planned || 0) + 1;
+      }
       if (paid) {
         if (c.date <= today) mm.classes.paidTaught++;
         mm.ins.expected += ins.rate || 0;
         const bi = (mm.ins.byIns[ins.id] = mm.ins.byIns[ins.id] || { classes: 0, expected: 0, paid: 0 });
         bi.classes++; bi.expected += ins.rate || 0;
+      }
+    }
+    // months that Eversports doesn't cover yet: use the plan from the Schedule page
+    const covered = new Set(live(state.classes).map((c) => mk(c.date)));
+    for (const p of live(state.plans)) {
+      if (covered.has(p.month) || p.month < mk(today)) continue;
+      const mm = M(p.month);
+      for (const [k, cell] of Object.entries(p.cells || {})) {
+        if (!cell || !cell.ins || cell.ins === '-') continue;
+        const ins = insById[cell.ins];
+        if (ins && ins.status === 'excluded') continue;
+        mm.classes.planned++; mm.classes.fromPlan = true;
+        if (paidIn(ins, p.month)) {
+          mm.ins.expected += ins.rate || 0;
+          const bi = (mm.ins.byIns[ins.id] = mm.ins.byIns[ins.id] || { classes: 0, expected: 0, paid: 0 });
+          bi.classes++; bi.expected += ins.rate || 0;
+        }
+        const b = (mm.classes.byIns[cell.ins] = mm.classes.byIns[cell.ins] || { classes: 0, attendees: 0, capacity: 0, planned: 0 });
+        b.planned = (b.planned || 0) + 1;
       }
     }
     // fill gaps & balances
@@ -726,13 +881,15 @@ td.nw { white-space: nowrap; }
     return e > 0 ? p / e : 1;
   }
 
-  // Forecast: months after the last bank data are estimated from the last 3 complete months.
-  // Instructor cash in a month pays for the month before, so planned classes in Eversports drive it.
+  // Forecast: months after the last bank data, per category, from the last 3 complete months.
+  // Instructor cash in a month pays for the month before, so planned classes (Eversports or the Schedule page) drive it.
   function forecast(state, agg, n = 3) {
     const ref = lastFullMonths(agg, 3);
-    const opIn = avg(ref.map((m) => m.groups.in));
-    const runCosts = avg(ref.map((m) => m.groups.out - (m.cats.instructors || 0) - (m.cats.payroll || 0)));
-    const insAvg = avg(ref.map((m) => (m.cats.instructors || 0) + (m.cats.payroll || 0)));
+    const runCats = Object.keys(CATS).filter((k) => (CATS[k].group === 'in' || CATS[k].group === 'out') && k !== 'license'); // the licence is paid once a year
+    const avgCat = {}; for (const k of runCats) avgCat[k] = avg(ref.map((m) => m.cats[k] || 0));
+    const insSum = ref.reduce((a, m) => a + (m.cats.instructors || 0), 0), paySum = ref.reduce((a, m) => a + (m.cats.payroll || 0), 0);
+    const sI = insSum + paySum !== 0 ? insSum / (insSum + paySum) : 0.8;
+    const insAvg = (avgCat.instructors || 0) + (avgCat.payroll || 0);
     const repay = lastFullMonths(agg, 2).map((m) => m.cats.loan_repay || 0).filter((x) => x < 0);
     const loan = repay.length ? repay[repay.length - 1] : 0;
     const ratio = onCostRatio(agg);
@@ -740,36 +897,50 @@ td.nw { white-space: nowrap; }
     const lastM = mk(last);
     const daysIn = (m) => new Date(+m.slice(0, 4), +m.slice(5, 7), 0).getDate();
     const lastDay = +last.slice(8, 10);
-    let startM = lastDay >= daysIn(lastM) ? addMonths(lastM, 1) : lastM;
+    const startM = lastDay >= daysIn(lastM) ? addMonths(lastM, 1) : lastM;
     const prevEnd = agg.months.find((x) => x.m === addMonths(startM, -1));
     let bal = prevEnd ? prevEnd.end : agg.cash;
+    const sumG = (cats, g) => Object.entries(cats).reduce((a, [k, v]) => a + (CATS[k] && CATS[k].group === g ? v : 0), 0);
     const out = [];
     for (let i = 0; i < n; i++) {
       const m = addMonths(startM, i);
       const prev = agg.byMonth[addMonths(m, -1)];
       const plannedIns = prev && prev.ins.expected > 0 ? -prev.ins.expected * ratio : insAvg;
-      let inc = opIn, cost = runCosts + plannedIns + loan, partial = false;
       const mm = agg.byMonth[m];
-      // current calendar month without bank data yet: Eversports sales so far, projected to month end
+      const cats = {};
+      for (const k of runCats) if (avgCat[k]) cats[k] = avgCat[k];
+      delete cats.uncat;
+      cats.instructors = plannedIns * sI; cats.payroll = plannedIns * (1 - sI);
+      if (loan) cats.loan_repay = loan;
+      let partial = false;
       if (m === mk(agg.today) && mm && mm.sales.gross > 0 && !(mm.tx > 0)) {
+        // current month without bank data yet: Eversports sales so far, projected to month end
         const d = Math.max(1, +agg.today.slice(8, 10));
-        const otherIn = avg(ref.map((x) => (x.cats.terminal || 0) + (x.cats.other_in || 0)));
-        inc = mm.sales.gross * daysIn(m) / d + otherIn;
+        cats.sales = mm.sales.gross * daysIn(m) / d;
       }
       if (m === lastM && mm && mm.tx) {
         // part of this month is already in the bank: actuals so far + the rest pro rata
         partial = true;
         const left = Math.max(0, (daysIn(m) - lastDay) / daysIn(m));
         const doneIns = (mm.cats.instructors || 0) + (mm.cats.payroll || 0);
-        inc = mm.groups.in + opIn * left;
-        cost = (mm.groups.out - doneIns) + runCosts * left + (doneIns || plannedIns) + (mm.cats.loan_repay || loan) + (mm.groups.setup || 0);
+        for (const k of Object.keys(CATS)) {
+          const act = mm.cats[k] || 0;
+          if (k === 'instructors' || k === 'payroll') cats[k] = doneIns ? act : cats[k];
+          else if (k === 'loan_repay') cats[k] = act || loan;
+          else if (runCats.includes(k)) cats[k] = act + (avgCat[k] || 0) * left;
+          else if (act) cats[k] = act;
+        }
       }
+      for (const k of Object.keys(cats)) if (!cats[k]) delete cats[k];
+      const inc = sumG(cats, 'in');
+      const cost = sumG(cats, 'out') + sumG(cats, 'fin') + sumG(cats, 'setup') + sumG(cats, 'tax');
+      const op = inc + sumG(cats, 'out');
       bal += inc + cost;
-      out.push({ m, inc, cost, net: inc + cost, end: bal, plannedIns, partial });
+      out.push({ m, cats, inc, cost, net: inc + cost, op, end: bal, plannedIns, partial, groups: { in: inc, out: sumG(cats, 'out'), setup: sumG(cats, 'setup'), tax: sumG(cats, 'tax'), fin: sumG(cats, 'fin') } });
     }
     const full = out.filter((x) => !x.partial);
     const avgNet = avg(full.map((x) => x.net));
-    return { months: out, opIn, runCosts, insAvg, loan, ratio, avgNet };
+    return { months: out, opIn: sumG(avgCat, 'in'), runCosts: sumG(avgCat, 'out') - (avgCat.instructors || 0) - (avgCat.payroll || 0), insAvg, loan, ratio, avgNet };
   }
 
   // Share of trial-class buyers who later bought anything else (pack, drop-in, membership...)
@@ -792,6 +963,96 @@ td.nw { white-space: nowrap; }
     return res;
   }
 
+  // "What to work on": simple rules over sales and class data. Each item: { tone: 'bad'|'good'|'info', title, text }
+  function insights(state, agg) {
+    const out = [];
+    const today = agg.today, cur = mk(today);
+    const full = agg.months.filter((m) => m.m < cur && (m.sales.gross > 0));
+    const last = full[full.length - 1], prev3 = full.slice(-4, -1);
+    const conv = trialConversion(state);
+    const pctf = (x) => Math.round(x * 100) + '%';
+    const euro = (c) => '€' + Math.round(c / 100).toLocaleString('de-AT');
+    // 1. sales pace this month
+    const now = agg.byMonth[cur];
+    if (now && now.sales.gross > 0 && full.length >= 2) {
+      const d = +today.slice(8, 10), days = new Date(+cur.slice(0, 4), +cur.slice(5, 7), 0).getDate();
+      const pace = now.sales.gross * days / d, base = avg(full.slice(-3).map((m) => m.sales.gross));
+      const ch = pace / base - 1;
+      if (ch < -0.15) out.push({ tone: 'bad', title: `Sales this month are heading ${pctf(-ch)} below average`, text: `${euro(now.sales.gross)} after ${d} days points to about ${euro(pace)} for the month, against ${euro(base)} on average. Fill the gap now rather than at month end: a short offer to past drop-in and trial clients (e.g. a 5-pack deal valid for 10 days), and a push on your fullest class times, where demand is proven.` });
+      else if (ch > 0.1) out.push({ tone: 'good', title: `Sales this month are ${pctf(ch)} above average`, text: `On track for about ${euro(pace)}. Look at what you did differently this month and repeat it.` });
+    }
+    // 2. trial follow-up
+    const cm = Object.keys(conv).filter((m) => m < cur && conv[m].trials >= 20).sort();
+    if (cm.length >= 2) {
+      const l = conv[cm[cm.length - 1]], first = conv[cm[0]];
+      const rl = l.converted / l.trials, rf = first.converted / first.trials;
+      if (rl < 0.3) out.push({ tone: 'bad', title: `Only ${pctf(rl)} of trial clients buy again`, text: `Trial classes bring people in (${l.trials} in ${cm[cm.length - 1].slice(5)}/${cm[cm.length - 1].slice(2, 4)}), but most don't come back${rf > rl + 0.05 ? ` (it was ${pctf(rf)} at the start)` : ''}. The fix is the 48 hours after the first class: a personal message from the instructor, and a "first pack" offer that expires within 7 days. Each extra 10% who convert is worth roughly ${euro(l.trials * 0.1 * 16900)} a month at a 5-pack.` });
+    }
+    // 3. product mix: memberships
+    if (last) {
+      const g = last.sales.byGroup, tot = last.sales.gross || 1;
+      const mem = (g['Memberships'] || {}).gross || 0;
+      if (mem / tot < 0.15) out.push({ tone: 'bad', title: `Memberships are only ${pctf(mem / tot)} of sales`, text: `Packs and drop-ins pay once; memberships pay every month and make cash flow predictable. Offer every pack buyer an upgrade at their 4th visit, and consider a founding-style membership price for the first 20 sign-ups this season.` });
+      // 4. biggest drop by product group vs previous 3 months
+      if (prev3.length >= 2) {
+        let worst = null;
+        for (const name of PRODUCT_GROUPS) {
+          if (name === 'Gift vouchers' || name === 'Other') continue;
+          const base = avg(prev3.map((m) => ((m.sales.byGroup[name] || {}).gross || 0)));
+          const now2 = (g[name] || {}).gross || 0;
+          if (base > 30000 && (now2 - base) / base < -0.25 && (!worst || now2 - base < worst.d)) worst = { name, d: now2 - base, base, now2 };
+        }
+        if (worst) out.push({ tone: 'bad', title: worst.now2 <= 0 ? `${worst.name}: nothing sold last month` : `${worst.name} dropped ${pctf(-worst.d / worst.base)} last month`, text: `${euro(worst.now2)} against ${euro(worst.base)} on average before. ${worst.name === 'Promotions' ? 'The summer offer ended. A winter version (e.g. "3 classes in 3 weeks") brought in up to ' + euro(Math.max(...prev3.map((m) => ((m.sales.byGroup.Promotions || {}).gross || 0)))) + ' a month.' : 'Check whether price, timing or visibility changed, and give it a spotlight in your next posts.'}` });
+      }
+      // promotions worked before but none running
+      const promoBest = Math.max(0, ...full.map((m) => ((m.sales.byGroup.Promotions || {}).gross || 0)));
+      if (promoBest > 100000 && !((g.Promotions || {}).gross) && !out.some((o) => /Promotions/.test(o.title))) out.push({ tone: 'info', title: 'No offer running at the moment', text: `Your best promotion month brought in ${euro(promoBest)}. A time-limited offer is your strongest lever when sales dip.` });
+    }
+    // 5. emptiest and fullest class times (last 8 weeks)
+    const since = new Date(new Date(today).getTime() - 56 * 864e5).toISOString().slice(0, 10);
+    const slots = {};
+    const W = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    for (const c of live(state.classes)) {
+      if (c.cancelled || !c.trainer || c.date > today || c.date < since || !c.max || /private/i.test(c.title)) continue;
+      const wd = (new Date(c.date + 'T12:00:00').getDay() + 6) % 7;
+      const k = W[wd] + ' ' + c.start + ' · ' + c.title;
+      const o = (slots[k] = slots[k] || { n: 0, p: 0, cap: 0, wait: 0, wd, start: c.start });
+      o.n++; o.p += c.present; o.cap += c.max;
+    }
+    const list = Object.entries(slots).filter(([, o]) => o.n >= 3).map(([k, o]) => ({ k, fill: o.p / o.cap, avg: o.p / o.n, o }));
+    if (list.length >= 6) {
+      list.sort((a, b) => a.fill - b.fill);
+      const low = list.slice(0, 3), high = list.slice(-3).reverse();
+      out.push({ tone: 'info', title: 'Emptiest class times (last 8 weeks)', text: low.map((x) => `${x.k}: ${x.avg.toFixed(1).replace('.', ',')} guests on average (${pctf(x.fill)} full)`).join(' · ') + '. Either cut or move these, or give them a reason to come (a themed class, a "bring a friend" slot).' });
+      out.push({ tone: 'good', title: 'Fullest class times', text: high.map((x) => `${x.k}: ${pctf(x.fill)} full`).join(' · ') + '. Demand is proven here: these are the times to add a class next to, and to feature in ads.' });
+    }
+    // 6. refunds
+    if (last && last.sales.refunds < 0 && -last.sales.refunds / (last.sales.gross || 1) > 0.03) out.push({ tone: 'info', title: `Refunds were ${pctf(-last.sales.refunds / last.sales.gross)} of sales last month`, text: 'Worth a look at why: late cancellations, double bookings or unhappy first-timers?' });
+    return out;
+  }
+
+  // Apply an update file: adds rules and instructor changes, the weekly slots. Each update applies once.
+  function applyPatch(state, p) {
+    if (!p || p.kind !== 'patch') return false;
+    if ((state.settings.patches || []).includes(p.id)) return 'already';
+    const st = state.settings;
+    if (p.rules) st.rules = [...p.rules, ...(st.rules || []).filter((r) => !p.rules.some((x) => x.m === r.m))];
+    for (const u of p.instructors || []) {
+      let ins = st.instructors.find((i) => !i.deleted && (norm(i.name) === norm(u.match) || (i.evNames || []).some((e) => norm(trainerName(e)) === norm(u.match))));
+      if (!ins) { ins = { id: 'i' + slug(u.match), name: u.match, evNames: [], bankNames: [], status: 'unknown', rate: 0, active: true }; st.instructors.push(ins); }
+      Object.assign(ins, u.set);
+    }
+    if (p.slots && !(st.slots || []).length) st.slots = p.slots;
+    if (p.studioName && !st.studioName) st.studioName = p.studioName;
+    for (const t of live(state.bank)) {
+      // drop manual categories that the new rules now cover
+      if (t.cat && (p.rules || []).some((r) => { try { return new RegExp(r.m, 'i').test(norm(t.party + ' | ' + t.text)); } catch (e) { return false; } })) { delete t.cat; t.updatedAt = now(); }
+    }
+    st.patches = [...(st.patches || []), p.id];
+    st.updatedAt = now();
+    return true;
+  }
+
   function keyFigures(state, agg) {
     const ref = lastFullMonths(agg, 3);
     const burn = avg(ref.map((m) => m.op + (m.cats.loan_repay || 0)));
@@ -802,7 +1063,223 @@ td.nw { white-space: nowrap; }
     return { burn, pace, fixed, runway, buffer: fixed * (state.settings.bufferMonths || 3), ref, fc };
   }
 
-  G.LL = { APP_VERSION, SCHEMA, CATS, GROUPS, BUILTIN_RULES, PRODUCT_GROUPS, defaultState, migrate, categorize, serviceMonth, importBank, importSales, importVouchers, importClasses, aggregate, forecast, keyFigures, trialConversion, onCostRatio, lastFullMonths, productGroup, findInstructor, ensureInstructor, trainerName, addMonths, monthRange, mk, live, slug, hash };
+  G.LL = { APP_VERSION, SCHEMA, CATS, GROUPS, BUILTIN_RULES, PRODUCT_GROUPS, defaultState, migrate, categorize, serviceMonth, importBank, importSales, importVouchers, importClasses, aggregate, forecast, keyFigures, trialConversion, insights, applyPatch, paidIn, COLLS, onCostRatio, lastFullMonths, productGroup, findInstructor, ensureInstructor, trainerName, addMonths, monthRange, mk, live, slug, hash };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* Lab Ledger — schedule: weekly slots, availability from a Google Form, proposals. No DOM. */
+(function (G) {
+  'use strict';
+  const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const DAYS_DE = ['montag', 'dienstag', 'mittwoch', 'donnerstag', 'freitag', 'samstag', 'sonntag'];
+  // Time windows offered in the Google Form (friendlier than every exact time)
+  const WINDOWS = [
+    { k: 'early', label: 'Early 6:30-8:30', from: 0, to: 9 * 60, re: /early|früh|frueh/i },
+    { k: 'morning', label: 'Morning 9-12:30', from: 9 * 60, to: 13 * 60, re: /morning|vormittag|morgen/i },
+    { k: 'afternoon', label: 'Afternoon 13-17:30', from: 13 * 60, to: 17 * 60 + 30, re: /afternoon|nachmittag|mittag/i },
+    { k: 'evening', label: 'Evening 17:30-21', from: 17 * 60 + 30, to: 24 * 60, re: /evening|abend/i },
+  ];
+  const mins = (t) => { const m = String(t).match(/(\d{1,2})[:.](\d{2})/); return m ? +m[1] * 60 + +m[2] : null; };
+  const hhmm = (t) => { const v = mins(t); return v === null ? null : String(Math.floor(v / 60)).padStart(2, '0') + ':' + String(v % 60).padStart(2, '0'); };
+  const windowOf = (start) => { const v = mins(start); return (WINDOWS.find((w) => v >= w.from && v < w.to) || WINDOWS[3]).k; };
+  const weekday = (iso) => (new Date(iso + 'T12:00:00').getDay() + 6) % 7; // Mon = 0
+  const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+  const datesOf = (m) => { const out = []; const n = new Date(+m.slice(0, 4), +m.slice(5, 7), 0).getDate(); for (let d = 1; d <= n; d++) out.push(m + '-' + String(d).padStart(2, '0')); return out; };
+  const weekKey = (iso) => { const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() - weekday(iso)); return d.toISOString().slice(0, 10); };
+  const cellKey = (date, slot) => date + '|' + slot.start + '|' + slot.title;
+  const durMin = (s) => (mins(s.end) && mins(s.start) ? mins(s.end) - mins(s.start) : 50);
+  const overlaps = (a, b) => mins(a.start) < mins(b.start) + durMin(b) && mins(b.start) < mins(a.start) + durMin(a);
+
+  // ---------- weekly slots from one Eversports week ----------
+  function slotsFromClasses(state, weekStart) {
+    const end = new Date(new Date(weekStart + 'T12:00:00').getTime() + 6 * 864e5).toISOString().slice(0, 10);
+    const seen = new Set(); const slots = [];
+    for (const c of LL.live(state.classes)) {
+      if (c.cancelled || c.date < weekStart || c.date > end || /private/i.test(c.title) || /private/i.test(c.type || '')) continue;
+      const day = weekday(c.date); const k = day + '|' + c.start + '|' + c.title;
+      if (seen.has(k)) continue; seen.add(k);
+      slots.push({ id: LL.hash(k), day, start: hhmm(c.start), end: hhmm(c.end), title: c.title });
+    }
+    return slots.sort((a, b) => a.day - b.day || mins(a.start) - mins(b.start));
+  }
+
+  // ---------- Google Form responses ----------
+  function parseDates(text, month) {
+    const out = new Set(); const y = +month.slice(0, 4);
+    const iso = (d, m, yy) => `${yy || y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    for (const part of String(text || '').split(/[,;\n]+/)) {
+      const p = part.trim(); if (!p) continue;
+      const r = p.match(/^(\d{1,2})\.?(?:(\d{1,2})\.)?\s*[-–bis]+\s*(\d{1,2})\.(\d{1,2})\.?(\d{4})?/i);
+      if (r) {
+        const m2 = +r[4], m1 = r[2] ? +r[2] : m2; const yy = r[5] ? +r[5] : y;
+        let d = new Date(iso(+r[1], m1, yy) + 'T12:00:00'); const e = new Date(iso(+r[3], m2, yy) + 'T12:00:00');
+        for (let i = 0; d <= e && i < 62; i++) { out.add(d.toISOString().slice(0, 10)); d = new Date(d.getTime() + 864e5); }
+        continue;
+      }
+      const s = p.match(/^(\d{1,2})\.(\d{1,2})\.?(\d{4})?/);
+      if (s) out.add(iso(+s[1], +s[2], s[3] ? +s[3] : y));
+    }
+    return [...out];
+  }
+  function parseAvailability(rows, month) {
+    if (!rows.length) return [];
+    const k = Object.keys(rows[0]);
+    const col = (re) => k.find((x) => re.test(x));
+    const nameC = col(/name|instructor|trainer/i), maxC = col(/max|how many|wie viele/i), awayC = col(/away|can'?t|cannot|not available|urlaub|abwesend|nicht/i);
+    const noteC = col(/note|comment|anmerk|notiz/i), monthC = col(/month|monat/i), tsC = col(/timestamp|zeitstempel/i);
+    const gridC = k.map((x) => {
+      const m = x.match(/\[([^\]]+)\]\s*$/); if (!m) return null;
+      const d = norm(m[1]); let day = DAYS.findIndex((n) => d.startsWith(n.toLowerCase().slice(0, 3)));
+      if (day < 0) day = DAYS_DE.findIndex((n) => d.startsWith(n.slice(0, 2)));
+      return day >= 0 ? { x, day } : null;
+    }).filter(Boolean);
+    if (!nameC || !gridC.length) throw new Error('This doesn\'t look like the availability form: it needs a name question and a grid question with the days as rows.');
+    const people = {};
+    for (const r of rows) {
+      const name = (r[nameC] || '').trim(); if (!name) continue;
+      if (monthC && r[monthC] && month) {
+        const mv = norm(r[monthC]); const mn = new Date(month + '-15').toLocaleString('en', { month: 'long' }).toLowerCase();
+        const mde = ['jänner', 'februar', 'märz', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'dezember'][+month.slice(5) - 1];
+        if (!mv.includes(mn) && !mv.includes(norm(mde)) && !mv.includes(month)) continue;
+      }
+      const days = {};
+      for (const g of gridC) {
+        const toks = String(r[g.x] || '').split(/[,;]\s*/).map((t) => t.trim()).filter(Boolean);
+        const d = (days[g.day] = days[g.day] || { windows: [], times: [] });
+        for (const t of toks) {
+          const w = WINDOWS.find((w) => w.re.test(t));
+          if (w) d.windows.push(w.k); else if (hhmm(t)) d.times.push(hhmm(t));
+        }
+      }
+      const max = parseInt(r[maxC], 10);
+      const p = { name, days, max: isNaN(max) ? null : max, away: month ? parseDates(r[awayC], month) : [], notes: (r[noteC] || '').trim(), ts: r[tsC] || '' };
+      const key = norm(name);
+      if (!people[key] || String(p.ts) >= String(people[key].ts)) people[key] = p; // the latest answer counts
+    }
+    return Object.values(people);
+  }
+  function matchInstructor(state, name) {
+    const n = norm(name), first = n.split(/\s+/)[0];
+    const ins = state.settings.instructors.filter((i) => !i.deleted);
+    return ins.find((i) => norm(i.name) === n) || ins.find((i) => (i.evNames || []).some((e) => norm(LL.trainerName(e)) === n))
+      || ins.find((i) => norm(i.name).split(/\s+/)[0] === first && ins.filter((j) => norm(j.name).split(/\s+/)[0] === first).length === 1) || null;
+  }
+  function importAvailability(state, rows, month) {
+    const people = parseAvailability(rows, month);
+    let added = 0; const created = [];
+    for (const p of people) {
+      let ins = matchInstructor(state, p.name);
+      if (!ins) { ins = { id: 'i' + LL.slug(p.name), name: p.name, evNames: [], bankNames: [], status: 'unknown', rate: 0, active: true }; state.settings.instructors.push(ins); state.settings.updatedAt = Date.now(); created.push(p.name); }
+      const id = month + '|' + ins.id;
+      state.avail[id] = { id, month, ins: ins.id, days: p.days, max: p.max, away: p.away, notes: p.notes, updatedAt: Date.now() };
+      added++;
+    }
+    return { added, created };
+  }
+  function isAvailable(av, date, slot) {
+    if (!av) return false;
+    if ((av.away || []).includes(date)) return false;
+    const d = av.days && av.days[weekday(date)]; if (!d) return false;
+    return (d.times || []).includes(slot.start) || (d.windows || []).includes(windowOf(slot.start));
+  }
+
+  // ---------- who can teach which class ----------
+  function teachesOf(state, ins) {
+    if (ins.teaches && ins.teaches.length) return ins.teaches;
+    const t = new Set();
+    for (const c of LL.live(state.classes)) if (!c.cancelled && c.trainer && !/private/i.test(c.title)) { const i = LL.findInstructor(state, c.trainer); if (i && i.id === ins.id) t.add(c.title); }
+    return [...t];
+  }
+  function qualifies(state, ins, slot, cache) {
+    const t = cache[ins.id] || (cache[ins.id] = teachesOf(state, ins));
+    if (t.length) return t.includes(slot.title);
+    return /lagree burn/i.test(slot.title); // new instructors: the standard class
+  }
+  // who usually teaches this weekly slot (last 6 weeks in Eversports)
+  function usualHolder(state) {
+    const since = new Date(Date.now() - 42 * 864e5).toISOString().slice(0, 10);
+    const cnt = {};
+    for (const c of LL.live(state.classes)) {
+      if (c.cancelled || !c.trainer || c.date < since) continue;
+      const i = LL.findInstructor(state, c.trainer); if (!i) continue;
+      const k = weekday(c.date) + '|' + hhmm(c.start) + '|' + c.title;
+      (cnt[k] = cnt[k] || {})[i.id] = (cnt[k][i.id] || 0) + 1;
+    }
+    const out = {}; for (const [k, v] of Object.entries(cnt)) out[k] = Object.entries(v).sort((a, b) => b[1] - a[1])[0][0];
+    return out;
+  }
+
+  // ---------- proposal ----------
+  // Fills every slot of the month. Order of preference: available + teaches this class, unpaid first,
+  // then whoever usually has this slot, then whoever has the fewest classes that week, then the lower rate.
+  // Cells you changed by hand are kept.
+  function propose(state, month, opts = {}) {
+    const slots = state.settings.slots || [];
+    const plan = state.plans[month] && !state.plans[month].deleted ? state.plans[month] : { id: month, month, cells: {} };
+    const keep = {}; for (const [k, c] of Object.entries(plan.cells || {})) if (c && c.manual) keep[k] = c;
+    const avail = {}; for (const a of LL.live(state.avail)) if (a.month === month) avail[a.ins] = a;
+    if (opts.assumeAll) {
+      // no answers yet: everyone active counts as available, and the usual person keeps their slot
+      const all = {}; for (let d = 0; d < 7; d++) all[d] = { windows: WINDOWS.map((w) => w.k), times: [] };
+      for (const i of state.settings.instructors) if (!i.deleted && i.active !== false && !avail[i.id]) avail[i.id] = { days: all, max: null, away: [] };
+    }
+    const ins = state.settings.instructors.filter((i) => !i.deleted && i.active !== false && avail[i.id]);
+    const holder = usualHolder(state); const qcache = {};
+    const cells = {}; const perWeek = {}; const perDay = {}; const busy = {}; const lastHolder = {};
+    const bump = (o, k) => (o[k] = (o[k] || 0) + 1);
+    const pri = { unpaid: 0, excluded: 1, unknown: 1, paid: 2 };
+    // count kept cells first
+    for (const [k, c] of Object.entries(keep)) {
+      const [date, start, title] = k.split('|');
+      if (c.ins && c.ins !== '-') { bump(perWeek, c.ins + weekKey(date)); bump(perDay, c.ins + date); (busy[c.ins + date] = busy[c.ins + date] || []).push({ start, end: (slots.find((s) => s.start === start && s.title === title) || {}).end }); }
+    }
+    let unfilled = 0;
+    for (const date of datesOf(month)) {
+      const wd = weekday(date);
+      for (const slot of slots.filter((s) => s.day === wd).sort((a, b) => mins(a.start) - mins(b.start))) {
+        const k = cellKey(date, slot);
+        if (keep[k]) { cells[k] = keep[k]; continue; }
+        const sk = wd + '|' + slot.start + '|' + slot.title;
+        const cand = ins.filter((i) => {
+          const a = avail[i.id];
+          if (!isAvailable(a, date, slot) || !qualifies(state, i, slot, qcache)) return false;
+          if (a.max && (perWeek[i.id + weekKey(date)] || 0) >= a.max) return false;
+          if ((perDay[i.id + date] || 0) >= (opts.maxPerDay || 4)) return false;
+          return !(busy[i.id + date] || []).some((b) => overlaps(b, slot));
+        });
+        const h = lastHolder[sk] || holder[sk];
+        if (opts.assumeAll && h && cand.some((c) => c.id === h)) cand.splice(0, cand.length, cand.find((c) => c.id === h));
+        cand.sort((a, b) => (pri[a.status] ?? 2) - (pri[b.status] ?? 2)
+          || ((lastHolder[sk] || holder[sk]) === b.id) - ((lastHolder[sk] || holder[sk]) === a.id)
+          || (perWeek[a.id + weekKey(date)] || 0) - (perWeek[b.id + weekKey(date)] || 0)
+          || (a.rate || 0) - (b.rate || 0));
+        const pick = cand[0];
+        if (pick) {
+          cells[k] = { ins: pick.id, manual: false };
+          bump(perWeek, pick.id + weekKey(date)); bump(perDay, pick.id + date);
+          (busy[pick.id + date] = busy[pick.id + date] || []).push(slot);
+          lastHolder[sk] = pick.id;
+        } else { cells[k] = { ins: '', manual: false }; unfilled++; }
+      }
+    }
+    state.plans[month] = { id: month, month, cells, generatedAt: Date.now(), updatedAt: Date.now() };
+    return { unfilled, total: Object.keys(cells).length };
+  }
+
+  // classes in a plan, grouped by week, for display and export
+  function planWeeks(state, month) {
+    const plan = state.plans[month]; const slots = state.settings.slots || [];
+    const weeks = {};
+    for (const date of datesOf(month)) {
+      const wk = weekKey(date);
+      const w = (weeks[wk] = weeks[wk] || { start: wk, days: {} });
+      w.days[date] = slots.filter((s) => s.day === weekday(date)).sort((a, b) => mins(a.start) - mins(b.start)).map((s) => ({ slot: s, key: cellKey(date, s), cell: plan && plan.cells ? plan.cells[cellKey(date, s)] : null }));
+    }
+    return Object.values(weeks);
+  }
+
+  G.LLS = { DAYS, WINDOWS, windowOf, weekday, weekKey, datesOf, cellKey, hhmm, mins, slotsFromClasses, parseAvailability, importAvailability, isAvailable, teachesOf, propose, planWeeks, matchInstructor };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -899,7 +1376,7 @@ td.nw { white-space: nowrap; }
     merge(a, b) {
       if (!b) return a;
       const out = JSON.parse(JSON.stringify(a));
-      for (const k of ['bank', 'statements', 'sales', 'vouchers', 'classes']) {
+      for (const k of LL.COLLS) {
         out[k] = out[k] || {};
         for (const [id, r] of Object.entries(b[k] || {})) {
           const l = out[k][id];
@@ -916,6 +1393,74 @@ td.nw { white-space: nowrap; }
 
 </script>
 <script>
+/* Lab Ledger — app lock: Face ID / Touch ID (passkey on this device) with a PIN as backup.
+   Settings live on each device. The lock hides the app; the data itself is protected by the device lock and encrypted sync. */
+(function (G) {
+  'use strict';
+  const KEY = 'labledger:lock:v1';
+  const AFTER_MS = 2 * 60 * 1000;
+  const b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+  const unb64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+  const cfg = () => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { return null; } };
+  const save = (c) => { try { c ? localStorage.setItem(KEY, JSON.stringify(c)) : localStorage.removeItem(KEY); } catch (e) {} };
+  async function hashPin(pin, salt) {
+    const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits']);
+    return b64(await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: unb64(salt), iterations: 150000, hash: 'SHA-256' }, k, 256));
+  }
+  let locked = false, hiddenAt = 0, fails = 0, waitUntil = 0;
+
+  const Lock = {
+    on: () => !!(cfg() && cfg().on),
+    hasBio: () => !!(cfg() && cfg().cred),
+    isLocked: () => locked,
+    async bioAvailable() {
+      try { return !!(window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); } catch (e) { return false; }
+    },
+    async enable(pin, useBio) {
+      const salt = b64(crypto.getRandomValues(new Uint8Array(16)));
+      const c = { on: true, salt, pin: await hashPin(pin, salt), cred: null };
+      if (useBio) {
+        const cred = await navigator.credentials.create({ publicKey: {
+          challenge: crypto.getRandomValues(new Uint8Array(32)),
+          rp: { name: 'Lab Ledger', id: location.hostname },
+          user: { id: crypto.getRandomValues(new Uint8Array(16)), name: 'lab-ledger', displayName: 'Lab Ledger' },
+          pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+          authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' },
+          timeout: 60000,
+        } });
+        c.cred = b64(cred.rawId);
+      }
+      save(c);
+    },
+    disable() { save(null); locked = false; },
+    async checkPin(pin) {
+      const c = cfg(); if (!c) return true;
+      if (Date.now() < waitUntil) throw new Error(`Too many tries. Wait ${Math.ceil((waitUntil - Date.now()) / 1000)} seconds.`);
+      if (await hashPin(pin, c.salt) === c.pin) { fails = 0; return true; }
+      fails++; if (fails >= 5) { waitUntil = Date.now() + 30000; fails = 0; }
+      return false;
+    },
+    async bio() {
+      const c = cfg(); if (!c || !c.cred) return false;
+      await navigator.credentials.get({ publicKey: { challenge: crypto.getRandomValues(new Uint8Array(32)), allowCredentials: [{ type: 'public-key', id: unb64(c.cred) }], userVerification: 'required', timeout: 60000, rpId: location.hostname } });
+      return true;
+    },
+    lock() { if (Lock.on()) locked = true; },
+    unlock() { locked = false; },
+    // lock again after 2 minutes away
+    watch(onLock) {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') hiddenAt = Date.now();
+        else if (Lock.on() && hiddenAt && Date.now() - hiddenAt > AFTER_MS) { locked = true; onLock(); }
+      });
+    },
+  };
+  if (Lock.on()) locked = true;
+  G.Lock = Lock;
+})(window);
+
+</script>
+<script>
 /* Lab Ledger — interface */
 (function () {
   'use strict';
@@ -926,7 +1471,7 @@ td.nw { white-space: nowrap; }
 
   // ---------- state ----------
   let state = load();
-  let ui = Object.assign({ page: 'overview', cfAll: false, txMonth: '', txCat: '', txQ: '', teamMonth: '', salesNet: false }, (() => { try { return JSON.parse(localStorage.getItem(UIKEY)) || {}; } catch (e) { return {}; } })());
+  let ui = Object.assign({ page: 'overview', cfAll: false, txMonth: '', txCat: '', txQ: '', teamMonth: '', salesNet: false, theme: 'auto', schedMonth: '' }, (() => { try { return JSON.parse(localStorage.getItem(UIKEY)) || {}; } catch (e) { return {}; } })());
   function load() { try { return LL.migrate(JSON.parse(localStorage.getItem(STORE))); } catch (e) { return LL.migrate(null); } }
   function save(silent) {
     try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { toast('Could not save on this device: ' + e.message); }
@@ -978,15 +1523,30 @@ td.nw { white-space: nowrap; }
 
   // ---------- pages ----------
   const PAGES = [
-    ['overview', 'Overview'], ['cashflow', 'Cash flow'], ['sales', 'Sales'], ['team', 'Team & classes'],
+    ['overview', 'Overview'], ['cashflow', 'Cash flow'], ['sales', 'Sales'], ['team', 'Team & classes'], ['schedule', 'Schedule'],
     ['tx', 'Transactions'], ['import', 'Import'], ['settings', 'Settings'],
   ];
   let agg = null;
+  function applyTheme() {
+    const r = document.documentElement;
+    if (ui.theme === 'light' || ui.theme === 'dark') r.dataset.theme = ui.theme; else delete r.dataset.theme;
+    const dark = ui.theme === 'dark' || (ui.theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+    document.querySelectorAll('meta[name=theme-color]').forEach((m) => m.setAttribute('content', dark ? '#1B1B1B' : '#F4F0F0'));
+    const ICON = {
+      auto: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>',
+      light: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></g></svg>',
+      dark: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/></svg>',
+    };
+    const b = $('#themeBtn'); if (b) { b.innerHTML = ICON[ui.theme] || ICON.auto; b.title = 'Appearance: ' + ({ auto: 'automatic', light: 'light', dark: 'dark' }[ui.theme]); }
+  }
   function render() {
+    applyTheme();
+    if (Lock.isLocked()) { $('#nav').innerHTML = ''; $('#main').innerHTML = viewLock(); afterRender(); return; }
     agg = LL.aggregate(state, today());
     $('#nav').innerHTML = PAGES.map(([k, l]) => `<button class="tab${ui.page === k ? ' on' : ''}" data-act="page" data-v="${k}">${l}${k === 'tx' && unsorted().length ? ` <span class="dot">${unsorted().length}</span>` : ''}</button>`).join('');
     const empty = !Object.keys(state.bank).length && !Object.keys(state.sales).length;
-    const v = empty && !['import', 'settings'].includes(ui.page) ? viewWelcome() : ({ overview: viewOverview, cashflow: viewCashflow, sales: viewSales, team: viewTeam, tx: viewTx, import: viewImport, settings: viewSettings }[ui.page] || viewOverview)();
+    const views = { overview: viewOverview, cashflow: viewCashflow, sales: viewSales, team: viewTeam, schedule: viewSchedule, tx: viewTx, import: viewImport, settings: viewSettings, help: viewHelp };
+    const v = empty && !['import', 'settings', 'help', 'schedule'].includes(ui.page) ? viewWelcome() : (views[ui.page] || viewOverview)();
     $('#main').innerHTML = v;
     setSyncBadge(syncErr ? 'err' : 'ok');
     afterRender();
@@ -1045,6 +1605,7 @@ td.nw { white-space: nowrap; }
     </div>
 
     ${attn.length ? `<div class="card attn"><h2>Needs a look</h2><ul>${attn.map((a) => `<li>${a}</li>`).join('')}</ul></div>` : ''}
+    ${insightsCard(LL.insights(state, agg), true)}
 
     <div class="grid2">
       <div class="card">
@@ -1156,31 +1717,60 @@ td.nw { white-space: nowrap; }
   const help = (t) => ` <button class="q" data-act="help" data-tip="${esc(t)}" aria-label="What is this?">?</button>`;
 
   // ---------- Cash flow ----------
+  const CAT_HELP = {
+    sales: 'Money Eversports (via Stripe) pays into the bank, usually once a week. Eversports bills its own fee separately.',
+    terminal: 'Card payments taken in the studio with the SumUp reader.',
+    other_in: 'Anything else coming in that isn\'t a sale, a loan or a tax refund (e.g. a supplier refund).',
+    rent: 'Monthly rent incl. service charges and VAT.',
+    instructors: 'Pay that reaches the instructors (net pay or their invoices).',
+    payroll: 'Social security (ÖGK), payroll tax and municipal tax on instructor pay.',
+    platform: 'The monthly Eversports invoice.',
+    utilities: 'Electricity and similar.', insurance: 'Studio insurance policies.',
+    software: 'Google Workspace, website hosting, Canva and other tools.',
+    marketing: 'Ads (Instagram/Facebook), flyers, printing.',
+    accounting: 'Tax advisor, notary, court fees.', bank: 'Account fees, card fees, interest.',
+    loan_fees: 'Fees for the bank loan guarantee.', supplies: 'Things for the studio after opening: cleaning, decoration, small equipment.',
+    license: 'The yearly Lagree licence fee.', memberships: 'Chamber of commerce (WKO) and similar fees.', travel: 'Train, hotel and travel costs.',
+    other_out: 'Costs that fit nowhere else.', uncat: 'Payments the app couldn\'t sort. Pick a category in Transactions.',
+    setup: 'One-off costs to build the studio: equipment, construction, design. Not part of the running result.',
+    certification: 'Lagree certification and training. One-off, not part of the running result.',
+    vat: 'VAT refunds from (or payments to) the tax office.',
+    owner: 'Money you and your co-owner put in (capital, shareholder loans, deposits).',
+    bank_loan: 'Money drawn from the bank loan.', loan_repay: 'Monthly loan repayment to the bank.', deposit: 'The security deposit for the loan.',
+  };
   function viewCashflow() {
     const lastBank = LL.mk(agg.lastBankDate || today());
-    let ms = agg.months.filter((m) => m.m <= lastBank);
+    const fcAll = LL.forecast(state, agg).months;
+    const partialM = fcAll[0] && fcAll[0].partial ? fcAll[0].m : null;
+    let ms = agg.months.filter((m) => m.m <= lastBank && m.m !== partialM);
     if (!ui.cfAll) ms = ms.filter((m) => m.m >= LL.addMonths(LL.mk(state.settings.openingDate), -1));
-    const catsBy = (grp) => Object.keys(CATS).filter((k) => CATS[k].group === grp && ms.some((m) => m.cats[k]));
-    const cell = (m, k) => { const v = m.cats[k] || 0; return `<td class="r ${cls(v)}">${v ? `<a data-act="drill" data-m="${m.m}" data-cat="${k}">${eur(v)}</a>` : '<span class="muted">·</span>'}</td>`; };
-    const rows = (grp) => catsBy(grp).map((k) => `<tr><th class="rl">${CATS[k].label}</th>${ms.map((m) => cell(m, k)).join('')}<td class="r tot ${cls(ms.reduce((a, m) => a + (m.cats[k] || 0), 0))}">${eur(ms.reduce((a, m) => a + (m.cats[k] || 0), 0))}</td></tr>`).join('');
-    const sum = (label, f, cl = '') => `<tr class="sum ${cl}"><th class="rl">${label}</th>${ms.map((m) => `<td class="r ${cls(f(m))}">${eur(f(m))}</td>`).join('')}<td class="r tot ${cls(ms.reduce((a, m) => a + f(m), 0))}">${eur(ms.reduce((a, m) => a + f(m), 0))}</td></tr>`;
-    const head = (t) => `<tr class="gh"><th class="rl" colspan="${ms.length + 2}">${t}</th></tr>`;
+    const cols = [
+      ...ms.map((m) => ({ m: m.m, cats: m.cats, groups: m.groups, op: m.op, net: m.net, end: m.end, fc: false })),
+      ...fcAll.map((f) => ({ m: f.m, cats: f.cats, groups: f.groups, op: f.op, net: f.net, end: f.end, fc: true, partial: f.partial })),
+    ];
+    const act = cols.filter((c) => !c.fc);
+    const catsBy = (grp) => Object.keys(CATS).filter((k) => CATS[k].group === grp && cols.some((m) => Math.round(m.cats[k] || 0)));
+    const cell = (c, k) => { const v = Math.round(c.cats[k] || 0); return `<td class="r ${cls(v)}${c.fc ? ' fc' : ''}">${v ? (c.fc ? eur(v) : `<a data-act="drill" data-m="${c.m}" data-cat="${k}">${eur(v)}</a>`) : '<span class="muted">·</span>'}</td>`; };
+    const tot = (f) => act.reduce((a, c) => a + f(c), 0);
+    const rows = (grp) => catsBy(grp).map((k) => `<tr><th class="rl">${CATS[k].label}${help(CAT_HELP[k] || '')}</th>${cols.map((c) => cell(c, k)).join('')}<td class="r tot ${cls(tot((c) => c.cats[k] || 0))}">${eur(tot((c) => c.cats[k] || 0))}</td></tr>`).join('');
+    const sum = (label, f, cl = '') => `<tr class="sum ${cl}"><th class="rl">${label}</th>${cols.map((c) => `<td class="r ${cls(f(c))}${c.fc ? ' fc' : ''}">${eur(f(c))}</td>`).join('')}<td class="r tot ${cls(tot(f))}">${eur(tot(f))}</td></tr>`;
+    const head = (t) => `<tr class="gh"><th class="rl" colspan="${cols.length + 2}">${t}</th></tr>`;
     return `<div class="card">
-      <div class="row between wrap"><h2>Cash flow by month${help('Every euro that moved on the business account, sorted. Tap an amount to see the payments behind it.')}</h2>
+      <div class="row between wrap"><h2>Cash flow by month${help('Every euro that moved on the business account, sorted. Tap an amount to see the payments behind it. The shaded columns on the right are the forecast for the next 3 months.')}</h2>
       <div class="seg"><button class="${!ui.cfAll ? 'on' : ''}" data-act="cfAll" data-v="0">Since opening</button><button class="${ui.cfAll ? 'on' : ''}" data-act="cfAll" data-v="1">Whole history</button></div></div>
       <div class="tablewrap sticky"><table class="t cf">
-        <thead><tr><th class="rl"></th>${ms.map((m) => `<th class="r">${mName(m.m)}</th>`).join('')}<th class="r">Total</th></tr></thead>
+        <thead><tr><th class="rl"></th>${cols.map((c) => `<th class="r${c.fc ? ' fc' : ''}">${mName(c.m)}${c.fc ? `<div class="fct">${c.partial ? 'actual + forecast' : 'forecast'}</div>` : ''}</th>`).join('')}<th class="r">Total<div class="fct">so far</div></th></tr></thead>
         <tbody>
-          ${head('Money in')}${rows('in')}${sum('Total money in', (m) => m.groups.in)}
-          ${head('Running costs')}${rows('out')}${sum('Total running costs', (m) => m.groups.out)}
-          ${sum('Operating result', (m) => m.op, 'strong')}
-          ${catsBy('setup').length ? head('One-off build-out') + rows('setup') : ''}
+          ${head('Money in')}${rows('in')}${sum('Total money in', (c) => c.groups.in)}
+          ${head('Running costs')}${rows('out')}${sum('Total running costs', (c) => c.groups.out)}
+          ${sum('Operating result', (c) => c.op, 'strong')}
+          ${catsBy('setup').length ? head('One-off') + rows('setup') : ''}
           ${catsBy('tax').length ? head('Tax office') + rows('tax') : ''}
           ${catsBy('fin').length ? head('Financing') + rows('fin') : ''}
-          ${sum('Net change', (m) => m.net, 'strong')}
-          <tr class="sum strong"><th class="rl">Cash at month end</th>${ms.map((m) => `<td class="r">${eur(m.end)}</td>`).join('')}<td></td></tr>
+          ${sum('Net change', (c) => c.net, 'strong')}
+          <tr class="sum strong"><th class="rl">Cash at month end</th>${cols.map((c) => `<td class="r${c.fc ? ' fc' : ''} ${c.end < 0 ? 'neg' : ''}">${eur(c.end)}</td>`).join('')}<td></td></tr>
         </tbody></table></div>
-      <p class="muted small">Months up to ${dmy(agg.lastBankDate)}, the last day with bank data.</p>
+      <p class="muted small">Actual months up to ${dmy(agg.lastBankDate)}, the last day with bank data. Forecast: average of the last 3 complete months; instructor pay from the planned classes (Eversports or the Schedule page); loan repayment as last paid.</p>
     </div>`;
   }
 
@@ -1197,6 +1787,7 @@ td.nw { white-space: nowrap; }
         <div class="tile"><div class="label">${mName(LL.mk(today()), true)} so far</div><div class="big">${totalNow ? eur(v(totalNow.sales)) : '—'}</div><div class="sub">until ${dmy(LL.live(state.sales).reduce((a, s) => (s.date > a ? s.date : a), ''))}</div></div>
         <div class="tile"><div class="label">Trial → bought more${help('Of the people whose first purchase was a trial class in that month, how many bought something else afterwards (drop-in, pack, membership…). Recent months look lower because people haven\'t had time yet.')}</div><div class="big">${last && conv[last.m] ? pct(conv[last.m].converted / conv[last.m].trials) : '—'}</div><div class="sub">${last && conv[last.m] ? `${conv[last.m].converted} of ${conv[last.m].trials} trial buyers in ${mName(last.m)}` : ''}</div></div>
       </div>
+      ${insightsCard(LL.insights(state, agg))}
       <div class="card">
         <div class="row between wrap"><h2>Sales per month${help('From the Eversports revenue report plus gift voucher sales. Payments made with a studio gift voucher are left out, because the voucher sale already counted.')}</h2>
         <div class="seg"><button class="${!ui.salesNet ? 'on' : ''}" data-act="salesNet" data-v="0">Incl. VAT</button><button class="${ui.salesNet ? 'on' : ''}" data-act="salesNet" data-v="1">Net of VAT</button></div></div>
@@ -1220,6 +1811,15 @@ td.nw { white-space: nowrap; }
       </div>`;
   }
 
+  function insightsCard(list, short) {
+    if (!list.length) return '';
+    const items = short ? list.filter((x) => x.tone === 'bad').slice(0, 2) : list;
+    if (!items.length) return '';
+    const icon = { bad: '↓', good: '↑', info: '→' };
+    return `<div class="card ideas"><div class="row between"><h2>What to work on${help('Suggestions from your own numbers: sales pace, trial follow-up, product mix and how full each class time is. They update every time you import.')}</h2>${short ? '<a data-act="page" data-v="sales">All ideas</a>' : ''}</div>
+      <ul class="idea-list">${items.map((x) => `<li class="idea ${x.tone}"><span class="ic">${icon[x.tone]}</span><div><b>${esc(x.title)}</b><p>${esc(x.text)}</p></div></li>`).join('')}</ul></div>`;
+  }
+
   // ---------- Team & classes ----------
   function viewTeam() {
     const ins = state.settings.instructors.filter((i) => !i.deleted);
@@ -1233,14 +1833,22 @@ td.nw { white-space: nowrap; }
     const ids = new Set([...Object.keys(M.classes.byIns), ...Object.keys(M.ins.byIns)]);
     const rows = [...ids].map((id) => {
       const i = byId[id]; const c = M.classes.byIns[id] || { classes: 0, attendees: 0, capacity: 0 }; const p = M.ins.byIns[id] || { classes: 0, expected: 0, paid: 0 };
-      return { id, name: i ? i.name : id.replace(/^x/, ''), status: i ? i.status : 'unknown', classes: Math.max(c.classes, p.classes), taught: c.classes, att: c.attendees, cap: c.capacity, expected: p.expected, paid: p.paid };
+      const st = i ? (LL.paidIn(i, M.m) ? 'paid' : i.status === 'paid' ? 'unpaid' : i.status) : 'unknown';
+      return { id, name: i ? i.name : id.replace(/^x/, ''), status: st, classes: Math.max(c.classes + (c.planned || 0), p.classes), taught: c.classes, att: c.attendees, cap: c.capacity, expected: p.expected, paid: p.paid };
     }).sort((a, b) => (a.status === 'paid') === (b.status === 'paid') ? b.classes - a.classes : a.status === 'paid' ? -1 : 1);
     const stLabel = { paid: 'paid', unpaid: 'unpaid', unknown: 'not set', excluded: '' };
+    // one bar per instructor: length = classes, colour = how full their classes were
+    const bars = rows.filter((r) => r.classes > 0).sort((a, b) => b.classes - a.classes);
+    const totalC = bars.reduce((a, r) => a + r.classes, 0) || 1, maxC = bars[0] ? bars[0].classes : 1;
+    const step = (f) => (f < 0.2 ? 1 : f < 0.35 ? 2 : f < 0.5 ? 3 : f < 0.65 ? 4 : 5);
+    const barsHtml = `<div class="ibars">${bars.map((r) => { const f = r.cap ? r.att / r.cap : null; return `<div class="ibar hov" data-tip="${esc(`<b>${esc(r.name)}</b><br>${r.classes} classes (${pct(r.classes / totalC)} of all)${r.taught < r.classes ? `<br>${r.classes - r.taught} still planned` : ''}${f !== null ? `<br>${pct(f)} full, ${nf2.format(r.att / r.taught)} guests per class` : ''}`)}"><span class="iname">${esc(r.name)}</span><span class="itrack"><span class="ifill ${f === null ? 'seq0' : 'seq' + step(f)}" style="width:${Math.max(3, (r.classes / maxC) * 100)}%"></span></span><span class="ival"><b>${r.classes}</b> <span class="muted">${pct(r.classes / totalC)}</span>${f !== null ? ` · ${pct(f)} full` : ' · planned'}</span></div>`; }).join('')}</div>
+      <div class="seqlegend"><span class="muted small">How full:</span>${['under 20%', '20–35%', '35–50%', '50–65%', '65%+'].map((l, i) => `<span><i class="sw seq${i + 1}"></i>${l}</span>`).join('')}<span><i class="sw seq0"></i>planned</span></div>`;
     const fut = M.m > cur || (M.m === cur && M.classes.planned);
     return `<div class="card">
       <div class="row between wrap"><h2>Instructors${help('Classes from the Eversports activity export. Expected pay = classes × rate (Settings). Paid = what left the bank for that month (payroll is paid early the following month).')}</h2>
         <div class="chips">${cm.map((m) => `<button class="chip${m.m === ui.teamMonth ? ' on' : ''}" data-act="teamMonth" data-v="${m.m}">${mName(m.m)}${m.m > cur ? ' · plan' : ''}</button>`).join('')}</div></div>
-      <div class="tablewrap"><table class="t">
+      ${barsHtml}
+      <div class="tablewrap mt"><table class="t">
         <thead><tr><th>Instructor</th><th class="r">Classes</th><th class="r">Avg. guests</th><th class="r">Full</th><th class="r">Expected pay</th><th class="r">Paid (bank)</th></tr></thead>
         <tbody>${rows.map((r) => `<tr class="${r.status !== 'paid' ? 'dim' : ''}"><td>${esc(r.name)} ${r.status !== 'paid' ? `<span class="tag">${stLabel[r.status] || ''}</span>` : ''}</td><td class="r">${r.classes}${r.taught < r.classes ? ` <span class="muted small">(${r.classes - r.taught} planned)</span>` : ''}</td><td class="r">${r.taught ? nf2.format(r.att / r.taught).replace(/,0+$/, '') : '·'}</td><td class="r">${r.cap ? pct(r.att / r.cap) : '·'}</td><td class="r">${r.status === 'paid' ? eur(r.expected) : '·'}</td><td class="r">${r.paid ? eur(r.paid, true) : '<span class="muted">·</span>'}</td></tr>`).join('')}</tbody>
         <tfoot><tr class="sum"><th>Total</th><th class="r">${M.classes.taught + M.classes.planned}</th><th class="r">${M.classes.taught ? nf2.format(M.classes.attendees / M.classes.taught) : '·'}</th><th class="r">${M.classes.capacity ? pct(M.classes.attendees / M.classes.capacity) : '·'}</th><th class="r">${eur(M.ins.expected)}</th><th class="r">${M.ins.paidNet ? eur(M.ins.paidNet, true) : '·'}</th></tr>
@@ -1336,6 +1944,7 @@ td.nw { white-space: nowrap; }
     const text = await f.text();
     if (name.endsWith('.json')) {
       const j = JSON.parse(text);
+      if (j && j.kind === 'patch') { const r = LL.applyPatch(state, j); return r === 'already' ? 'this update was already applied' : `update applied: ${esc(j.note || j.id)}`; }
       if (j && j.schema && j.settings && j.bank) { state = LL.migrate(Sync.merge(state, Object.assign({}, j, { settings: Object.assign({}, j.settings, { updatedAt: Math.max(j.settings.updatedAt || 0, (state.settings.updatedAt || 0) + 1) }) }))); return 'backup restored and merged'; }
       const arr = Array.isArray(j) ? j : j.transactions || j.collection || j.items || [];
       const tx = LLParse.parseGeorgeJSON(arr);
@@ -1348,6 +1957,11 @@ td.nw { white-space: nowrap; }
     if (kind === 'sales') { const r = LL.importSales(state, LLParse.parseSales(rows), f.name); return `Eversports sales: ${r.added} new, ${r.skipped} already there`; }
     if (kind === 'vouchers') { const r = LL.importVouchers(state, LLParse.parseVouchers(rows), f.name); return `gift vouchers: ${r.added} new, ${r.skipped} already there`; }
     if (kind === 'classes') { const r = LL.importClasses(state, LLParse.parseClasses(rows), f.name); return `${r.added} classes from ${dmy(r.from)} to ${dmy(r.to)}${r.replaced ? ' (replaced the earlier export for these dates)' : ''}`; }
+    if (kind === 'availability') {
+      const m = ui.schedMonth || LL.addMonths(LL.mk(today()), 1);
+      const r = LLS.importAvailability(state, rows, m);
+      return `availability for ${mName(m, true)}: ${r.added} answers${r.created.length ? ` (new names: ${r.created.map(esc).join(', ')}. Set them up in Settings)` : ''}`;
+    }
     if (kind === 'georgecsv') { const r = LL.importBank(state, LLParse.parseGeorgeCSV(rows), [], f.name); return `${r.added} new payments, ${r.skipped} already there`; }
     throw new Error('File type not recognised. Expected an Erste statement PDF, a George export, or an Eversports revenue, voucher or activity export.');
   }
@@ -1379,21 +1993,128 @@ td.nw { white-space: nowrap; }
     return pages;
   }
 
+  // ---------- Schedule ----------
+  const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const dShort = (iso) => DAYS[LLS.weekday(iso)] + ' ' + (+iso.slice(8, 10)) + '.' + (+iso.slice(5, 7)) + '.';
+  const insName = (id) => { const i = state.settings.instructors.find((x) => x.id === id); return i ? i.name : ''; };
+  function schedMonths() { const cur = LL.mk(today()); return [cur, LL.addMonths(cur, 1), LL.addMonths(cur, 2)]; }
+  function viewSchedule() {
+    const months = schedMonths();
+    if (!months.includes(ui.schedMonth)) ui.schedMonth = months[1];
+    const M = ui.schedMonth;
+    const slots = state.settings.slots || [];
+    const chips = `<div class="chips">${months.map((m) => `<button class="chip${m === M ? ' on' : ''}" data-act="schedMonth" data-v="${m}">${mName(m, true)}</button>`).join('')}</div>`;
+    if (!slots.length) {
+      const wk = latestWeek();
+      return `<div class="card"><h2>Schedule</h2><p>First tell the app which classes run every week. ${wk ? `The quickest way: copy them from Eversports, from the week of ${dmy(wk)}.` : 'Import the Eversports activity export first, or add the classes by hand below.'}</p>
+        ${wk ? `<button class="btn primary" data-act="slotsFromEv" data-v="${wk}">Copy weekly classes from Eversports</button>` : ''}</div>${slotsEditor()}`;
+    }
+    const plan = state.plans[M] && !state.plans[M].deleted ? state.plans[M] : null;
+    const av = LL.live(state.avail).filter((a) => a.month === M);
+    const avBy = Object.fromEntries(av.map((a) => [a.ins, a]));
+    const team = state.settings.instructors.filter((i) => !i.deleted && i.active !== false);
+    const missing = team.filter((i) => !avBy[i.id] && i.status !== 'excluded');
+    const cells = plan ? Object.values(plan.cells) : [];
+    const open = cells.filter((c) => !c.ins).length, cancelled = cells.filter((c) => c.ins === '-').length;
+    const per = {}; cells.forEach((c) => { if (c.ins && c.ins !== '-') per[c.ins] = (per[c.ins] || 0) + 1; });
+    const ratio = LL.onCostRatio(agg);
+    const cost = Object.entries(per).reduce((a, [id, n]) => { const i = state.settings.instructors.find((x) => x.id === id); return a + (LL.paidIn(i, M) ? (i.rate || 0) * n : 0); }, 0);
+    const teachCache = {};
+    const weeks = plan ? LLS.planWeeks(state, M) : [];
+    const narrow = window.innerWidth < 760;
+    const sel = (e, date) => {
+      const c = e.cell || { ins: '' }; const opts = [];
+      const teaches = (i) => teachCache[i.id] || (teachCache[i.id] = LLS.teachesOf(state, i));
+      const can = (i) => (teaches(i).length ? teaches(i).includes(e.slot.title) : /lagree burn/i.test(e.slot.title));
+      const okIns = team.filter((i) => LLS.isAvailable(avBy[i.id], date, e.slot) && can(i));
+      const rest = team.filter((i) => !okIns.includes(i));
+      opts.push(`<option value=""${!c.ins ? ' selected' : ''}>— open —</option>`);
+      if (okIns.length) opts.push(`<optgroup label="Available">${okIns.map((i) => `<option value="${i.id}"${c.ins === i.id ? ' selected' : ''}>${esc(i.name)}${i.status === 'unpaid' ? ' (unpaid)' : ''}</option>`).join('')}</optgroup>`);
+      opts.push(`<optgroup label="Not available / other class">${rest.map((i) => `<option value="${i.id}"${c.ins === i.id ? ' selected' : ''}>${esc(i.name)}</option>`).join('')}</optgroup>`);
+      opts.push(`<option value="-"${c.ins === '-' ? ' selected' : ''}>✕ No class this day</option>`);
+      return `<select class="cellsel${!c.ins ? ' open' : c.ins === '-' ? ' off' : ''}${c.manual ? ' man' : ''}" data-act="cellSet" data-k="${esc(e.key)}" aria-label="${esc(e.slot.title + ' ' + e.slot.start)}">${opts.join('')}</select>`;
+    };
+    const weekHtml = (w) => {
+      const dates = Object.keys(w.days).sort();
+      if (narrow) return dates.map((d) => `<div class="sday"><div class="sdh">${dShort(d)}</div>${w.days[d].map((e) => `<div class="srow"><span class="st">${e.slot.start}</span><span class="sn">${esc(e.slot.title)}</span>${sel(e, d)}</div>`).join('') || '<div class="muted small">no classes</div>'}</div>`).join('');
+      const times = [...new Set(dates.flatMap((d) => w.days[d].map((e) => e.slot.start)))].sort();
+      const all7 = [...Array(7)].map((_, i) => new Date(new Date(w.start + 'T12:00:00').getTime() + i * 864e5).toISOString().slice(0, 10));
+      return `<div class="tablewrap"><table class="t sgrid"><thead><tr><th></th>${all7.map((d) => `<th class="${w.days[d] ? '' : 'out'}">${dShort(d)}</th>`).join('')}</tr></thead><tbody>${times.map((t) => `<tr><th class="st">${t}</th>${all7.map((d) => `<td class="${w.days[d] ? '' : 'out'}">${(w.days[d] || []).filter((e) => e.slot.start === t).map((e) => `<div class="scell"><span class="sn">${esc(e.slot.title)}</span>${sel(e, d)}</div>`).join('')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    };
+    return `<div class="card">
+      <div class="row between wrap"><h2>Schedule${help('1) Instructors fill in the Google Form. 2) Import their answers. 3) Make a proposal: unpaid instructors first, then whoever usually has the slot, spread fairly, within each person\'s max per week. 4) Change anything by tapping. 5) Export for the team. Classes still have to be created in Eversports by hand.')}</h2>${chips}</div>
+      <div class="steps3">
+        <div class="stp"><b>1 · Availability</b><span class="muted small">${av.length} answered${missing.length ? ` · missing: ${missing.map((i) => esc(i.name)).join(', ')}` : ''}</span><label class="btn sm">Import form answers<input type="file" id="availFile" accept=".csv" hidden></label></div>
+        <div class="stp"><b>2 · Proposal</b><span class="muted small">${plan ? `${cells.length - open - cancelled} of ${cells.length - cancelled} classes filled${open ? ` · <span class="negc">${open} open</span>` : ''}` : 'not made yet'}</span><button class="btn sm${plan ? '' : ' primary'}" data-act="propose">${plan ? 'Make new proposal' : 'Make proposal'}</button></div>
+        <div class="stp"><b>3 · Share</b><span class="muted small">${plan ? `≈ ${eur(cost * ratio)} instructor cost` : ''}</span><button class="btn sm" data-act="exportPlan" ${plan ? '' : 'disabled'}>Export for instructors</button></div>
+      </div>
+      ${plan ? `<div class="chips mt">${Object.entries(per).sort((a, b) => b[1] - a[1]).map(([id, n]) => `<span class="chip static">${esc(insName(id))} · ${n}${avBy[id] && avBy[id].max ? `<span class="muted"> (max ${avBy[id].max}/wk)</span>` : ''}</span>`).join('')}</div>` : ''}
+    </div>
+    ${plan ? weeks.map((w) => `<div class="card"><h2>Week of ${dmy(w.start)}</h2>${weekHtml(w)}</div>`).join('') : `<div class="card"><p class="muted">${av.length ? 'Answers are in. Tap “Make proposal”.' : 'No answers for this month yet. Share the Google Form with the team (Help → Schedule explains how), then import the answers here. You can also make a proposal from history without answers: everyone counts as available.'}</p>${!av.length ? '<button class="btn" data-act="propose" data-v="all">Proposal without answers</button>' : ''}</div>`}
+    ${av.length ? `<div class="card"><h2>Answers for ${mName(M, true)}</h2><div class="tablewrap"><table class="t"><thead><tr><th>Name</th><th>Can teach</th><th class="r">Max/wk</th><th>Away</th><th>Notes</th></tr></thead><tbody>${av.map((a) => `<tr><td>${esc(insName(a.ins))}</td><td class="small">${Object.entries(a.days || {}).filter(([, d]) => d.windows.length || d.times.length).map(([k, d]) => `<b>${DAYS[k]}</b> ${[...d.windows.map((w) => ({ early: 'early', morning: 'morning', afternoon: 'afternoon', evening: 'evening' }[w])), ...d.times].join(', ')}`).join(' · ') || '—'}</td><td class="r">${a.max || '—'}</td><td class="small">${(a.away || []).map((d) => d.slice(8) + '.' + d.slice(5, 7)).join(', ') || '—'}</td><td class="small">${esc(a.notes || '')}</td></tr>`).join('')}</tbody></table></div></div>` : ''}
+    ${slotsEditor()}
+    <div id="print" hidden></div>`;
+  }
+  function latestWeek() {
+    // the most recent full week in the Eversports export that lies in the future, else the last one
+    const dates = [...new Set(LL.live(state.classes).map((c) => c.date))].sort();
+    if (!dates.length) return null;
+    const mondays = [...new Set(dates.map((d) => LLS.weekKey(d)))].sort();
+    const full = mondays.filter((m) => dates.filter((d) => LLS.weekKey(d) === m).length >= 6);
+    const fut = full.filter((m) => m >= LLS.weekKey(today()));
+    return fut[0] || full[full.length - 1] || mondays[mondays.length - 1];
+  }
+  function slotsEditor() {
+    const slots = (state.settings.slots || []).slice().sort((a, b) => a.day - b.day || LLS.mins(a.start) - LLS.mins(b.start));
+    const titles = [...new Set([...slots.map((s) => s.title), ...LL.live(state.classes).map((c) => c.title)])].filter((t) => !/private/i.test(t)).sort();
+    return `<details class="card"${slots.length ? '' : ' open'}><summary><h2>Weekly classes${help('The classes that run every week. The proposal fills these. Change a time here and the next proposal uses it.')}</h2><span class="muted small">${slots.length} classes a week</span></summary>
+      <div class="slotlist">${DAYS.map((d, di) => `<div class="slday"><b>${d}</b>${slots.filter((s) => s.day === di).map((s) => `<span class="slot">${s.start} ${esc(s.title)} <button class="x" data-act="delSlot" data-v="${s.id}" aria-label="Remove">×</button></span>`).join('') || '<span class="muted small">—</span>'}</div>`).join('')}</div>
+      <div class="addslot"><select id="nsDay">${DAYS.map((d, i) => `<option value="${i}">${d}</option>`).join('')}</select><input class="in" id="nsStart" placeholder="07:40" inputmode="numeric" aria-label="Start"><input class="in" id="nsEnd" placeholder="08:30" inputmode="numeric" aria-label="End"><input class="in" id="nsTitle" list="nsTitles" placeholder="Lagree Burn" aria-label="Class"><datalist id="nsTitles">${titles.map((t) => `<option value="${esc(t)}">`).join('')}</datalist><button class="btn sm" data-act="addSlot">Add</button></div>
+      ${latestWeek() ? `<p class="muted small mt">Or <a data-act="slotsFromEv" data-v="${latestWeek()}">replace them with the week of ${dmy(latestWeek())} from Eversports</a>.</p>` : ''}
+    </details>`;
+  }
+  function exportPlan() {
+    const M = ui.schedMonth; const weeks = LLS.planWeeks(state, M);
+    const name = state.settings.studioName || 'Schedule';
+    const per = {};
+    let html = `<div class="pr-head"><h1>${esc(name)}</h1><h2>Schedule ${mName(M, true)}</h2></div>`;
+    for (const w of weeks) {
+      const dates = Object.keys(w.days).sort();
+      const times = [...new Set(dates.flatMap((d) => w.days[d].map((e) => e.slot.start)))].sort();
+      const all7 = [...Array(7)].map((_, i) => new Date(new Date(w.start + 'T12:00:00').getTime() + i * 864e5).toISOString().slice(0, 10));
+      html += `<table class="pr-week"><thead><tr><th></th>${all7.map((d) => `<th>${w.days[d] ? dShort(d) : ''}</th>`).join('')}</tr></thead><tbody>${times.map((t) => `<tr><th>${t}</th>${all7.map((d) => `<td>${(w.days[d] || []).filter((e) => e.slot.start === t).map((e) => { const c = e.cell || {}; if (c.ins === '-') return ''; const n = c.ins ? insName(c.ins) : 'open'; if (c.ins) (per[n] = per[n] || []).push(`${dShort(d)} ${t} ${e.slot.title}`); return `<div><span>${esc(e.slot.title)}</span><b>${esc(n)}</b></div>`; }).join('')}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+    }
+    html += `<div class="pr-list"><h2>By instructor</h2>${Object.keys(per).sort().map((n) => `<p><b>${esc(n)}</b> (${per[n].length}): ${per[n].map(esc).join(' · ')}</p>`).join('')}</div>`;
+    const text = `${name} · ${mName(M, true)}\n\n` + Object.keys(per).sort().map((n) => `*${n}* (${per[n].length} classes)\n` + per[n].map((x) => '• ' + x).join('\n')).join('\n\n');
+    const box = $('#print'); box.hidden = false; box.innerHTML = `<div class="pr-bar"><button class="btn primary" data-act="printPlan">Print / save as PDF</button><button class="btn" data-act="copyPlan">Copy text for WhatsApp</button><button class="btn ghost" data-act="closePlan">Close</button></div><div class="pr-body">${html}</div>`;
+    box.dataset.text = text; document.body.classList.add('printing'); window.scrollTo(0, 0);
+  }
+
+  // ---------- Lock ----------
+  function viewLock() {
+    return `<section class="lockscreen"><div class="lockmark">L</div><h1>Lab Ledger</h1><p class="muted">Locked</p>
+      ${Lock.hasBio() ? '<button class="btn primary big-b" data-act="unlockBio">Unlock with Face ID / Touch ID</button>' : ''}
+      <div class="pinrow"><input class="in pin" id="pinIn" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" aria-label="PIN"><button class="btn" data-act="unlockPin">Unlock</button></div>
+      <p id="lockErr" class="negc small"></p></section>`;
+  }
+
   // ---------- Settings ----------
   function viewSettings() {
     const ins = state.settings.instructors.filter((i) => !i.deleted).sort((a, b) => ['unknown', 'paid', 'unpaid', 'excluded'].indexOf(a.status) - ['unknown', 'paid', 'unpaid', 'excluded'].indexOf(b.status) || a.name.localeCompare(b.name));
     const c = Sync.cfg();
+    const titles = [...new Set((state.settings.slots || []).map((s) => s.title))].sort();
     return `<div class="card">
-      <h2>Instructors${help('Names come in automatically from the Eversports activity export. Set who is paid and their rate per class. “Bank name” is how their pay shows on the statement, so payments are matched to them. “Not in tool” hides someone completely.')}</h2>
-      <div class="tablewrap"><table class="t ins">
-        <thead><tr><th>Name</th><th>Status</th><th class="r">Rate / class</th><th>Bank name</th><th>Active</th></tr></thead>
-        <tbody>${ins.map((i) => `<tr class="${i.status === 'unknown' ? 'warnrow' : ''}">
-          <td><input class="in" value="${esc(i.name)}" data-act="insSet" data-id="${i.id}" data-f="name" aria-label="Name"><div class="muted small">${esc((i.evNames || []).join(', '))}</div></td>
-          <td><select data-act="insSet" data-id="${i.id}" data-f="status">${[['unknown', 'Not set'], ['paid', 'Paid'], ['unpaid', 'Unpaid'], ['excluded', 'Not in tool']].map(([k, l]) => `<option value="${k}"${k === i.status ? ' selected' : ''}>${l}</option>`).join('')}</select></td>
-          <td class="r"><input class="in num" inputmode="decimal" value="${i.rate ? nf2.format(i.rate / 100) : ''}" data-act="insSet" data-id="${i.id}" data-f="rate" ${i.status !== 'paid' ? 'disabled' : ''} aria-label="Rate"></td>
-          <td><input class="in" value="${esc((i.bankNames || []).join(', '))}" data-act="insSet" data-id="${i.id}" data-f="bankNames" placeholder="as on the statement" ${i.status !== 'paid' ? 'disabled' : ''} aria-label="Bank name"></td>
-          <td><input type="checkbox" ${i.active !== false ? 'checked' : ''} data-act="insSet" data-id="${i.id}" data-f="active" aria-label="Active"></td></tr>`).join('') || '<tr><td colspan="5" class="muted">Import the Eversports activity export first.</td></tr>'}</tbody>
-      </table></div>
+      <div class="row between wrap"><h2>Instructors${help('Names come in automatically from Eversports and the availability form. “Paid from” lets someone start unpaid and switch to invoices later. “Bank name” is how their pay shows on the statement. “Teaches” decides which classes the schedule proposes them for (empty = what they taught before). “Not in tool” hides someone from the money, but they can still be scheduled.')}</h2><button class="btn sm" data-act="addIns">+ Add instructor</button></div>
+      <div class="inslist">${ins.map((i) => { const t = (i.teaches && i.teaches.length) ? i.teaches : []; const derived = LLS.teachesOf(state, Object.assign({}, i, { teaches: [] })); return `<div class="insrow${i.status === 'unknown' ? ' warnrow' : ''}" id="ins-${i.id}">
+          <label class="f-name"><span>Name</span><input class="in" value="${esc(i.name)}" data-act="insSet" data-id="${i.id}" data-f="name"></label>
+          <label><span>Status</span><select data-act="insSet" data-id="${i.id}" data-f="status">${[['unknown', 'Not set'], ['paid', 'Paid'], ['unpaid', 'Unpaid'], ['excluded', 'Not in tool']].map(([k, l]) => `<option value="${k}"${k === i.status ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
+          <label><span>€ / class</span><input class="in num" inputmode="decimal" value="${i.rate ? nf2.format(i.rate / 100) : ''}" data-act="insSet" data-id="${i.id}" data-f="rate" ${i.status !== 'paid' ? 'disabled' : ''}></label>
+          <label><span>Paid from</span><input class="in" type="month" value="${i.paidFrom || ''}" data-act="insSet" data-id="${i.id}" data-f="paidFrom" ${i.status !== 'paid' ? 'disabled' : ''}></label>
+          <label class="f-bank"><span>Bank name</span><input class="in" value="${esc((i.bankNames || []).join(', '))}" data-act="insSet" data-id="${i.id}" data-f="bankNames" placeholder="as on the statement" ${i.status !== 'paid' ? 'disabled' : ''}></label>
+          <label class="f-act"><span>Active</span><input type="checkbox" ${i.active !== false ? 'checked' : ''} data-act="insSet" data-id="${i.id}" data-f="active"></label>
+          ${titles.length ? `<div class="f-teach"><span>Teaches ${t.length ? '' : '<em>(automatic, from past classes)</em>'}</span><div class="tchips">${titles.map((x) => { const on = t.length ? t.includes(x) : (derived.length ? derived.includes(x) : /lagree burn/i.test(x)); return `<button class="tchip${on ? ' on' : ''}${t.length ? '' : ' auto'}" data-act="teachToggle" data-id="${i.id}" data-v="${esc(x)}">${esc(x)}</button>`; }).join('')}</div></div>` : ''}
+          <button class="x" data-act="delIns" data-v="${i.id}" aria-label="Remove ${esc(i.name)}">×</button>
+        </div>`; }).join('') || '<p class="muted">No instructors yet. Import the Eversports activity export or add one.</p>'}</div>
     </div>
     <div class="grid2">
       <div class="card">
@@ -1401,18 +2122,24 @@ td.nw { white-space: nowrap; }
         ${c ? `<p><span class="okc">● Connected.</span> ${Sync.cfg().last ? 'Last sync ' + new Date(Sync.cfg().last).toLocaleString('de-AT') : ''}</p>
           <label class="fld">Sync ID<div class="row gap"><input class="in mono" readonly value="${esc(c.gistId)}" id="sid"><button class="btn sm" data-act="copy" data-v="${esc(c.gistId)}">Copy</button></div></label>
           ${syncErr ? `<p class="negc small">${esc(syncErr)}</p>` : ''}
-          <div class="row gap"><button class="btn" data-act="syncNow">Sync now</button><button class="btn" data-act="showToken">Show token</button><button class="btn ghost" data-act="disconnect">Disconnect this device</button></div>`
+          <div class="row gap wrap"><button class="btn" data-act="syncNow">Sync now</button><button class="btn" data-act="showToken">Show token</button><button class="btn ghost" data-act="disconnect">Disconnect this device</button></div>`
         : `<p class="muted small">First device: paste the token, choose a passphrase, leave Sync ID empty → <b>Create sync file</b>. Every other device: same token, the Sync ID and the passphrase → <b>Connect</b>.</p>
           <label class="fld">GitHub token<input class="in mono" id="sTok" type="password" autocomplete="off" placeholder="ghp_…"></label>
           <label class="fld">Passphrase<input class="in" id="sPass" type="password" autocomplete="new-password" placeholder="at least 10 characters"></label>
           <label class="fld">Sync ID <span class="muted small">(empty on the first device)</span><input class="in mono" id="sId" autocomplete="off"></label>
           <p id="sErr" class="negc small"></p>
           <div class="row gap"><button class="btn primary" data-act="syncCreate">Create sync file</button><button class="btn" data-act="syncConnect">Connect</button></div>`}
+        <h2 class="mt">App lock${help('Asks for Face ID / Touch ID (or your PIN) every time you open the app, and after 2 minutes away. Set it up on each device.')}</h2>
+        ${Lock.on() ? `<p><span class="okc">● On</span> · ${Lock.hasBio() ? 'Face ID / Touch ID + PIN' : 'PIN only'}</p><div class="row gap wrap"><input class="in pin" id="lockOffPin" type="password" inputmode="numeric" placeholder="PIN" aria-label="PIN"><button class="btn ghost" data-act="lockOff">Turn off</button></div><p id="lockSetErr" class="negc small"></p>`
+        : `<div class="row gap wrap"><input class="in pin" id="lockPin1" type="password" inputmode="numeric" autocomplete="new-password" placeholder="New PIN (4–8 digits)" aria-label="New PIN"><input class="in pin" id="lockPin2" type="password" inputmode="numeric" autocomplete="new-password" placeholder="Repeat PIN" aria-label="Repeat PIN"></div>
+          <label class="chk" id="bioRow" hidden><input type="checkbox" id="lockBio" checked> Also use Face ID / Touch ID</label>
+          <p id="lockSetErr" class="negc small"></p><button class="btn primary" data-act="lockOn">Turn on app lock</button>`}
       </div>
       <div class="card">
         <h2>General</h2>
         <label class="fld">Opening day<input class="in" type="date" value="${state.settings.openingDate}" data-act="setSetting" data-f="openingDate"></label>
         <label class="fld">Safety buffer (months of running costs)<input class="in num" inputmode="numeric" value="${state.settings.bufferMonths}" data-act="setSetting" data-f="bufferMonths"></label>
+        <label class="fld">Name on exported schedules<input class="in" value="${esc(state.settings.studioName || '')}" data-act="setSetting" data-f="studioName" placeholder="Studio name"></label>
         <h2 class="mt">Backup</h2>
         <p class="muted small">A backup file is <b>not encrypted</b>. Keep it somewhere private. With sync on, the encrypted copy on GitHub is your everyday backup.</p>
         <div class="row gap wrap"><button class="btn" data-act="backup">Download backup</button><label class="btn">Restore from backup<input type="file" accept=".json" id="restore" hidden></label></div>
@@ -1423,17 +2150,116 @@ td.nw { white-space: nowrap; }
     </div>`;
   }
 
+  // ---------- Help ----------
+  function viewHelp() {
+    const sec = (id, title, body, open) => `<details class="card help" id="h-${id}"${open ? ' open' : ''}><summary><h2>${title}</h2></summary><div class="hb">${body}</div></details>`;
+    return `<div class="card"><h1 class="ht">How Lab Ledger works</h1><p>Lab Ledger shows how the studio is doing: money in the bank, what came in and went out each month, sales, instructors and the next three months. You don't type numbers in. You drop in a few files once a month and the app does the rest. Tap any <span class="q static">?</span> in the app for a short explanation.</p></div>
+    ${sec('month', 'Every month (5 minutes)', `<ol class="steps">
+      <li><b>Bank:</b> in George Business open the account → <i>Kontoauszüge</i> → download the PDF of last month.</li>
+      <li><b>Eversports sales:</b> Financials → Reports → <i>Revenue report (based on income & expenses)</i> for last month.</li>
+      <li><b>Gift vouchers:</b> Financials → Reports → <i>Voucher sales report</i>, same month.</li>
+      <li><b>Classes:</b> Activities → Export activity & booking data → <i>Activity overview of all appointments</i>. Take last month and next month.</li>
+      <li>Open <b>Import</b> and drop all four files in at once. Anything already there is skipped.</li>
+      <li>Look at <b>Overview → Needs a look</b> and sort anything new.</li></ol>`, true)}
+    ${sec('pages', 'What each page shows', `<p><b>Overview:</b> cash in the bank, last month's result, how long the cash lasts, and the next 3 months.</p>
+      <p><b>Cash flow:</b> every month by category, like your spreadsheet. The shaded columns on the right are the forecast. Tap an amount to see the payments behind it.</p>
+      <p><b>Sales:</b> what you sold by product, how many trial clients come back, and <i>What to work on</i>: ideas from your numbers.</p>
+      <p><b>Team & classes:</b> classes per instructor, how full they were, expected pay vs what was paid.</p>
+      <p><b>Schedule:</b> plan next month's classes from the team's availability.</p>
+      <p><b>Transactions:</b> every bank payment. Change a category if it's wrong.</p>`)}
+    ${sec('result', 'Result, runway, buffer: what they mean', `<p><b>Result</b> = money in from classes minus running costs (rent, instructors, fees…). One-off build-out, certification, VAT refunds and loan money are left out, so you see how the studio itself is doing.</p>
+      <p><b>Runway</b> = how many months the cash lasts at the expected pace, loan repayment included.</p>
+      <p><b>Safety buffer</b> = the cash you'd like to keep (3 months of running costs) compared with what's in the bank.</p>
+      <p><b>Forecast</b> = the average of the last 3 complete months, with instructor pay from the planned classes.</p>`)}
+    ${sec('categories', 'Categories explained', `<table class="t"><tbody>${Object.entries(CATS).map(([k, c]) => `<tr><td><b>${c.label}</b></td><td>${esc(CAT_HELP[k] || '')}</td></tr>`).join('')}</tbody></table>
+      <p class="muted small mt">To change a payment: Transactions → choose another category → tap “Always sort … as …” so it happens automatically next time.</p>`)}
+    ${sec('schedule', 'Schedule: how it works', `<ol class="steps">
+      <li><b>Once:</b> make a Google Form (forms.google.com → Blank) with these questions:
+        <ul><li><i>Your name</i> (Dropdown with the instructors' names)</li>
+        <li><i>Month</i> (Dropdown, e.g. November 2026, December 2026)</li>
+        <li><i>When can you teach?</i>: <b>Checkbox grid</b>. Rows: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday. Columns: <code>Early 6:30-8:30</code>, <code>Morning 9-12:30</code>, <code>Afternoon 13-17:30</code>, <code>Evening 17:30-21</code></li>
+        <li><i>Max classes per week</i> (Short answer)</li>
+        <li><i>Days you're away</i> (Short answer, e.g. “3.11, 20.-24.11.”)</li>
+        <li><i>Notes</i> (Paragraph, optional)</li></ul>
+        Then Send → copy the link → share it in the team chat.</li>
+      <li><b>Each month:</b> ask the team to fill it in for the next month.</li>
+      <li>In the form open <i>Responses</i> → green Sheets icon. In the sheet: File → Download → <b>Comma-separated values (.csv)</b>.</li>
+      <li>In Lab Ledger: <b>Schedule</b> → pick the month → <b>Import form answers</b> → <b>Make proposal</b>.</li>
+      <li>Change any class by tapping the name. Your changes stay even if you make a new proposal.</li>
+      <li><b>Export for instructors</b> → Print / save as PDF, or copy the text for WhatsApp.</li>
+      <li>Create the classes in Eversports as planned (Eversports doesn't allow apps to do this).</li></ol>
+      <p><b>How the proposal chooses:</b> only people who are available and teach that class, unpaid instructors first, then whoever usually has the slot, then whoever has the fewest classes that week. Nobody gets more than their max per week or two classes at once.</p>
+      <p><b>Weekly classes</b> (bottom of the Schedule page) are the classes that run every week. Change them there when the timetable changes.</p>`)}
+    ${sec('team', 'Instructors: paid, unpaid, invoices', `<p>In <b>Settings → Instructors</b> set each person to <i>Paid</i>, <i>Unpaid</i> or <i>Not in tool</i> (hidden from the money, still schedulable). For paid instructors enter the rate per class and the name that appears on the bank statement. <i>Paid from</i> is for someone who starts unpaid and later sends invoices. <b>+ Add instructor</b> adds someone new.</p>`)}
+    ${sec('share', 'Sharing with your co-owner', `<p>Both of you use the same app link. In <b>Settings → Sync</b>, each device connects with the same <b>token</b>, <b>Sync ID</b> and <b>passphrase</b>. Changes appear on the other devices within seconds. Share these three through a password manager, not one chat message.</p>`)}
+    ${sec('lock', 'Face ID and PIN', `<p><b>Settings → App lock</b>: choose a PIN and tick Face ID / Touch ID. From then on the app asks every time you open it, and after 2 minutes away. Set it up on each device. Forgot the PIN? Remove the app from the device and connect sync again: your data comes back from the encrypted sync file.</p>`)}
+    ${sec('safe', 'Is my data safe?', `<p>Your numbers are stored on your devices and, encrypted, in the studio's GitHub account. Without the passphrase nobody can read them, GitHub included. Files you import never leave your device. Customer names aren't stored. The app code on GitHub contains no data.</p>`)}
+    ${sec('wrong', 'Something looks wrong?', `<p><b>A payment is in the wrong category:</b> Transactions → change it. <b>Cash doesn't match the bank:</b> import the latest statement PDF; each statement is checked against its own balance. <b>Instructor pay looks off:</b> check Settings → Instructors (status, rate, paid from, bank name). <b>Anything else:</b> take a screenshot and send it to whoever helps you with the app.</p>`)}`;
+  }
+
   // ---------- events ----------
   function afterRender() {
     const fi = $('#file'); if (fi) fi.onchange = () => importFiles([...fi.files]);
     const rs = $('#restore'); if (rs) rs.onchange = () => importFiles([...rs.files]);
+    const af = $('#availFile'); if (af) af.onchange = () => importFiles([...af.files]);
+    const br = $('#bioRow'); if (br) Lock.bioAvailable().then((ok) => { br.hidden = !ok; });
+    const pin = $('#pinIn'); if (pin) { pin.onkeydown = (e) => { if (e.key === 'Enter') ACT.unlockPin(); }; if (!Lock.hasBio()) setTimeout(() => pin.focus(), 50); }
     const q = $('#txQ'); if (q) q.oninput = () => { ui.txQ = q.value; saveUI(); const pos = q.selectionStart; render(); const n = $('#txQ'); n.focus(); n.setSelectionRange(pos, pos); };
   }
   document.addEventListener('dragover', (e) => { e.preventDefault(); const d = $('#drop'); if (d) d.classList.add('over'); });
   document.addEventListener('dragleave', () => { const d = $('#drop'); if (d) d.classList.remove('over'); });
   document.addEventListener('drop', (e) => { e.preventDefault(); if (e.dataTransfer.files.length) { ui.page = 'import'; saveUI(); render(); importFiles([...e.dataTransfer.files]); } });
 
+  const newId = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   const ACT = {
+    theme: () => { ui.theme = { auto: 'light', light: 'dark', dark: 'auto' }[ui.theme] || 'auto'; saveUI(); render(); toast('Appearance: ' + ({ auto: 'automatic (follows your device)', light: 'light', dark: 'dark' }[ui.theme]), 1800); },
+    schedMonth: (el) => { ui.schedMonth = el.dataset.v; saveUI(); render(); },
+    slotsFromEv: (el) => {
+      if ((state.settings.slots || []).length && !confirm('Replace the weekly classes with the week of ' + dmy(el.dataset.v) + ' from Eversports?')) return;
+      state.settings.slots = LLS.slotsFromClasses(state, el.dataset.v); state.settings.updatedAt = Date.now(); save(); render();
+    },
+    addSlot: () => {
+      const day = +$('#nsDay').value, start = LLS.hhmm($('#nsStart').value), end = LLS.hhmm($('#nsEnd').value) || null, title = $('#nsTitle').value.trim();
+      if (!start || !title) { toast('Add a start time (e.g. 07:40) and a class name.'); return; }
+      state.settings.slots = [...(state.settings.slots || []), { id: newId('s'), day, start, end: end || LLS.hhmm(LLS.mins(start) + 50 + ''), title }];
+      state.settings.updatedAt = Date.now(); save(); render();
+    },
+    delSlot: (el) => { state.settings.slots = state.settings.slots.filter((s) => s.id !== el.dataset.v); state.settings.updatedAt = Date.now(); save(); render(); },
+    propose: (el) => {
+      const M = ui.schedMonth; const had = state.plans[M] && !state.plans[M].deleted;
+      const kept = had ? Object.values(state.plans[M].cells).filter((c) => c.manual).length : 0;
+      if (had && !confirm(`Make a new proposal for ${mName(M, true)}?${kept ? ` Your ${kept} manual change${kept > 1 ? 's' : ''} stay.` : ''}`)) return;
+      const r = LLS.propose(state, M, { assumeAll: el.dataset.v === 'all' });
+      save(); render(); toast(`Proposal ready: ${r.total - r.unfilled} of ${r.total} classes filled${r.unfilled ? `, ${r.unfilled} still open (marked)` : ''}.`);
+    },
+    exportPlan: () => exportPlan(),
+    printPlan: () => window.print(),
+    copyPlan: () => { const t = $('#print').dataset.text; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => toast('Copied. Paste it into WhatsApp.'), () => toast('Copy didn\'t work here. Use Print / save as PDF instead.')); },
+    closePlan: () => { const b = $('#print'); b.hidden = true; b.innerHTML = ''; document.body.classList.remove('printing'); },
+    addIns: () => {
+      const id = newId('i');
+      state.settings.instructors.push({ id, name: 'New instructor', evNames: [], bankNames: [], status: 'unknown', rate: 0, active: true });
+      state.settings.updatedAt = Date.now(); save(); render();
+      const el = document.querySelector(`#ins-${id} input`); if (el) { el.scrollIntoView({ block: 'center' }); el.select(); }
+    },
+    teachToggle: (el) => {
+      const i = state.settings.instructors.find((x) => x.id === el.dataset.id); const v = el.dataset.v;
+      let t = i.teaches && i.teaches.length ? i.teaches.slice() : (() => { const d = LLS.teachesOf(state, Object.assign({}, i, { teaches: [] })); return d.length ? d : (state.settings.slots || []).map((s) => s.title).filter((x) => /lagree burn/i.test(x)); })();
+      t = t.includes(v) ? t.filter((x) => x !== v) : [...t, v];
+      i.teaches = [...new Set(t)]; state.settings.updatedAt = Date.now(); save(); render();
+    },
+    delIns: (el) => { const i = state.settings.instructors.find((x) => x.id === el.dataset.v); if (i && confirm(`Remove ${i.name}? Their past classes stay; they just disappear from the lists.`)) { i.deleted = true; state.settings.updatedAt = Date.now(); save(); render(); } },
+    lockOn: async () => {
+      const a = $('#lockPin1').value, b = $('#lockPin2').value, err = $('#lockSetErr');
+      if (!/^\d{4,8}$/.test(a)) { err.textContent = 'The PIN needs 4 to 8 digits.'; return; }
+      if (a !== b) { err.textContent = 'The two PINs are different.'; return; }
+      const bio = $('#lockBio') && $('#lockBio').checked && !$('#bioRow').hidden;
+      try { await Lock.enable(a, bio); toast(bio ? 'App lock is on, with Face ID / Touch ID.' : 'App lock is on.'); render(); }
+      catch (e) { err.textContent = 'Face ID / Touch ID couldn\'t be set up (' + e.message + '). Untick it to use the PIN only.'; }
+    },
+    lockOff: async () => { const err = $('#lockSetErr'); try { if (await Lock.checkPin($('#lockOffPin').value)) { Lock.disable(); toast('App lock is off.'); render(); } else err.textContent = 'Wrong PIN.'; } catch (e) { err.textContent = e.message; } },
+    unlockBio: async () => { try { if (await Lock.bio()) { Lock.unlock(); render(); if (Sync.on()) syncNow(); } } catch (e) { $('#lockErr').textContent = 'Not recognised. Try again or use your PIN.'; } },
+    unlockPin: async () => { const err = $('#lockErr'); try { if (await Lock.checkPin($('#pinIn').value)) { Lock.unlock(); render(); if (Sync.on()) syncNow(); } else { err.textContent = 'Wrong PIN.'; $('#pinIn').value = ''; } } catch (e) { err.textContent = e.message; } },
     page: (el) => { ui.page = el.dataset.v; if (el.dataset.cat) { ui.txCat = el.dataset.cat; ui.txMonth = ''; } saveUI(); render(); window.scrollTo(0, 0); },
     cfAll: (el) => { ui.cfAll = el.dataset.v === '1'; saveUI(); render(); },
     salesNet: (el) => { ui.salesNet = el.dataset.v === '1'; saveUI(); render(); },
@@ -1474,6 +2300,11 @@ td.nw { white-space: nowrap; }
     },
   };
   const CHANGE = {
+    cellSet: (el) => {
+      const M = ui.schedMonth; const p = state.plans[M]; if (!p) return;
+      p.cells[el.dataset.k] = { ins: el.value, manual: true }; p.updatedAt = Date.now(); save();
+      el.className = 'cellsel man' + (!el.value ? ' open' : el.value === '-' ? ' off' : '');
+    },
     txMonth: (el) => { ui.txMonth = el.value; saveUI(); render(); },
     txCat: (el) => { ui.txCat = el.value; saveUI(); render(); },
     setCat: (el) => {
@@ -1492,6 +2323,8 @@ td.nw { white-space: nowrap; }
       if (f === 'rate') i.rate = Math.round(parseFloat(el.value.replace(/\./g, '').replace(',', '.')) * 100) || 0;
       else if (f === 'bankNames') i.bankNames = el.value.split(',').map((s) => s.trim()).filter(Boolean);
       else if (f === 'active') i.active = el.checked;
+      else if (f === 'teaches') i.teaches = [...el.selectedOptions].map((o) => o.value);
+      else if (f === 'paidFrom') i.paidFrom = el.value || null;
       else i[f] = el.value;
       state.settings.updatedAt = Date.now(); save(); render();
     },
@@ -1514,10 +2347,12 @@ td.nw { white-space: nowrap; }
   document.addEventListener('click', (e) => { const g = e.target.closest('.hov'); if (g) showTip(g, g.dataset.tip, true); else if (!e.target.closest('.q')) $('#tip').hidden = true; }, true);
 
   let rsT; window.addEventListener('resize', () => { clearTimeout(rsT); rsT = setTimeout(() => { if (!document.activeElement || !['INPUT', 'SELECT'].includes(document.activeElement.tagName)) render(); }, 200); });
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') syncNow(); });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !Lock.isLocked()) syncNow(); });
 
+  Lock.watch(() => render());
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => applyTheme());
   render();
-  if (Sync.on()) syncNow();
+  if (Sync.on() && !Lock.isLocked()) syncNow();
 })();
 
 </script>
