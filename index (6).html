@@ -1,0 +1,1525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; worker-src blob:; connect-src https://api.github.com https://gist.githubusercontent.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta name="theme-color" content="#F5F0EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161614" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lab Ledger">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A1A18'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Georgia' font-style='italic' font-size='36' fill='%23EBD3C7'%3EL%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231A1A18'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Georgia' font-style='italic' font-size='36' fill='%23EBD3C7'%3EL%3C/text%3E%3C/svg%3E">
+<title>Lab Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F0EA; --surface: #FFFDFB; --surface2: #F0E8E0; --ink: #1A1A18; --ink2: #55514B; --muted: #8A847C;
+  --line: #E4DBD1; --accent: #B65F3C; --accent-ink: #fff; --blush: #EBD3C7;
+  --in: #1F6FA8; --out: #C8693F; --pos: #2E6B4A; --neg: #B2402E; --warn: #9A6200;
+  --grid: #ECE4DB; --shadow: 0 1px 2px rgba(26,26,24,.05), 0 4px 16px rgba(26,26,24,.04);
+  --serif: 'Cormorant Garamond', Georgia, serif; --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161614; --surface: #201F1C; --surface2: #2A2925; --ink: #EFE9E2; --ink2: #C3BDB5; --muted: #8E887F;
+    --line: #34322D; --accent: #D9845A; --accent-ink: #1A1A18; --blush: #3A2C25;
+    --in: #4A92D4; --out: #CF6D3C; --pos: #6FBF8E; --neg: #EE7A63; --warn: #E3B04B; --grid: #2C2B27;
+    --shadow: none; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161614; --surface: #201F1C; --surface2: #2A2925; --ink: #EFE9E2; --ink2: #C3BDB5; --muted: #8E887F;
+  --line: #34322D; --accent: #D9845A; --accent-ink: #1A1A18; --blush: #3A2C25;
+  --in: #4A92D4; --out: #CF6D3C; --pos: #6FBF8E; --neg: #EE7A63; --warn: #E3B04B; --grid: #2C2B27;
+  --shadow: none; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 var(--sans); font-feature-settings: 'tnum' 1, 'cv11' 1; }
+a { color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+header.top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.top-in { max-width: 1180px; margin: 0 auto; padding: 14px 16px 0; }
+.brand { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.brand h1 { margin: 0; font: italic 500 28px/1.1 var(--serif); letter-spacing: .01em; }
+.brand h1 span { font: 600 11px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-style: normal; margin-left: 10px; }
+.sync { font-size: 12px; padding: 4px 10px; border-radius: 99px; background: var(--surface2); color: var(--ink2); white-space: nowrap; }
+.sync::before { content: '●'; margin-right: 6px; }
+.sync.ok::before { color: var(--pos); } .sync.busy::before { color: var(--warn); } .sync.err::before { color: var(--neg); } .sync.off::before { color: var(--muted); }
+nav#nav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; margin-top: 10px; }
+nav#nav::-webkit-scrollbar { display: none; }
+.tab { border: 0; background: none; color: var(--ink2); font: 500 14px var(--sans); padding: 10px 12px 12px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; }
+.tab.on { color: var(--ink); border-bottom-color: var(--accent); }
+.tab .dot { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 9px; background: var(--accent); color: var(--accent-ink); font-size: 11px; line-height: 18px; text-align: center; }
+main { max-width: 1180px; margin: 0 auto; padding: 20px 16px 60px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 18px 16px; margin-bottom: 16px; box-shadow: var(--shadow); min-width: 0; }
+h2 { font: 600 15px/1.3 var(--sans); margin: 0 0 12px; letter-spacing: .005em; }
+h2.mt, .mt { margin-top: 18px; }
+.tiles { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); min-width: 0; }
+.tile.hero { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.tile.hero .label, .tile.hero .sub { color: color-mix(in srgb, var(--bg) 75%, var(--ink)); }
+.tile.hero .q { color: inherit; border-color: currentColor; }
+.label { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+.big { font: 500 34px/1.15 var(--serif); margin: 6px 0 4px; letter-spacing: -.01em; white-space: nowrap; }
+.tile.hero .big { font-size: 44px; }
+.sub { font-size: 13px; color: var(--ink2); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid2 > .card { margin-bottom: 16px; }
+.pos, .okc { color: var(--pos); } .neg, .negc { color: var(--neg); } .warnc { color: var(--warn); }
+td.neg, td.pos { color: inherit; }
+td.neg a, td.neg { color: var(--neg); }
+.b { font-weight: 600; }
+.muted { color: var(--muted); } .small { font-size: 12.5px; }
+.row { display: flex; align-items: center; } .gap { gap: 8px; } .wrap { flex-wrap: wrap; } .between { justify-content: space-between; gap: 10px; }
+.attn { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); background: color-mix(in srgb, var(--blush) 35%, var(--surface)); }
+.attn ul { margin: 0; padding-left: 18px; } .attn li { margin: 4px 0; }
+/* charts */
+.chart { width: 100%; height: auto; display: block; overflow: visible; }
+.chart .grid { stroke: var(--grid); stroke-width: 1; }
+.chart .base { stroke: var(--muted); stroke-width: 1; }
+.chart .zero { stroke: var(--neg); stroke-width: 1; stroke-dasharray: 3 3; }
+.chart .ax { fill: var(--muted); font: 11px var(--sans); }
+.chart .b-in { fill: var(--in); } .chart .b-out { fill: var(--out); }
+.chart .ln { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+.chart .ln.dash { stroke-dasharray: 5 5; stroke: var(--muted); }
+.chart .pt { fill: var(--ink); stroke: var(--surface); stroke-width: 2; }
+.chart .pt.f { fill: var(--surface); stroke: var(--muted); }
+.chart .hit { fill: transparent; }
+.chart .hov:hover .hit { fill: color-mix(in srgb, var(--ink) 5%, transparent); }
+.legend { display: flex; gap: 16px; font-size: 13px; color: var(--ink2); margin: -4px 0 8px; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.sw-in { background: var(--in); } .sw-out { background: var(--out); }
+#tip { position: absolute; z-index: 50; background: var(--ink); color: var(--bg); padding: 8px 10px; border-radius: 8px; font-size: 13px; line-height: 1.4; pointer-events: none; box-shadow: 0 6px 20px rgba(0,0,0,.18); }
+#tip b { font-weight: 600; }
+.q { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--muted); background: none; color: var(--muted); font: 600 11px/1 var(--sans); padding: 0; cursor: pointer; flex: none; vertical-align: 1px; text-transform: none; letter-spacing: 0; }
+/* tables */
+.tablewrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -4px; padding: 0 4px; }
+table.t { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.t th, .t td { padding: 7px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.t thead th { font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.t .r { text-align: right; white-space: nowrap; }
+.t td a { color: inherit; text-decoration: none; border-bottom: 1px dotted var(--muted); }
+.t tr.sum th, .t tr.sum td { font-weight: 600; background: var(--surface2); }
+.t tr.strong th, .t tr.strong td { border-top: 1.5px solid var(--ink2); }
+.t tr.gh th { font: 600 11px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-top: 16px; border-bottom: 0; }
+.t .rl { font-weight: 500; white-space: nowrap; }
+.t.cf .rl { position: sticky; left: 0; background: var(--surface); z-index: 1; min-width: 150px; }
+.t.cf tr.sum .rl { background: var(--surface2); }
+.t .tot { border-left: 1px solid var(--line); }
+.t tr.dim td { color: var(--muted); }
+.t tr.warnrow td { background: color-mix(in srgb, var(--blush) 40%, transparent); }
+.tag { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 99px; background: var(--surface2); color: var(--ink2); vertical-align: 1px; }
+/* controls */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 500 14px var(--sans); padding: 9px 14px; border-radius: 10px; cursor: pointer; }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn.ghost { background: none; color: var(--ink2); }
+.btn.sm { padding: 4px 10px; font-size: 12.5px; border-radius: 8px; }
+.seg { display: inline-flex; background: var(--surface2); border-radius: 10px; padding: 3px; }
+.seg button { border: 0; background: none; padding: 6px 12px; border-radius: 8px; font: 500 13px var(--sans); color: var(--ink2); cursor: pointer; }
+.seg button.on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 99px; padding: 5px 11px; font: 500 13px var(--sans); color: var(--ink2); cursor: pointer; }
+.chip.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.in, select { font: 14px var(--sans); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; max-width: 100%; min-width: 0; }
+.in:disabled { opacity: .45; }
+.in.num { width: 90px; text-align: right; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+.fld { display: block; font-size: 13px; color: var(--ink2); margin: 10px 0; }
+.fld .in { display: block; width: 100%; margin-top: 4px; }
+.fld .row .in { margin-top: 4px; }
+.ins .in { width: 100%; min-width: 110px; }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.search { position: relative; flex: 1 1 240px; }
+.search input { width: 100%; padding-right: 30px; font: 14px var(--sans); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 30px 8px 10px; }
+.x { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: none; color: var(--muted); font-size: 18px; cursor: pointer; }
+.rules { list-style: none; padding: 0; margin: 0; font-size: 13px; }
+.rules li { position: relative; padding: 4px 26px 4px 0; border-bottom: 1px solid var(--line); }
+.rules code { font-size: 12px; }
+/* transactions */
+.txlist { border-top: 1px solid var(--line); }
+.tx { display: grid; grid-template-columns: 1fr auto; grid-template-areas: 'main amt' 'cat cat'; gap: 4px 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.tx.warn { background: color-mix(in srgb, var(--blush) 35%, transparent); margin: 0 -8px; padding: 10px 8px; }
+.tx-main { grid-area: main; min-width: 0; } .tx-amt { grid-area: amt; font-weight: 600; white-space: nowrap; text-align: right; }
+.tx-amt.neg { color: var(--ink); } .tx-amt.pos { color: var(--pos); }
+.tx-name { font-weight: 500; overflow-wrap: anywhere; } .tx-meta { font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
+.tx-cat { grid-area: cat; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.tx-cat select { font-size: 13px; padding: 4px 6px; }
+@media (min-width: 760px) { .tx { grid-template-columns: 1fr 220px 120px; grid-template-areas: 'main cat amt'; align-items: center; } }
+/* import */
+.drop { display: flex; flex-direction: column; gap: 6px; align-items: center; justify-content: center; text-align: center; border: 2px dashed var(--line); border-radius: 14px; padding: 34px 16px; cursor: pointer; background: var(--surface2); }
+.drop.over { border-color: var(--accent); background: color-mix(in srgb, var(--blush) 40%, var(--surface)); }
+.drop input { display: none; }
+.result { padding-left: 18px; } .result li { margin: 6px 0; }
+.steps { padding-left: 20px; } .steps li { margin: 8px 0; }
+.hero-empty { max-width: 560px; margin: 60px auto; text-align: center; }
+.hero-empty h1 { font: 500 40px/1.1 var(--serif); margin: 0 0 12px; }
+.hero-empty .row { justify-content: center; margin: 22px 0 12px; }
+#toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 60; background: var(--ink); color: var(--bg); padding: 10px 14px; border-radius: 12px; font-size: 14px; max-width: calc(100vw - 32px); box-shadow: 0 8px 28px rgba(0,0,0,.25); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+#toast .btn { background: var(--bg); color: var(--ink); border: 0; }
+#toast code { overflow-wrap: anywhere; }
+@media (max-width: 980px) { .tiles { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+td.nw { white-space: nowrap; }
+@media (max-width: 520px) {
+  .hide-sm { display: none; }
+  .tiles { grid-template-columns: 1fr; } .big { font-size: 30px; } .tile.hero .big { font-size: 38px; }
+  .card { padding: 14px 12px; border-radius: 12px; } .brand h1 { font-size: 24px; } .brand h1 span { display: none; }
+}
+
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="brand"><h1>Lab Ledger<span>Studio finances</span></h1><span id="syncBadge" class="sync off">Not synced</span></div>
+  <nav id="nav" aria-label="Pages"></nav>
+</div></header>
+<main id="main"></main>
+<div id="tip" hidden></div>
+<div id="toast" hidden></div>
+<script>
+/* Lab Ledger — file parsers. Pure functions, no DOM. Works in browser and Node. */
+(function (G) {
+  'use strict';
+
+  // ---------- helpers ----------
+  const toCents = (n) => Math.round(n * 100);
+  // "1.234,56-" (Erste) -> -123456
+  function atAmount(s) {
+    s = String(s).trim();
+    const neg = /-$/.test(s) || /^-/.test(s);
+    const n = parseFloat(s.replace(/[-\s]/g, '').replace(/\./g, '').replace(',', '.'));
+    return isNaN(n) ? null : (neg ? -1 : 1) * toCents(n);
+  }
+  // "1,890" / "78,998.9" / "-19" (Eversports, English format) -> cents
+  function enAmount(s) {
+    s = String(s || '').trim().replace(/,/g, '');
+    if (s === '') return 0;
+    const n = parseFloat(s);
+    return isNaN(n) ? 0 : toCents(n);
+  }
+  // dd.mm.yyyy or dd/mm/yyyy -> yyyy-mm-dd
+  function isoDate(s) {
+    const m = String(s).trim().match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})/);
+    if (m) return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+    const m2 = String(s).trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return m2 ? `${m2[1]}-${m2[2]}-${m2[3]}` : null;
+  }
+
+  // ---------- CSV ----------
+  function parseCSV(text) {
+    text = text.replace(/^﻿/, '');
+    const first = text.split(/\r?\n/, 1)[0];
+    const delim = (first.split(';').length >= first.split(',').length) ? ';' : ',';
+    const rows = []; let row = [], cell = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+        else cell += c;
+      } else if (c === '"') q = true;
+      else if (c === delim) { row.push(cell); cell = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i + 1] === '\n') i++;
+        row.push(cell); rows.push(row); row = []; cell = '';
+      } else cell += c;
+    }
+    if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+    const head = (rows.shift() || []).map((h) => h.trim());
+    return rows.filter((r) => r.some((c) => c.trim() !== '')).map((r) => {
+      const o = {}; head.forEach((h, i) => (o[h] = (r[i] || '').trim())); return o;
+    });
+  }
+
+  // Detect which Eversports / bank export a CSV is
+  function detectCSV(rows) {
+    if (!rows.length) return null;
+    const k = Object.keys(rows[0]);
+    const has = (x) => k.includes(x);
+    if (has('Voucher Code') && has('Paid Invoice Amount')) return 'vouchers';
+    if (has('Paid Gross') && has('Product Name')) return 'sales';
+    if (has('Trainer') && has('Max. participants') && has('Start time')) return 'classes';
+    // George CSV (best effort): needs a date and an amount column
+    const lk = k.map((x) => x.toLowerCase());
+    if (lk.some((x) => /buchungsdatum|booking date|valuta|value date/.test(x)) && lk.some((x) => /betrag|amount/.test(x))) return 'georgecsv';
+    return null;
+  }
+
+  // ---------- Eversports: revenue report (income & expenses) ----------
+  function parseSales(rows) {
+    const out = [];
+    for (const r of rows) {
+      const date = isoDate(r['Paid At']);
+      if (!date) continue; // skips the "Sum ..." line
+      out.push({
+        date, inv: r['Invoice Number'], state: r['Payment State'],
+        product: (r['Product Name'] || '').trim(), ptype: r['Product Type'],
+        gross: enAmount(r['Paid Gross']), net: enAmount(r['Paid Net']), vat: enAmount(r['VAT Amount']),
+        method: r['Payment Method'], cashier: r['Cashier'] === 'online' ? 'online' : 'studio', customer: (r['Customer Name'] || '').trim(),
+      });
+    }
+    return out;
+  }
+  // ---------- Eversports: voucher sales ----------
+  function parseVouchers(rows) {
+    const out = [];
+    for (const r of rows) {
+      const date = isoDate(r['Paid At'] || r['Invoice Date']);
+      if (!date) continue;
+      out.push({
+        date, inv: r['Invoice No.'], type: r['Invoice Type'],
+        gross: enAmount(r['Paid Invoice Amount']), vat: enAmount(r['VAT Amount']),
+        net: enAmount(r['Paid Invoice Amount']) - enAmount(r['VAT Amount']), method: r['Payment Method'],
+      });
+    }
+    return out;
+  }
+  // ---------- Eversports: activity report / utilization report ----------
+  function parseClasses(rows) {
+    const out = [];
+    for (const r of rows) {
+      const date = isoDate(r['Date']);
+      if (!date) continue;
+      const cancelled = /cancel/i.test(r['Status'] || '') || /^yes$/i.test(r['Session cancelled'] || '');
+      out.push({
+        date, start: r['Start time'], end: r['End time'], title: (r['Title'] || '').trim(), type: r['Type'],
+        trainer: (r['Trainer'] || '').trim(), registered: +r['Registered'] || 0, present: +r['Present'] || 0,
+        max: +r['Max. participants'] || 0, sport: r['Sport'] || '', cancelled,
+      });
+    }
+    return out;
+  }
+
+  // ---------- Erste / Sparkasse statement PDF ----------
+  // pages: array of arrays of {str, x, y}. Returns {statements:[...], tx:[...]}
+  const AMT = /^-?[\d.]+,\d\d-?$/;
+  const DATE = /^\d\d\.\d\d\.\d{4}$/;
+  function linesFromItems(items) {
+    const rows = [];
+    for (const it of items) {
+      if (!it.str || !it.str.trim()) continue;
+      if (it.w === undefined) it.w = 0;
+      let row = rows.find((r) => Math.abs(r.y - it.y) < 2.5);
+      if (!row) { row = { y: it.y, items: [] }; rows.push(row); }
+      row.items.push(it);
+    }
+    rows.sort((a, b) => b.y - a.y);
+    // merge word items into column cells: a gap wider than ~8pt starts a new cell
+    rows.forEach((r) => {
+      r.items.sort((a, b) => a.x - b.x);
+      const cells = []; let c = null;
+      for (const it of r.items) {
+        const s = it.str.trim();
+        if (c && (it.w === 0 ? it.x - c.end < 12 : it.x - c.end < 8)) { c.str += (it.x - c.end > 1.2 ? ' ' : '') + s; c.end = it.x + (it.w || s.length * 4.5); }
+        else { c = { str: s, x: it.x, end: it.x + (it.w || s.length * 4.5) }; cells.push(c); }
+      }
+      r.items = cells.map((x) => ({ str: x.str.replace(/([\d.]+,\d\d) -$/, '$1-'), x: x.x }));
+    });
+    return rows;
+  }
+  function parseStatementPages(pages) {
+    const statements = []; const tx = [];
+    let st = null, inBody = false, cur = null;
+    for (const items of pages) {
+      const rows = linesFromItems(items);
+      for (const row of rows) {
+        const parts = row.items.map((i) => i.str.trim()).filter(Boolean);
+        const text = parts.join(' ');
+        const nr = text.match(/Nr\.\s*(\d{3}\/\d{4})/);
+        if (nr && /Kontoauszug/.test(text)) {
+          st = { no: nr[1], iban: null, oldBal: null, newBal: null, date: null, count: 0, sum: 0 };
+          statements.push(st); inBody = false; cur = null; continue;
+        }
+        if (!st) continue;
+        const ib = text.match(/IBAN:\s*(AT\d{18})/); if (ib) st.iban = ib[1];
+        const ob = text.match(/Alter Kontostand\s+(-?[\d.]+,\d\d-?)/); if (ob && st.oldBal === null) st.oldBal = atAmount(ob[1]);
+        const nb = text.match(/Neuer Kontostand(?:\/New Balance)?\s+(-?[\d.]+,\d\d-?)/); if (nb) st.newBal = atAmount(nb[1]);
+        if (/Neuer Kontostand\/New Balance/.test(text)) { inBody = false; cur = null; continue; }
+        if (/Buchungstext\/Booking Text/.test(text)) { inBody = true; continue; }
+        const foot = text.match(/^AT\d{18}\s+(\d\d\.\d\d\.\d{4})/);
+        if (foot) { st.date = isoDate(foot[1]); inBody = false; continue; }
+        if (/^IBAN Datum\/Date/.test(text)) { inBody = false; continue; }
+        if (/^(Erste Bank der|Sparkassen AG|Am Belvedere|1100 Wien|Salzburger Sparkasse|Alter Kontostand|Neuer Kontostand)/.test(text)) continue;
+        if (!inBody) continue;
+        const last = parts[parts.length - 1];
+        const di = parts.findIndex((p) => DATE.test(p));
+        if (di >= 0 && AMT.test(last) && di < parts.length - 1) {
+          cur = { date: isoDate(parts[di]), amount: atAmount(last), ref: parts.slice(0, di).join(' ').replace(/\s+/g, ' '), details: [], st: st.no };
+          tx.push(cur); st.count++; st.sum += cur.amount;
+        } else if (di >= 0 && !AMT.test(last)) {
+          cur = null; // booking line without amount (closing notes)
+        } else if (cur) {
+          cur.details.push(text.replace(/\s+/g, ' '));
+        }
+      }
+    }
+    for (const t of tx) {
+      // counterparty = first detail line that isn't a reference code
+      t.party = (t.details.find((d) => !/^(MDID:|NOTPROVIDED|EVERSPORT-|SPESEN|stammt von|Reklamationen|[A-Z]{3}\s+[\d.,]+$)/.test(d)) || t.ref || '').trim();
+      t.text = [t.ref, ...t.details].join(' | ');
+    }
+    return { statements, tx };
+  }
+
+  // ---------- George CSV (best effort, untested format) ----------
+  function parseGeorgeCSV(rows) {
+    const k = Object.keys(rows[0]);
+    const find = (re) => k.find((x) => re.test(x.toLowerCase()));
+    const dCol = find(/buchungsdatum|booking date/) || find(/valuta|value date/);
+    const aCol = find(/^betrag|amount/);
+    const pCol = find(/partner|name|empfänger|auftraggeber/);
+    const tCol = find(/buchungstext|verwendungszweck|reference|booking text|details/);
+    const tx = [];
+    for (const r of rows) {
+      const date = isoDate(r[dCol]); if (!date) continue;
+      let a = r[aCol];
+      const amount = /,\d\d-?$/.test(a) ? atAmount(a) : enAmount(a);
+      const party = (r[pCol] || '').trim(); const ref = (r[tCol] || '').trim();
+      tx.push({ date, amount, ref, party: party || ref, details: [party], text: [ref, party].join(' | ') });
+    }
+    return tx;
+  }
+  // ---------- George JSON (best effort) ----------
+  function parseGeorgeJSON(arr) {
+    const tx = [];
+    for (const r of arr) {
+      const date = isoDate(r.booking || r.bookingDate || r.valuation || r.valueDate || '');
+      const amt = r.amount || {};
+      let v = amt.value !== undefined ? amt.value / Math.pow(10, amt.precision || 0) : parseFloat(r.amount);
+      if (!date || isNaN(v)) continue;
+      const party = r.partnerName || r.partner?.name || '';
+      const ref = r.reference || r.referenceNumber || r.receiverReference || '';
+      const desc = [r.bookingTypeTranslation, r.additionalInformation].filter(Boolean).join(' ');
+      tx.push({ date, amount: Math.round(v * 100), ref: ref || desc, party: party || desc, details: [party, desc].filter(Boolean), text: [ref, party, desc].filter(Boolean).join(' | ') });
+    }
+    return tx;
+  }
+
+  G.LLParse = { parseCSV, detectCSV, parseSales, parseVouchers, parseClasses, parseStatementPages, parseGeorgeCSV, parseGeorgeJSON, isoDate, atAmount, enAmount };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* Lab Ledger — data model, import merge, categories, monthly aggregation. No DOM. */
+(function (G) {
+  'use strict';
+  const APP_VERSION = '1.0';
+  const SCHEMA = 1;
+
+  // ---------- categories ----------
+  // group: in = operating income, out = operating cost, setup = one-off build-out,
+  //        tax = VAT / tax office, fin = financing (owners, bank loan, deposits)
+  const CATS = {
+    sales:       { label: 'Eversports payouts', group: 'in' },
+    terminal:    { label: 'Card terminal (SumUp)', group: 'in' },
+    other_in:    { label: 'Other income', group: 'in' },
+    rent:        { label: 'Rent', group: 'out' },
+    instructors: { label: 'Instructor pay', group: 'out' },
+    payroll:     { label: 'Social security & payroll tax', group: 'out' },
+    platform:    { label: 'Eversports fees', group: 'out' },
+    utilities:   { label: 'Utilities', group: 'out' },
+    insurance:   { label: 'Insurance', group: 'out' },
+    software:    { label: 'Software & web', group: 'out' },
+    marketing:   { label: 'Marketing', group: 'out' },
+    accounting:  { label: 'Accounting & legal', group: 'out' },
+    bank:        { label: 'Bank fees', group: 'out' },
+    loan_fees:   { label: 'Loan fees', group: 'out' },
+    supplies:    { label: 'Studio supplies', group: 'out' },
+    license:     { label: 'Lagree licence & training', group: 'out' },
+    memberships: { label: 'Chamber & fees', group: 'out' },
+    travel:      { label: 'Travel', group: 'out' },
+    other_out:   { label: 'Other costs', group: 'out' },
+    uncat:       { label: 'Not sorted yet', group: 'out' },
+    setup:       { label: 'Build-out & setup', group: 'setup' },
+    vat:         { label: 'VAT & tax office', group: 'tax' },
+    owner:       { label: 'Shareholder money', group: 'fin' },
+    bank_loan:   { label: 'Bank loan drawdown', group: 'fin' },
+    loan_repay:  { label: 'Loan repayment', group: 'fin' },
+    deposit:     { label: 'Security deposit', group: 'fin' },
+  };
+  const GROUPS = { in: 'Income', out: 'Running costs', setup: 'One-off build-out', tax: 'Tax office', fin: 'Financing' };
+
+  // Generic rules (no personal data). Matched against "party | text", lower case. sign: '+' only money in, '-' only money out.
+  const BUILTIN_RULES = [
+    { m: 'eversport-|stripe', c: 'sales', s: '+' },
+    { m: 'eversport', c: 'platform' },
+    { m: 'sumup limited|sumup eur ops', c: 'terminal' },
+    { m: 'rueckzahlung', c: 'vat', s: '+' },
+    { m: 'fa österreich|finanzamt', c: 'payroll', s: '-' },
+    { m: 'gesundheitskasse|ögk|oegk', c: 'payroll' },
+    { m: 'gemeinde salzburg|magistrat', c: 'payroll' },
+    { m: 'haftungsprovision', c: 'loan_fees' },
+    { m: 'kreditauszahlung|teilauszahlung|teilinanspruchnahme|fehlbuchung', c: 'bank_loan' },
+    { m: '^kredit |\\| kredit \\d', c: 'loan_repay', s: '-' },
+    { m: 'kontoführung|buchungskosten|debitkarte|digital banking|karten-airbag|^spesen|ausfertigungsgebühr|kest|habenzinsen', c: 'bank' },
+    { m: 'wirtschaftskammer', c: 'memberships' },
+    { m: 'salzburg ag', c: 'utilities' },
+    { m: 'versicherung|arag se|uniqa|allianz|generali', c: 'insurance' },
+    { m: 'google|strato|canva|elementor|wix|squarespace|adobe|apple.com/bill', c: 'software' },
+    { m: 'facebk|meta pla|instagram|flyeralarm|vistaprint|peterkopie|google ads', c: 'marketing' },
+    { m: 'steuerberat|notar|landesgericht|rechtsanw', c: 'accounting' },
+    { m: 'lagree fitness|spx fitness', c: 'license' },
+    { m: 'westbahn|öbb|oebb|numastays|booking.com|airbnb|ryanair|austrian air', c: 'travel' },
+    { m: 'amazon|ikea|jysk|bauhaus|dm-fil|lidl|spar |billa|hofer|temu|kaufland|zara ?home|deichmann|dehner|blumen|etsy|sklum|kenay|sport-tec|lampenwelt|obi |hornbach|müller|brunos|wolt|colibri|ryzon|sb supply|abraham|sanitino|eufy|dji', c: 'supplies' },
+  ];
+
+  function defaultState() {
+    return {
+      schema: SCHEMA,
+      settings: {
+        openingDate: '2026-05-16',
+        startMonth: null,
+        instructors: [],
+        rules: [],
+        bufferMonths: 3,
+        updatedAt: 0,
+      },
+      bank: {}, statements: {}, sales: {}, vouchers: {}, classes: {},
+    };
+  }
+  function migrate(s) {
+    const d = defaultState();
+    s = Object.assign(d, s || {});
+    s.settings = Object.assign(defaultState().settings, s.settings || {});
+    for (const k of ['bank', 'statements', 'sales', 'vouchers', 'classes']) s[k] = s[k] || {};
+    s.schema = SCHEMA;
+    return s;
+  }
+
+  // ---------- small utils ----------
+  const now = () => Date.now();
+  const mk = (iso) => iso.slice(0, 7);
+  function addMonths(m, n) { let [y, mo] = m.split('-').map(Number); mo += n; while (mo > 12) { mo -= 12; y++; } while (mo < 1) { mo += 12; y--; } return `${y}-${String(mo).padStart(2, '0')}`; }
+  function monthRange(a, b) { const out = []; for (let m = a; m <= b; m = addMonths(m, 1)) out.push(m); return out; }
+  function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
+  const live = (o) => Object.values(o).filter((x) => !x.deleted);
+  const norm = (s) => String(s || '').toLowerCase();
+  function slug(s) { return norm(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+
+  // ---------- instructors ----------
+  // Eversports trainer label "Lea - ENG" -> "Lea"
+  function trainerName(t) { return String(t || '').replace(/\s+-\s+(ENG|DE|EN|GER)$/i, '').trim(); }
+  function findInstructor(state, trainer) {
+    const t = norm(trainerName(trainer));
+    return state.settings.instructors.find((i) => !i.deleted && (norm(i.name) === t || (i.evNames || []).some((e) => norm(trainerName(e)) === t)));
+  }
+  function ensureInstructor(state, trainer) {
+    if (!trainer) return null;
+    let ins = findInstructor(state, trainer);
+    if (!ins) {
+      ins = { id: 'i' + slug(trainerName(trainer)), name: trainerName(trainer), evNames: [trainer], bankNames: [], status: 'unknown', rate: 0, active: true };
+      state.settings.instructors.push(ins); state.settings.updatedAt = now();
+    }
+    return ins;
+  }
+
+  // ---------- categorize a bank line ----------
+  function categorize(state, t) {
+    if (t.cat) return { cat: t.cat, who: t.who || null, manual: true };
+    const hay = norm(t.party + ' | ' + t.text);
+    // instructor pay by bank name
+    for (const i of state.settings.instructors) {
+      if (i.deleted) continue;
+      for (const b of i.bankNames || []) if (b && hay.includes(norm(b)) && t.amount < 0) return { cat: 'instructors', who: i.id };
+    }
+    const rules = [...(state.settings.rules || []).filter((r) => !r.deleted), ...BUILTIN_RULES];
+    for (const r of rules) {
+      if (r.s === '+' && t.amount < 0) continue;
+      if (r.s === '-' && t.amount > 0) continue;
+      let ok = false;
+      try { ok = new RegExp(r.m, 'i').test(hay); } catch (e) { ok = hay.includes(norm(r.m)); }
+      if (ok) {
+        let cat = r.c;
+        if (cat === 'supplies' && t.date < state.settings.openingDate) cat = 'setup';
+        return { cat, who: null, rule: r };
+      }
+    }
+    return { cat: t.amount > 0 ? 'other_in' : 'uncat', who: null };
+  }
+
+    // Payroll runs in arrears: paid in the first weeks of a month = pay for the month before.
+  function serviceMonth(t) {
+    return +t.date.slice(8, 10) >= 20 ? mk(t.date) : addMonths(mk(t.date), -1);
+  }
+
+  // ---------- imports ----------
+  // Bank lines: de-duplicate by date+amount as a multiset, so the same payment from a PDF and a CSV export isn't counted twice,
+  // while two equal payments on the same day inside one file are both kept.
+  function importBank(state, txs, statements, src) {
+    const existing = {};
+    for (const t of live(state.bank)) { const k = t.date + '|' + t.amount; existing[k] = (existing[k] || 0) + 1; }
+    const seen = {}; let added = 0, skipped = 0;
+    for (const t of txs) {
+      const k = t.date + '|' + t.amount; seen[k] = (seen[k] || 0) + 1;
+      if (seen[k] <= (existing[k] || 0)) { skipped++; continue; }
+      const id = 'b' + hash(k + '|' + t.ref + '|' + t.party) + seen[k];
+      state.bank[id] = { id, date: t.date, amount: t.amount, ref: t.ref || '', party: t.party || '', text: t.text || '', st: t.st || null, src, updatedAt: now() };
+      added++;
+    }
+    let stOk = 0, stBad = [];
+    for (const s of statements || []) {
+      if (s.oldBal === null || s.newBal === null) continue;
+      const ok = s.oldBal + s.sum === s.newBal;
+      if (ok) stOk++; else stBad.push(s.no);
+      state.statements[s.iban + ':' + s.no] = { no: s.no, iban: s.iban, date: s.date, oldBal: s.oldBal, newBal: s.newBal, count: s.count, ok, updatedAt: now() };
+    }
+    return { added, skipped, statements: (statements || []).length, stOk, stBad };
+  }
+  function importSales(state, rows, src) {
+    let added = 0, skipped = 0;
+    for (const r of rows) {
+      const id = 's' + r.inv + '_' + r.date + '_' + r.gross;
+      if (state.sales[id]) { skipped++; continue; }
+      const o = Object.assign({ id, src, updatedAt: now() }, r);
+      // keep only a fingerprint of the customer (for trial conversion), never the name
+      o.cust = r.customer && !/walkin/i.test(r.customer) ? hash(norm(r.customer).replace(/\s+/g, ' ')) : null;
+      delete o.customer;
+      state.sales[id] = o; added++;
+    }
+    return { added, skipped };
+  }
+  function importVouchers(state, rows, src) {
+    let added = 0, skipped = 0;
+    for (const r of rows) {
+      const id = 'v' + r.inv + '_' + r.type + '_' + r.gross;
+      if (state.vouchers[id]) { skipped++; continue; }
+      state.vouchers[id] = Object.assign({ id, src, updatedAt: now() }, r); added++;
+    }
+    return { added, skipped };
+  }
+  // Classes: a new export replaces everything inside its date range (schedules change).
+  function importClasses(state, rows, src) {
+    if (!rows.length) return { added: 0, replaced: 0 };
+    const from = rows.reduce((a, r) => (r.date < a ? r.date : a), '9999');
+    const to = rows.reduce((a, r) => (r.date > a ? r.date : a), '0000');
+    let replaced = 0;
+    for (const c of live(state.classes)) if (c.date >= from && c.date <= to) { c.deleted = true; c.updatedAt = now(); replaced++; }
+    const seen = {}; let added = 0;
+    for (const r of rows) {
+      const k = r.date + '|' + r.start + '|' + r.title + '|' + r.trainer + '|' + r.cancelled;
+      seen[k] = (seen[k] || 0) + 1;
+      const id = 'c' + hash(k) + seen[k];
+      state.classes[id] = Object.assign({ id, src, updatedAt: now() }, r);
+      if (r.trainer && !r.cancelled) ensureInstructor(state, r.trainer);
+      added++;
+    }
+    return { added, replaced, from, to };
+  }
+
+  // ---------- sales product groups ----------
+  const PRODUCT_GROUPS = ['Trial classes', 'Drop-ins', 'Class packs', 'Memberships', 'Promotions', 'Yoga', 'Events & privates', 'Gift vouchers', 'Other'];
+  function productGroup(name) {
+    const n = norm(name);
+    if (/first/.test(n)) return 'Trial classes';
+    if (/membership/.test(n)) return 'Memberships';
+    if (/summer burn|promo|special/.test(n)) return 'Promotions';
+    if (/yoga/.test(n)) return 'Yoga';
+    if (/private|brunch|event|workshop|minis|certif|pop.?up/.test(n)) return 'Events & privates';
+    if (/^1 /.test(n)) return 'Drop-ins';
+    if (/^\d+ .*class/.test(n)) return 'Class packs';
+    return 'Other';
+  }
+
+  // ---------- money helpers ----------
+  const isTaught = (c, today) => !c.deleted && !c.cancelled && c.trainer && c.date <= today;
+  const isPlanned = (c, today) => !c.deleted && !c.cancelled && c.trainer && c.date > today;
+
+  // ---------- aggregate everything per month ----------
+  function aggregate(state, todayIso) {
+    const today = todayIso || new Date().toISOString().slice(0, 10);
+    const bank = live(state.bank).sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+    const sts = live(state.statements).sort((a, b) => (a.date < b.date ? -1 : 1));
+    const months = {};
+    const M = (m) => (months[m] = months[m] || {
+      m, cats: {}, groups: { in: 0, out: 0, setup: 0, tax: 0, fin: 0 }, net: 0, end: null,
+      sales: { gross: 0, net: 0, count: 0, refunds: 0, byGroup: {}, voucherRedeemed: 0 }, vouchers: { gross: 0, net: 0, count: 0 },
+      classes: { taught: 0, paidTaught: 0, attendees: 0, capacity: 0, planned: 0, byIns: {} },
+      ins: { expected: 0, paidNet: 0, payroll: 0, byIns: {} },
+      tx: 0,
+    });
+    // bank
+    let first = sts.length ? sts[0] : null;
+    let bal = first ? first.oldBal : 0;
+    const startDate = first ? first.date : (bank[0] && bank[0].date);
+    for (const t of bank) {
+      const c = categorize(state, t); t._c = c;
+      const mm = M(mk(t.date));
+      mm.cats[c.cat] = (mm.cats[c.cat] || 0) + t.amount;
+      mm.groups[CATS[c.cat] ? CATS[c.cat].group : 'out'] += t.amount;
+      mm.net += t.amount; mm.tx++;
+      bal += t.amount; mm.end = bal;
+      if (c.cat === 'instructors' || c.cat === 'payroll') {
+        const sm = M(serviceMonth(t));
+        if (c.cat === 'instructors') { sm.ins.paidNet += -t.amount; if (c.who) sm.ins.byIns[c.who] = sm.ins.byIns[c.who] || { classes: 0, expected: 0, paid: 0 }, sm.ins.byIns[c.who].paid += -t.amount; }
+        else sm.ins.payroll += -t.amount;
+      }
+    }
+    // sales (revenue report). Payments made with a studio gift voucher aren't new money: the voucher sale was.
+    for (const s of live(state.sales)) {
+      const mm = M(mk(s.date));
+      if (/^voucher$/i.test(s.method)) { mm.sales.voucherRedeemed += s.gross; continue; }
+      mm.sales.gross += s.gross; mm.sales.net += s.net; mm.sales.count += s.gross > 0 ? 1 : 0;
+      if (s.gross < 0) mm.sales.refunds += s.gross;
+      const g = productGroup(s.product);
+      mm.sales.byGroup[g] = mm.sales.byGroup[g] || { gross: 0, net: 0, count: 0 };
+      mm.sales.byGroup[g].gross += s.gross; mm.sales.byGroup[g].net += s.net; mm.sales.byGroup[g].count += s.gross > 0 ? 1 : s.gross < 0 ? -1 : 0;
+    }
+    for (const v of live(state.vouchers)) {
+      const mm = M(mk(v.date));
+      mm.vouchers.gross += v.gross; mm.vouchers.net += v.net; mm.vouchers.count += v.gross > 0 ? 1 : -1;
+      mm.sales.byGroup['Gift vouchers'] = mm.sales.byGroup['Gift vouchers'] || { gross: 0, net: 0, count: 0 };
+      const g = mm.sales.byGroup['Gift vouchers']; g.gross += v.gross; g.net += v.net; g.count += v.gross > 0 ? 1 : -1;
+      mm.sales.gross += v.gross; mm.sales.net += v.net;
+    }
+    // classes
+    const insById = {}; state.settings.instructors.forEach((i) => (insById[i.id] = i));
+    for (const c of live(state.classes)) {
+      if (c.cancelled || !c.trainer) continue;
+      const ins = findInstructor(state, c.trainer);
+      if (ins && ins.status === 'excluded') continue;
+      const mm = M(mk(c.date));
+      const paid = ins && ins.status === 'paid';
+      const key = ins ? ins.id : 'x' + slug(c.trainer);
+      if (c.date <= today) {
+        mm.classes.taught++; mm.classes.attendees += c.present; mm.classes.capacity += c.max;
+        const b = (mm.classes.byIns[key] = mm.classes.byIns[key] || { classes: 0, attendees: 0, capacity: 0 });
+        b.classes++; b.attendees += c.present; b.capacity += c.max;
+      } else mm.classes.planned++;
+      if (paid) {
+        if (c.date <= today) mm.classes.paidTaught++;
+        mm.ins.expected += ins.rate || 0;
+        const bi = (mm.ins.byIns[ins.id] = mm.ins.byIns[ins.id] || { classes: 0, expected: 0, paid: 0 });
+        bi.classes++; bi.expected += ins.rate || 0;
+      }
+    }
+    // fill gaps & balances
+    const keys = Object.keys(months).sort();
+    const startM = state.settings.startMonth || (startDate ? mk(startDate) : keys[0]);
+    const lastM = keys.length ? keys[keys.length - 1] : mk(today);
+    const list = startM ? monthRange(startM, lastM > mk(today) ? lastM : mk(today)).map((m) => M(m)) : [];
+    let run = first ? first.oldBal : 0;
+    for (const mm of list) { if (mm.end === null) mm.end = run; run = mm.end; mm.op = mm.groups.in + mm.groups.out; }
+    // statement check: balance at each statement date from the running total
+    const stChecks = sts.map((s) => s.ok);
+    const cash = list.length ? list.filter((m) => m.m <= mk(today)).slice(-1)[0].end : 0;
+    const lastBankDate = bank.length ? bank[bank.length - 1].date : null;
+    const lastStatement = sts.length ? sts[sts.length - 1] : null;
+    return { months: list, byMonth: months, cash, lastBankDate, lastStatement, statementsOk: stChecks.every(Boolean), statementCount: sts.length, today, bank };
+  }
+
+  // ---------- key figures & forecast ----------
+  function lastFullMonths(agg, n) {
+    const cur = mk(agg.today);
+    return agg.months.filter((m) => m.m < cur && m.tx > 0).slice(-n);
+  }
+  const avg = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
+
+  function onCostRatio(agg) {
+    // actual cash for instructors (net pay + payroll) vs expected gross from classes x rate, over recent complete months
+    const ms = lastFullMonths(agg, 4).filter((m) => m.ins.expected > 0 && (m.ins.paidNet + m.ins.payroll) > 0).slice(-3);
+    const e = ms.reduce((a, m) => a + m.ins.expected, 0), p = ms.reduce((a, m) => a + m.ins.paidNet + m.ins.payroll, 0);
+    return e > 0 ? p / e : 1;
+  }
+
+  // Forecast: months after the last bank data are estimated from the last 3 complete months.
+  // Instructor cash in a month pays for the month before, so planned classes in Eversports drive it.
+  function forecast(state, agg, n = 3) {
+    const ref = lastFullMonths(agg, 3);
+    const opIn = avg(ref.map((m) => m.groups.in));
+    const runCosts = avg(ref.map((m) => m.groups.out - (m.cats.instructors || 0) - (m.cats.payroll || 0)));
+    const insAvg = avg(ref.map((m) => (m.cats.instructors || 0) + (m.cats.payroll || 0)));
+    const repay = lastFullMonths(agg, 2).map((m) => m.cats.loan_repay || 0).filter((x) => x < 0);
+    const loan = repay.length ? repay[repay.length - 1] : 0;
+    const ratio = onCostRatio(agg);
+    const last = agg.lastBankDate || agg.today;
+    const lastM = mk(last);
+    const daysIn = (m) => new Date(+m.slice(0, 4), +m.slice(5, 7), 0).getDate();
+    const lastDay = +last.slice(8, 10);
+    let startM = lastDay >= daysIn(lastM) ? addMonths(lastM, 1) : lastM;
+    const prevEnd = agg.months.find((x) => x.m === addMonths(startM, -1));
+    let bal = prevEnd ? prevEnd.end : agg.cash;
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const m = addMonths(startM, i);
+      const prev = agg.byMonth[addMonths(m, -1)];
+      const plannedIns = prev && prev.ins.expected > 0 ? -prev.ins.expected * ratio : insAvg;
+      let inc = opIn, cost = runCosts + plannedIns + loan, partial = false;
+      const mm = agg.byMonth[m];
+      // current calendar month without bank data yet: Eversports sales so far, projected to month end
+      if (m === mk(agg.today) && mm && mm.sales.gross > 0 && !(mm.tx > 0)) {
+        const d = Math.max(1, +agg.today.slice(8, 10));
+        const otherIn = avg(ref.map((x) => (x.cats.terminal || 0) + (x.cats.other_in || 0)));
+        inc = mm.sales.gross * daysIn(m) / d + otherIn;
+      }
+      if (m === lastM && mm && mm.tx) {
+        // part of this month is already in the bank: actuals so far + the rest pro rata
+        partial = true;
+        const left = Math.max(0, (daysIn(m) - lastDay) / daysIn(m));
+        const doneIns = (mm.cats.instructors || 0) + (mm.cats.payroll || 0);
+        inc = mm.groups.in + opIn * left;
+        cost = (mm.groups.out - doneIns) + runCosts * left + (doneIns || plannedIns) + (mm.cats.loan_repay || loan) + (mm.groups.setup || 0);
+      }
+      bal += inc + cost;
+      out.push({ m, inc, cost, net: inc + cost, end: bal, plannedIns, partial });
+    }
+    const full = out.filter((x) => !x.partial);
+    const avgNet = avg(full.map((x) => x.net));
+    return { months: out, opIn, runCosts, insAvg, loan, ratio, avgNet };
+  }
+
+  // Share of trial-class buyers who later bought anything else (pack, drop-in, membership...)
+  function trialConversion(state) {
+    const byCust = {};
+    for (const s of live(state.sales)) {
+      if (!s.cust || s.gross <= 0 || /^voucher$/i.test(s.method)) continue;
+      (byCust[s.cust] = byCust[s.cust] || []).push(s);
+    }
+    const res = {};
+    for (const list of Object.values(byCust)) {
+      list.sort((a, b) => (a.date < b.date ? -1 : 1));
+      const t = list.find((s) => productGroup(s.product) === 'Trial classes');
+      if (!t) continue;
+      const m = mk(t.date);
+      const r = (res[m] = res[m] || { trials: 0, converted: 0 });
+      r.trials++;
+      if (list.some((s) => s.date >= t.date && s !== t && productGroup(s.product) !== 'Trial classes')) r.converted++;
+    }
+    return res;
+  }
+
+  function keyFigures(state, agg) {
+    const ref = lastFullMonths(agg, 3);
+    const burn = avg(ref.map((m) => m.op + (m.cats.loan_repay || 0)));
+    const fixed = avg(ref.map((m) => -m.groups.out));
+    const fc = forecast(state, agg);
+    const pace = fc.avgNet;
+    const runway = pace < 0 ? agg.cash / -pace : Infinity;
+    return { burn, pace, fixed, runway, buffer: fixed * (state.settings.bufferMonths || 3), ref, fc };
+  }
+
+  G.LL = { APP_VERSION, SCHEMA, CATS, GROUPS, BUILTIN_RULES, PRODUCT_GROUPS, defaultState, migrate, categorize, serviceMonth, importBank, importSales, importVouchers, importClasses, aggregate, forecast, keyFigures, trialConversion, onCostRatio, lastFullMonths, productGroup, findInstructor, ensureInstructor, trainerName, addMonths, monthRange, mk, live, slug, hash };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* Lab Ledger — end-to-end encrypted sync through a private GitHub Gist.
+   Data is gzipped and encrypted (AES-256-GCM, key from passphrase via PBKDF2) on the device. GitHub only ever sees ciphertext. */
+(function (G) {
+  'use strict';
+  const KEY = 'labledger:sync:v1';
+  const FILE = 'labledger.json';
+  const API = 'https://api.github.com/gists';
+  const b64 = (buf) => { let s = ''; const a = new Uint8Array(buf); for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000)); return btoa(s); };
+  const unb64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+
+  async function gzip(str) {
+    if (typeof CompressionStream === 'undefined') return { z: false, data: new TextEncoder().encode(str) };
+    const cs = new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'));
+    return { z: true, data: new Uint8Array(await new Response(cs).arrayBuffer()) };
+  }
+  async function gunzip(bytes) {
+    const ds = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    return await new Response(ds).text();
+  }
+  async function deriveKey(pass, salt) {
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 310000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+  }
+  const cfg = () => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { return null; } };
+  const saveCfg = (c) => { try { c ? localStorage.setItem(KEY, JSON.stringify(c)) : localStorage.removeItem(KEY); } catch (e) {} };
+  async function keyFromCfg(c) { return crypto.subtle.importKey('raw', unb64(c.key), 'AES-GCM', false, ['encrypt', 'decrypt']); }
+
+  async function encrypt(obj, key, saltB64) {
+    const { z, data } = await gzip(JSON.stringify(obj));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
+    return JSON.stringify({ app: 'lab-ledger', v: 1, z, salt: saltB64, iv: b64(iv), ct: b64(ct) });
+  }
+  async function decrypt(text, key) {
+    const f = JSON.parse(text);
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(f.iv) }, key, unb64(f.ct));
+    return JSON.parse(f.z ? await gunzip(new Uint8Array(pt)) : new TextDecoder().decode(pt));
+  }
+  async function gh(token, url, opts = {}) {
+    const r = await fetch(url, Object.assign({}, opts, { headers: Object.assign({ Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }, opts.headers || {}) }));
+    if (!r.ok) {
+      const msg = r.status === 401 ? 'GitHub refused the token (check it, and that it has the "gist" permission).'
+        : r.status === 404 ? 'Sync file not found. Check the Sync ID and that the token belongs to the studio GitHub account.'
+        : r.status === 403 ? 'GitHub says slow down (rate limit). Try again in a few minutes.' : 'GitHub error ' + r.status;
+      throw new Error(msg);
+    }
+    return r.json();
+  }
+  async function readFile(token, gist) {
+    const f = gist.files && gist.files[FILE];
+    if (!f) throw new Error('This gist is not a Lab Ledger sync file.');
+    if (!f.truncated) return f.content;
+    const r = await fetch(f.raw_url); return r.text();
+  }
+
+  const Sync = {
+    cfg, FILE,
+    on: () => !!cfg(),
+    async create(token, pass, state) {
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const key = await deriveKey(pass, salt);
+      const content = await encrypt(state, key, b64(salt));
+      const g = await gh(token, API, { method: 'POST', body: JSON.stringify({ description: 'Lab Ledger (encrypted)', public: false, files: { [FILE]: { content } } }) });
+      saveCfg({ token, gistId: g.id, salt: b64(salt), key: b64(await crypto.subtle.exportKey('raw', key)), last: Date.now() });
+      return g.id;
+    },
+    async connect(token, gistId, pass) {
+      const g = await gh(token, API + '/' + gistId.trim());
+      const text = await readFile(token, g);
+      const f = JSON.parse(text);
+      const key = await deriveKey(pass, unb64(f.salt));
+      let remote;
+      try { remote = await decrypt(text, key); } catch (e) { throw new Error('Wrong passphrase.'); }
+      saveCfg({ token, gistId: g.id, salt: f.salt, key: b64(await crypto.subtle.exportKey('raw', key)), last: Date.now() });
+      return remote;
+    },
+    async pull() {
+      const c = cfg(); if (!c) return null;
+      const g = await gh(c.token, API + '/' + c.gistId);
+      return decrypt(await readFile(c.token, g), await keyFromCfg(c));
+    },
+    async push(state) {
+      const c = cfg(); if (!c) return;
+      const content = await encrypt(state, await keyFromCfg(c), c.salt);
+      await gh(c.token, API + '/' + c.gistId, { method: 'PATCH', body: JSON.stringify({ files: { [FILE]: { content } } }) });
+      c.last = Date.now(); saveCfg(c);
+    },
+    disconnect() { saveCfg(null); },
+    // merge two states: per record, the newer edit wins
+    merge(a, b) {
+      if (!b) return a;
+      const out = JSON.parse(JSON.stringify(a));
+      for (const k of ['bank', 'statements', 'sales', 'vouchers', 'classes']) {
+        out[k] = out[k] || {};
+        for (const [id, r] of Object.entries(b[k] || {})) {
+          const l = out[k][id];
+          if (!l || (r.updatedAt || 0) > (l.updatedAt || 0)) out[k][id] = r;
+        }
+      }
+      if (b.settings && (b.settings.updatedAt || 0) > ((out.settings && out.settings.updatedAt) || 0)) out.settings = b.settings;
+      out.importLog = [...(a.importLog || []), ...(b.importLog || [])].filter((x, i, arr) => arr.findIndex((y) => y.id === x.id) === i).sort((x, y) => y.at - x.at).slice(0, 60);
+      return out;
+    },
+  };
+  G.Sync = Sync;
+})(window);
+
+</script>
+<script>
+/* Lab Ledger — interface */
+(function () {
+  'use strict';
+  const { CATS, GROUPS } = LL;
+  const STORE = 'labledger:data:v1', UIKEY = 'labledger:ui:v1';
+  const $ = (s, el = document) => el.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  // ---------- state ----------
+  let state = load();
+  let ui = Object.assign({ page: 'overview', cfAll: false, txMonth: '', txCat: '', txQ: '', teamMonth: '', salesNet: false }, (() => { try { return JSON.parse(localStorage.getItem(UIKEY)) || {}; } catch (e) { return {}; } })());
+  function load() { try { return LL.migrate(JSON.parse(localStorage.getItem(STORE))); } catch (e) { return LL.migrate(null); } }
+  function save(silent) {
+    try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { toast('Could not save on this device: ' + e.message); }
+    if (!silent) scheduleSync();
+  }
+  function saveUI() { try { localStorage.setItem(UIKEY, JSON.stringify(ui)); } catch (e) {} }
+  const today = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+
+  // ---------- formatting ----------
+  const nf0 = new Intl.NumberFormat('de-AT', { maximumFractionDigits: 0, minimumFractionDigits: 0 });
+  const nf2 = new Intl.NumberFormat('de-AT', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+  const eur = (c, dec) => (c < 0 ? '−' : '') + '€ ' + (dec ? nf2 : nf0).format(Math.abs(c) / 100);
+  const eurS = (c) => (c > 0 ? '+' : '') + eur(c);
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const mName = (m, long) => (long ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][+m.slice(5) - 1] : MON[+m.slice(5) - 1]) + ' ' + (long ? m.slice(0, 4) : "'" + m.slice(2, 4));
+  const dmy = (iso) => (iso ? iso.slice(8, 10) + '.' + iso.slice(5, 7) + '.' + iso.slice(0, 4) : '—');
+  const pct = (x) => (isFinite(x) ? Math.round(x * 100) + '%' : '—');
+  const cls = (c) => (c < 0 ? 'neg' : c > 0 ? 'pos' : '');
+
+  // ---------- toast ----------
+  let toastT;
+  function toast(html, ms = 4200) {
+    const t = $('#toast'); t.innerHTML = html; t.hidden = false;
+    clearTimeout(toastT); toastT = setTimeout(() => (t.hidden = true), ms);
+  }
+
+  // ---------- sync ----------
+  let syncT, syncing = false, syncErr = null;
+  function scheduleSync() { if (!Sync.on()) return; clearTimeout(syncT); syncT = setTimeout(syncNow, 2500); setSyncBadge('pending'); }
+  async function syncNow() {
+    if (!Sync.on() || syncing) return;
+    syncing = true; setSyncBadge('busy');
+    try {
+      const remote = await Sync.pull();
+      state = LL.migrate(Sync.merge(state, remote));
+      save(true);
+      await Sync.push(state);
+      syncErr = null; setSyncBadge('ok');
+      render();
+    } catch (e) { syncErr = e.message; setSyncBadge('err'); }
+    syncing = false;
+  }
+  function setSyncBadge(s) {
+    const b = $('#syncBadge'); if (!b) return;
+    if (!Sync.on()) { b.className = 'sync off'; b.textContent = 'Not synced'; b.title = 'Settings → Sync'; return; }
+    const map = { ok: ['ok', 'Synced'], busy: ['busy', 'Syncing…'], pending: ['busy', 'Saving…'], err: ['err', 'Sync problem'] };
+    const [c, t] = map[s] || map.ok; b.className = 'sync ' + c; b.textContent = t; b.title = syncErr || '';
+  }
+
+  // ---------- pages ----------
+  const PAGES = [
+    ['overview', 'Overview'], ['cashflow', 'Cash flow'], ['sales', 'Sales'], ['team', 'Team & classes'],
+    ['tx', 'Transactions'], ['import', 'Import'], ['settings', 'Settings'],
+  ];
+  let agg = null;
+  function render() {
+    agg = LL.aggregate(state, today());
+    $('#nav').innerHTML = PAGES.map(([k, l]) => `<button class="tab${ui.page === k ? ' on' : ''}" data-act="page" data-v="${k}">${l}${k === 'tx' && unsorted().length ? ` <span class="dot">${unsorted().length}</span>` : ''}</button>`).join('');
+    const empty = !Object.keys(state.bank).length && !Object.keys(state.sales).length;
+    const v = empty && !['import', 'settings'].includes(ui.page) ? viewWelcome() : ({ overview: viewOverview, cashflow: viewCashflow, sales: viewSales, team: viewTeam, tx: viewTx, import: viewImport, settings: viewSettings }[ui.page] || viewOverview)();
+    $('#main').innerHTML = v;
+    setSyncBadge(syncErr ? 'err' : 'ok');
+    afterRender();
+  }
+  const unsorted = () => (agg ? agg.bank.filter((t) => t._c.cat === 'uncat') : []);
+  const opMonths = () => {
+    const open = LL.mk(state.settings.openingDate);
+    return agg.months.filter((m) => m.m >= LL.addMonths(open, 0));
+  };
+
+  function viewWelcome() {
+    return `<section class="hero-empty">
+      <h1>Welcome to <em>Lab Ledger</em></h1>
+      <p>Your studio finances in one place: cash, sales, instructors and what's ahead. Everything stays on this device and is shared with your co-owner only through encrypted sync.</p>
+      <div class="row gap">
+        <button class="btn primary" data-act="page" data-v="import">Import files</button>
+        <button class="btn" data-act="page" data-v="settings">Connect sync</button>
+      </div>
+      <p class="muted small">Already set up on another device? Connect sync in Settings and your data arrives by itself.</p>
+    </section>`;
+  }
+
+  // ---------- Overview ----------
+  function viewOverview() {
+    const kf = LL.keyFigures(state, agg);
+    const fc = kf.fc;
+    const last = LL.lastFullMonths(agg, 1)[0];
+    const prev = last ? agg.months.find((m) => m.m === LL.addMonths(last.m, -1)) : null;
+    const runway = kf.runway;
+    const runTxt = runway === Infinity ? 'Cash positive' : runway < 1 ? 'Under 1 month' : `≈ ${runway < 10 ? runway.toFixed(1).replace('.', ',') : Math.round(runway)} months`;
+    const bufGap = agg.cash - kf.buffer;
+    const lowPoint = fc.months.find((m) => m.end < 0);
+    const attn = attention(kf);
+    return `
+    <div class="tiles">
+      <div class="tile hero">
+        <div class="label">Cash in the bank${help('Balance of the business account on the last day you have bank data for. Import the latest statement to update it.')}</div>
+        <div class="big">${eur(agg.cash)}</div>
+        <div class="sub">on ${dmy(agg.lastBankDate)}${agg.statementsOk ? ` · <span class="okc">✓ matches ${agg.statementCount} statements</span>` : ' · <span class="negc">check statements</span>'}</div>
+      </div>
+      <div class="tile">
+        <div class="label">${last ? mName(last.m, true) : 'Last month'} result${help('Money in (Eversports payouts, card terminal, other income) minus running costs. Build-out, tax office and loan money are left out so you see how the studio itself is doing.')}</div>
+        <div class="big ${cls(last ? last.op : 0)}">${last ? eurS(last.op) : '—'}</div>
+        <div class="sub">${last ? `${eur(last.groups.in)} in · ${eur(-last.groups.out)} out` : ''}${prev && prev.tx ? ` · ${mName(prev.m)}: ${eurS(prev.op)}` : ''}</div>
+      </div>
+      <div class="tile">
+        <div class="label">Runway${help('How long the cash lasts at the pace expected for the next months: running costs, instructor pay from the Eversports schedule, and the loan repayment, against average income.')}</div>
+        <div class="big ${runway < 3 ? 'negc' : runway < 6 ? 'warnc' : ''}">${runTxt}</div>
+        <div class="sub">${fc.avgNet < 0 ? `expected ${eur(fc.avgNet)} a month incl. loan` : 'income covers costs and loan'}</div>
+      </div>
+      <div class="tile">
+        <div class="label">Safety buffer${help(`Target: ${state.settings.bufferMonths} months of running costs in the bank (change it in Settings).`)}</div>
+        <div class="big ${bufGap < 0 ? 'warnc' : 'okc'}">${bufGap < 0 ? eur(bufGap) : 'Covered'}</div>
+        <div class="sub">target ${eur(kf.buffer)} (${state.settings.bufferMonths} × ${eur(kf.fixed)})</div>
+      </div>
+    </div>
+
+    ${attn.length ? `<div class="card attn"><h2>Needs a look</h2><ul>${attn.map((a) => `<li>${a}</li>`).join('')}</ul></div>` : ''}
+
+    <div class="grid2">
+      <div class="card">
+        <h2>Money in vs running costs${help('Per month since opening. Running costs include rent, instructors, social security, fees and supplies. Build-out, VAT refunds and loan money are not included.')}</h2>
+        <div class="legend"><span><i class="sw sw-in"></i>Money in</span><span><i class="sw sw-out"></i>Running costs</span></div>
+        ${barsInOut(opMonths().filter((m) => m.tx > 0))}
+      </div>
+      <div class="card">
+        <h2>Cash in the bank${help('Month-end balance from shortly before opening, then the forecast (dashed). The full history since the account was opened is under Cash flow → Whole history.')}</h2>
+        ${lineCash(agg.months.filter((m) => m.m <= LL.mk(agg.lastBankDate || today()) && m.m >= LL.addMonths(LL.mk(state.settings.openingDate), -2)), fc.months)}
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Next months${help('Income: average of the last 3 complete months (for the current month: Eversports sales so far, projected). Instructors: classes planned in Eversports × rate, plus social security at the rate you actually paid recently. Loan: the last repayment.')}</h2>
+      <div class="tablewrap"><table class="t">
+        <thead><tr><th>Month</th><th class="r">In</th><th class="r">Out</th><th class="r hide-sm">Result</th><th class="r">Cash at end</th></tr></thead>
+        <tbody>${fc.months.map((f) => `<tr><td class="nw">${mName(f.m)}${f.partial ? ' <span class="muted small">(partly actual)</span>' : ''}</td><td class="r">${eur(f.inc)}</td><td class="r">${eur(f.cost)}</td><td class="r hide-sm ${cls(f.net)}">${eurS(f.net)}</td><td class="r ${f.end < 0 ? 'negc b' : ''}">${eur(f.end)}</td></tr>`).join('')}</tbody>
+      </table></div>
+      <p class="muted small">Includes the loan repayment of ${eur(-fc.loan)} a month${fc.loan ? '' : ' (none seen yet)'} and instructor social security at ${pct(fc.ratio - 1)} on top of class pay. ${lowPoint ? `<b class="negc">At this pace the account goes below zero in ${mName(lowPoint.m, true)}.</b>` : ''}</p>
+    </div>`;
+  }
+  function attention(kf) {
+    const out = [];
+    const u = unsorted();
+    if (u.length) out.push(`<a data-act="page" data-v="tx" data-cat="uncat">${u.length} payment${u.length > 1 ? 's' : ''} not sorted yet</a> (e.g. ${esc(u[0].party)} ${eur(u[0].amount)})`);
+    const unk = state.settings.instructors.filter((i) => !i.deleted && i.status === 'unknown');
+    if (unk.length) out.push(`New in the schedule: ${unk.map((i) => esc(i.name)).join(', ')}. <a data-act="page" data-v="settings">Paid or not?</a>`);
+    if (agg.lastBankDate) {
+      const age = (new Date(today()) - new Date(agg.lastBankDate)) / 864e5;
+      if (age > 20) out.push(`Bank data ends ${dmy(agg.lastBankDate)}. <a data-act="page" data-v="import">Import the latest statement</a>.`);
+    }
+    const lastSale = LL.live(state.sales).reduce((a, s) => (s.date > a ? s.date : a), '');
+    if (lastSale && (new Date(today()) - new Date(lastSale)) / 864e5 > 20) out.push(`Eversports sales end ${dmy(lastSale)}. <a data-act="page" data-v="import">Import the revenue report</a>.`);
+    if (!agg.statementsOk) out.push('A bank statement doesn\'t add up. Re-import it as PDF.');
+    return out;
+  }
+
+  // ---------- charts (SVG, hand-made) ----------
+  function chartW(full) {
+    const vw = Math.min(window.innerWidth, 1180);
+    if (full || window.innerWidth < 760) return Math.max(300, vw - 32 - (window.innerWidth < 520 ? 26 : 38));
+    return Math.max(300, (vw - 32 - 16) / 2 - 38);
+  }
+  function niceMax(v) { if (v <= 0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); const n = v / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p; }
+  function kfmt(c) { const v = c / 100; return Math.abs(v) >= 1000 ? nf0.format(Math.round(v / 1000)) + 'k' : nf0.format(v); }
+  function barsInOut(ms) {
+    if (!ms.length) return '<p class="muted">No months yet.</p>';
+    const W = chartW(), H = 230, L = 44, B = 26, T = 10;
+    const max = niceMax(Math.max(...ms.map((m) => Math.max(m.groups.in, -m.groups.out))));
+    const cw = (W - L - 6) / ms.length, bw = Math.min(26, (cw - 10) / 2);
+    const y = (v) => T + (H - T - B) * (1 - v / max);
+    let g = '';
+    for (let i = 0; i <= 4; i++) { const v = (max * i) / 4; g += `<line class="grid" x1="${L}" x2="${W}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${kfmt(v)}</text>`; }
+    ms.forEach((m, i) => {
+      const cx = L + cw * i + cw / 2;
+      const hi = y(0) - y(m.groups.in), ho = y(0) - y(-m.groups.out);
+      g += `<g class="hov" data-tip="${esc(`<b>${mName(m.m, true)}</b><br>Money in ${eur(m.groups.in)}<br>Running costs ${eur(-m.groups.out)}<br>Result ${eurS(m.op)}`)}">
+        <rect class="hit" x="${cx - cw / 2}" y="${T}" width="${cw}" height="${H - T - B}"/>
+        ${bar(cx - bw - 1, y(0), bw, hi, 'in')}${bar(cx + 1, y(0), bw, ho, 'out')}
+        <text class="ax" x="${cx}" y="${H - 8}" text-anchor="middle">${MON[+m.m.slice(5) - 1]}</text></g>`;
+    });
+    return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="Money in and running costs per month">${g}<line class="base" x1="${L}" x2="${W}" y1="${y(0)}" y2="${y(0)}"/></svg>`;
+  }
+  function bar(x, base, w, h, c) {
+    if (h <= 0) return '';
+    const r = Math.min(4, h, w / 2);
+    return `<path class="b-${c}" d="M${x},${base} V${base - h + r} Q${x},${base - h} ${x + r},${base - h} H${x + w - r} Q${x + w},${base - h} ${x + w},${base - h + r} V${base} Z"/>`;
+  }
+  function lineCash(ms, fc) {
+    if (!ms.length) return '<p class="muted">No bank data yet.</p>';
+    const pts = ms.map((m) => ({ m: m.m, v: m.end, f: false }));
+    const all = [...pts, ...fc.filter((f) => f.m > pts[pts.length - 1].m).map((f) => ({ m: f.m, v: f.end, f: true }))];
+    const W = chartW(), H = 230, L = 50, B = 26, T = 10, R = 8;
+    const hiV = Math.max(...all.map((p) => p.v), 1), loV = Math.min(0, ...all.map((p) => p.v));
+    const stepV = niceMax((hiV - loV) / 4);
+    const lo = Math.floor(loV / stepV) * stepV, maxV = Math.max(lo + stepV, Math.ceil(hiV / stepV) * stepV);
+    const x = (i) => L + ((W - L - R) * i) / Math.max(1, all.length - 1);
+    const y = (v) => T + (H - T - B) * (1 - (v - lo) / (maxV - lo));
+    let g = '';
+    for (let v = lo; v <= maxV + 1; v += stepV) { g += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${kfmt(v)}</text>`; }
+    if (lo < 0) g += `<line class="zero" x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}"/>`;
+    const real = all.filter((p) => !p.f);
+    g += `<path class="ln" d="${real.map((p, i) => (i ? 'L' : 'M') + x(i) + ',' + y(p.v)).join(' ')}"/>`;
+    const fi = all.findIndex((p) => p.f);
+    if (fi > 0) g += `<path class="ln dash" d="${all.slice(fi - 1).map((p, j) => (j ? 'L' : 'M') + x(fi - 1 + j) + ',' + y(p.v)).join(' ')}"/>`;
+    const step = Math.ceil(all.length / Math.max(3, Math.floor(W / 70)));
+    all.forEach((p, i) => {
+      if (i % step === 0 || i === all.length - 1) g += `<text class="ax" x="${x(i)}" y="${H - 8}" text-anchor="middle">${MON[+p.m.slice(5) - 1]}${p.m.slice(5) === '01' || i === 0 ? " '" + p.m.slice(2, 4) : ''}</text>`;
+      const cw = (W - L - R) / Math.max(1, all.length - 1);
+      g += `<g class="hov" data-tip="${esc(`<b>${mName(p.m, true)}</b><br>${p.f ? 'Forecast ' : 'Month end '}${eur(p.v)}`)}"><rect class="hit" x="${x(i) - cw / 2}" y="${T}" width="${cw}" height="${H - T - B}"/><circle class="pt${p.f ? ' f' : ''}" cx="${x(i)}" cy="${y(p.v)}" r="4"/></g>`;
+    });
+    return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="Cash in the bank per month">${g}</svg>`;
+  }
+  function barsSingle(ms, val, tip) {
+    if (!ms.length) return '<p class="muted">No data yet.</p>';
+    const W = chartW(true), H = 220, L = 44, B = 26, T = 10;
+    const max = niceMax(Math.max(...ms.map(val), 1));
+    const cw = (W - L - 6) / ms.length, bw = Math.min(34, cw - 12);
+    const y = (v) => T + (H - T - B) * (1 - v / max);
+    let g = '';
+    for (let i = 0; i <= 4; i++) { const v = (max * i) / 4; g += `<line class="grid" x1="${L}" x2="${W}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${kfmt(v)}</text>`; }
+    ms.forEach((m, i) => {
+      const cx = L + cw * i + cw / 2;
+      g += `<g class="hov" data-tip="${esc(tip(m))}"><rect class="hit" x="${cx - cw / 2}" y="${T}" width="${cw}" height="${H - T - B}"/>${bar(cx - bw / 2, y(0), bw, y(0) - y(Math.max(0, val(m))), 'in')}<text class="ax" x="${cx}" y="${H - 8}" text-anchor="middle">${MON[+m.m.slice(5) - 1]}</text></g>`;
+    });
+    return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img">${g}<line class="base" x1="${L}" x2="${W}" y1="${y(0)}" y2="${y(0)}"/></svg>`;
+  }
+  const help = (t) => ` <button class="q" data-act="help" data-tip="${esc(t)}" aria-label="What is this?">?</button>`;
+
+  // ---------- Cash flow ----------
+  function viewCashflow() {
+    const lastBank = LL.mk(agg.lastBankDate || today());
+    let ms = agg.months.filter((m) => m.m <= lastBank);
+    if (!ui.cfAll) ms = ms.filter((m) => m.m >= LL.addMonths(LL.mk(state.settings.openingDate), -1));
+    const catsBy = (grp) => Object.keys(CATS).filter((k) => CATS[k].group === grp && ms.some((m) => m.cats[k]));
+    const cell = (m, k) => { const v = m.cats[k] || 0; return `<td class="r ${cls(v)}">${v ? `<a data-act="drill" data-m="${m.m}" data-cat="${k}">${eur(v)}</a>` : '<span class="muted">·</span>'}</td>`; };
+    const rows = (grp) => catsBy(grp).map((k) => `<tr><th class="rl">${CATS[k].label}</th>${ms.map((m) => cell(m, k)).join('')}<td class="r tot ${cls(ms.reduce((a, m) => a + (m.cats[k] || 0), 0))}">${eur(ms.reduce((a, m) => a + (m.cats[k] || 0), 0))}</td></tr>`).join('');
+    const sum = (label, f, cl = '') => `<tr class="sum ${cl}"><th class="rl">${label}</th>${ms.map((m) => `<td class="r ${cls(f(m))}">${eur(f(m))}</td>`).join('')}<td class="r tot ${cls(ms.reduce((a, m) => a + f(m), 0))}">${eur(ms.reduce((a, m) => a + f(m), 0))}</td></tr>`;
+    const head = (t) => `<tr class="gh"><th class="rl" colspan="${ms.length + 2}">${t}</th></tr>`;
+    return `<div class="card">
+      <div class="row between wrap"><h2>Cash flow by month${help('Every euro that moved on the business account, sorted. Tap an amount to see the payments behind it.')}</h2>
+      <div class="seg"><button class="${!ui.cfAll ? 'on' : ''}" data-act="cfAll" data-v="0">Since opening</button><button class="${ui.cfAll ? 'on' : ''}" data-act="cfAll" data-v="1">Whole history</button></div></div>
+      <div class="tablewrap sticky"><table class="t cf">
+        <thead><tr><th class="rl"></th>${ms.map((m) => `<th class="r">${mName(m.m)}</th>`).join('')}<th class="r">Total</th></tr></thead>
+        <tbody>
+          ${head('Money in')}${rows('in')}${sum('Total money in', (m) => m.groups.in)}
+          ${head('Running costs')}${rows('out')}${sum('Total running costs', (m) => m.groups.out)}
+          ${sum('Operating result', (m) => m.op, 'strong')}
+          ${catsBy('setup').length ? head('One-off build-out') + rows('setup') : ''}
+          ${catsBy('tax').length ? head('Tax office') + rows('tax') : ''}
+          ${catsBy('fin').length ? head('Financing') + rows('fin') : ''}
+          ${sum('Net change', (m) => m.net, 'strong')}
+          <tr class="sum strong"><th class="rl">Cash at month end</th>${ms.map((m) => `<td class="r">${eur(m.end)}</td>`).join('')}<td></td></tr>
+        </tbody></table></div>
+      <p class="muted small">Months up to ${dmy(agg.lastBankDate)}, the last day with bank data.</p>
+    </div>`;
+  }
+
+  // ---------- Sales ----------
+  function viewSales() {
+    const ms = agg.months.filter((m) => m.sales.gross || m.sales.count || m.vouchers.count);
+    const conv = LL.trialConversion(state);
+    const groups = LL.PRODUCT_GROUPS.filter((g) => ms.some((m) => m.sales.byGroup[g]));
+    const v = (o) => (o ? (ui.salesNet ? o.net : o.gross) : 0);
+    const last = ms.filter((m) => m.m < LL.mk(today())).slice(-1)[0];
+    const totalNow = ms.find((m) => m.m === LL.mk(today()));
+    return `<div class="tiles">
+        <div class="tile"><div class="label">${last ? mName(last.m, true) : ''} sales</div><div class="big">${last ? eur(v(last.sales)) : '—'}</div><div class="sub">${ui.salesNet ? 'net of VAT' : 'incl. VAT'}</div></div>
+        <div class="tile"><div class="label">${mName(LL.mk(today()), true)} so far</div><div class="big">${totalNow ? eur(v(totalNow.sales)) : '—'}</div><div class="sub">until ${dmy(LL.live(state.sales).reduce((a, s) => (s.date > a ? s.date : a), ''))}</div></div>
+        <div class="tile"><div class="label">Trial → bought more${help('Of the people whose first purchase was a trial class in that month, how many bought something else afterwards (drop-in, pack, membership…). Recent months look lower because people haven\'t had time yet.')}</div><div class="big">${last && conv[last.m] ? pct(conv[last.m].converted / conv[last.m].trials) : '—'}</div><div class="sub">${last && conv[last.m] ? `${conv[last.m].converted} of ${conv[last.m].trials} trial buyers in ${mName(last.m)}` : ''}</div></div>
+      </div>
+      <div class="card">
+        <div class="row between wrap"><h2>Sales per month${help('From the Eversports revenue report plus gift voucher sales. Payments made with a studio gift voucher are left out, because the voucher sale already counted.')}</h2>
+        <div class="seg"><button class="${!ui.salesNet ? 'on' : ''}" data-act="salesNet" data-v="0">Incl. VAT</button><button class="${ui.salesNet ? 'on' : ''}" data-act="salesNet" data-v="1">Net of VAT</button></div></div>
+        ${barsSingle(ms, (m) => v(m.sales), (m) => `<b>${mName(m.m, true)}</b><br>Sales ${eur(v(m.sales))}`)}
+        <div class="tablewrap sticky"><table class="t cf">
+          <thead><tr><th class="rl"></th>${ms.map((m) => `<th class="r">${mName(m.m)}</th>`).join('')}</tr></thead>
+          <tbody>
+          ${groups.map((g) => `<tr><th class="rl">${g}</th>${ms.map((m) => { const o = m.sales.byGroup[g]; return `<td class="r">${o ? eur(v(o)) + `<div class="muted small">${o.count}×</div>` : '<span class="muted">·</span>'}</td>`; }).join('')}</tr>`).join('')}
+          <tr class="sum strong"><th class="rl">Total sales</th>${ms.map((m) => `<td class="r">${eur(v(m.sales))}</td>`).join('')}</tr>
+          <tr><th class="rl">of which refunds</th>${ms.map((m) => `<td class="r ${cls(m.sales.refunds)}">${m.sales.refunds ? eur(m.sales.refunds) : '<span class="muted">·</span>'}</td>`).join('')}</tr>
+          <tr><th class="rl">Paid with gift voucher${help('Classes paid with a studio voucher. Not new money: shown for information.')}</th>${ms.map((m) => `<td class="r muted">${m.sales.voucherRedeemed ? eur(m.sales.voucherRedeemed) : '·'}</td>`).join('')}</tr>
+          <tr class="gh"><th class="rl" colspan="${ms.length + 1}">Compared with the bank</th></tr>
+          <tr><th class="rl">Eversports payouts${help('What Stripe/Eversports actually paid into the bank that month. It differs from sales by timing (payouts run weekly) and by in-studio card payments, which arrive through SumUp.')}</th>${ms.map((m) => `<td class="r">${m.cats.sales ? eur(m.cats.sales) : '<span class="muted">·</span>'}</td>`).join('')}</tr>
+          <tr><th class="rl">Card terminal (SumUp)</th>${ms.map((m) => `<td class="r">${m.cats.terminal ? eur(m.cats.terminal) : '<span class="muted">·</span>'}</td>`).join('')}</tr>
+          <tr><th class="rl">Eversports fees</th>${ms.map((m) => `<td class="r ${cls(m.cats.platform || 0)}">${m.cats.platform ? eur(m.cats.platform) : '<span class="muted">·</span>'}</td>`).join('')}</tr>
+          <tr><th class="rl">Fees as % of sales</th>${ms.map((m) => `<td class="r muted">${m.cats.platform && m.sales.gross ? pct(-m.cats.platform / m.sales.gross) : '·'}</td>`).join('')}</tr>
+          <tr class="gh"><th class="rl" colspan="${ms.length + 1}">Trial classes</th></tr>
+          <tr><th class="rl">New trial buyers</th>${ms.map((m) => `<td class="r">${conv[m.m] ? conv[m.m].trials : '·'}</td>`).join('')}</tr>
+          <tr><th class="rl">… who bought more</th>${ms.map((m) => `<td class="r">${conv[m.m] ? `${conv[m.m].converted} <span class="muted small">(${pct(conv[m.m].converted / conv[m.m].trials)})</span>` : '·'}</td>`).join('')}</tr>
+          </tbody></table></div>
+      </div>`;
+  }
+
+  // ---------- Team & classes ----------
+  function viewTeam() {
+    const ins = state.settings.instructors.filter((i) => !i.deleted);
+    const byId = Object.fromEntries(ins.map((i) => [i.id, i]));
+    const cm = agg.months.filter((m) => m.classes.taught || m.classes.planned || m.ins.expected || m.ins.paidNet);
+    if (!cm.length) return `<div class="card"><h2>Team & classes</h2><p class="muted">Import the Eversports “Activity overview of all appointments” to see classes and instructor pay.</p></div>`;
+    const cur = LL.mk(today());
+    if (!ui.teamMonth || !cm.find((m) => m.m === ui.teamMonth)) ui.teamMonth = cm.filter((m) => m.m <= cur).slice(-1)[0]?.m || cm[0].m;
+    const M = agg.byMonth[ui.teamMonth];
+    const ratio = LL.onCostRatio(agg);
+    const ids = new Set([...Object.keys(M.classes.byIns), ...Object.keys(M.ins.byIns)]);
+    const rows = [...ids].map((id) => {
+      const i = byId[id]; const c = M.classes.byIns[id] || { classes: 0, attendees: 0, capacity: 0 }; const p = M.ins.byIns[id] || { classes: 0, expected: 0, paid: 0 };
+      return { id, name: i ? i.name : id.replace(/^x/, ''), status: i ? i.status : 'unknown', classes: Math.max(c.classes, p.classes), taught: c.classes, att: c.attendees, cap: c.capacity, expected: p.expected, paid: p.paid };
+    }).sort((a, b) => (a.status === 'paid') === (b.status === 'paid') ? b.classes - a.classes : a.status === 'paid' ? -1 : 1);
+    const stLabel = { paid: 'paid', unpaid: 'unpaid', unknown: 'not set', excluded: '' };
+    const fut = M.m > cur || (M.m === cur && M.classes.planned);
+    return `<div class="card">
+      <div class="row between wrap"><h2>Instructors${help('Classes from the Eversports activity export. Expected pay = classes × rate (Settings). Paid = what left the bank for that month (payroll is paid early the following month).')}</h2>
+        <div class="chips">${cm.map((m) => `<button class="chip${m.m === ui.teamMonth ? ' on' : ''}" data-act="teamMonth" data-v="${m.m}">${mName(m.m)}${m.m > cur ? ' · plan' : ''}</button>`).join('')}</div></div>
+      <div class="tablewrap"><table class="t">
+        <thead><tr><th>Instructor</th><th class="r">Classes</th><th class="r">Avg. guests</th><th class="r">Full</th><th class="r">Expected pay</th><th class="r">Paid (bank)</th></tr></thead>
+        <tbody>${rows.map((r) => `<tr class="${r.status !== 'paid' ? 'dim' : ''}"><td>${esc(r.name)} ${r.status !== 'paid' ? `<span class="tag">${stLabel[r.status] || ''}</span>` : ''}</td><td class="r">${r.classes}${r.taught < r.classes ? ` <span class="muted small">(${r.classes - r.taught} planned)</span>` : ''}</td><td class="r">${r.taught ? nf2.format(r.att / r.taught).replace(/,0+$/, '') : '·'}</td><td class="r">${r.cap ? pct(r.att / r.cap) : '·'}</td><td class="r">${r.status === 'paid' ? eur(r.expected) : '·'}</td><td class="r">${r.paid ? eur(r.paid, true) : '<span class="muted">·</span>'}</td></tr>`).join('')}</tbody>
+        <tfoot><tr class="sum"><th>Total</th><th class="r">${M.classes.taught + M.classes.planned}</th><th class="r">${M.classes.taught ? nf2.format(M.classes.attendees / M.classes.taught) : '·'}</th><th class="r">${M.classes.capacity ? pct(M.classes.attendees / M.classes.capacity) : '·'}</th><th class="r">${eur(M.ins.expected)}</th><th class="r">${M.ins.paidNet ? eur(M.ins.paidNet, true) : '·'}</th></tr>
+        <tr><td colspan="5">Social security & payroll tax for ${mName(M.m)}</td><td class="r">${M.ins.payroll ? eur(M.ins.payroll, true) : fut || !M.ins.paidNet ? `<span class="muted">≈ ${eur(M.ins.expected * (ratio - 1))}</span>` : '·'}</td></tr>
+        <tr class="sum strong"><td colspan="4">Instructor cost${fut || !M.ins.paidNet ? ' (expected)' : ''}</td><td class="r">${eur(M.ins.expected * ratio)}</td><td class="r">${M.ins.paidNet ? eur(M.ins.paidNet + M.ins.payroll) : '·'}</td></tr></tfoot>
+      </table></div>
+      <p class="muted small">“Paid” is net pay; payroll tax and social security come on top (recently ${pct(ratio - 1)} of class pay). ${M.m >= LL.addMonths(LL.mk(agg.lastBankDate || today()), 0) ? `Pay for ${mName(M.m)} shows once the bank statement for ${mName(LL.addMonths(M.m, 1))} is imported.` : ''}</p>
+    </div>
+    <div class="card">
+      <h2>Classes per month</h2>
+      <div class="tablewrap"><table class="t">
+        <thead><tr><th>Month</th><th class="r">Classes</th><th class="r">by paid team</th><th class="r">Guests</th><th class="r">Avg. per class</th><th class="r">Full</th><th class="r">Instructor cost</th><th class="r">Cost per guest</th></tr></thead>
+        <tbody>${cm.map((m) => { const cost = m.ins.paidNet ? m.ins.paidNet + m.ins.payroll : m.ins.expected * ratio; const est = !m.ins.paidNet; return `<tr><td>${mName(m.m, true)}</td><td class="r">${m.classes.taught}${m.classes.planned ? ` <span class="muted small">+${m.classes.planned} planned</span>` : ''}</td><td class="r">${m.classes.paidTaught}</td><td class="r">${m.classes.attendees || '·'}</td><td class="r">${m.classes.taught ? nf2.format(m.classes.attendees / m.classes.taught) : '·'}</td><td class="r">${m.classes.capacity ? pct(m.classes.attendees / m.classes.capacity) : '·'}</td><td class="r">${est ? '≈ ' : ''}${eur(cost)}</td><td class="r">${m.classes.attendees && !m.classes.planned ? (est ? '≈ ' : '') + eur(cost / m.classes.attendees, true) : '·'}</td></tr>`; }).join('')}</tbody>
+      </table></div>
+    </div>`;
+  }
+
+  // ---------- Transactions ----------
+  function viewTx() {
+    const months = [...new Set(agg.bank.map((t) => LL.mk(t.date)))].sort().reverse();
+    const q = (ui.txQ || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    let list = agg.bank.slice().reverse();
+    if (ui.txMonth) list = list.filter((t) => LL.mk(t.date) === ui.txMonth);
+    if (ui.txCat) list = list.filter((t) => t._c.cat === ui.txCat);
+    if (q) list = list.filter((t) => (t.party + ' ' + t.text + ' ' + (CATS[t._c.cat] || {}).label).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').includes(q));
+    const total = list.reduce((a, t) => a + t.amount, 0);
+    const paid = state.settings.instructors.filter((i) => !i.deleted && i.status === 'paid');
+    const opts = (sel) => Object.entries(GROUPS).map(([g, gl]) => `<optgroup label="${gl}">${Object.entries(CATS).filter(([, c]) => c.group === g).map(([k, c]) => `<option value="${k}"${k === sel ? ' selected' : ''}>${c.label}</option>`).join('')}</optgroup>`).join('');
+    const shown = list.slice(0, 400);
+    return `<div class="card">
+      <div class="filters">
+        <div class="search"><input id="txQ" type="search" placeholder="Search name, reference, category" value="${esc(ui.txQ)}"><button class="x" data-act="txClear" aria-label="Clear">×</button></div>
+        <select data-act="txMonth"><option value="">All months</option>${months.map((m) => `<option value="${m}"${m === ui.txMonth ? ' selected' : ''}>${mName(m, true)}</option>`).join('')}</select>
+        <select data-act="txCat"><option value="">All categories</option>${opts(ui.txCat)}</select>
+      </div>
+      <p class="muted small">${list.length} payments · total ${eur(total, true)}${list.length > shown.length ? ` · showing the latest ${shown.length}` : ''}</p>
+      <div class="txlist">${shown.map((t) => `
+        <div class="tx${t._c.cat === 'uncat' ? ' warn' : ''}">
+          <div class="tx-main"><div class="tx-name">${esc(t.party || t.ref)}</div><div class="tx-meta">${dmy(t.date)} · ${esc((t.ref || '').slice(0, 60))}${t.note ? ' · ' + esc(t.note) : ''}</div></div>
+          <div class="tx-amt ${cls(t.amount)}">${eur(t.amount, true)}</div>
+          <div class="tx-cat"><select data-act="setCat" data-id="${t.id}" aria-label="Category">${opts(t._c.cat)}</select>
+          ${t._c.cat === 'instructors' ? `<select data-act="setWho" data-id="${t.id}" aria-label="Instructor"><option value="">Who?</option>${paid.map((i) => `<option value="${i.id}"${i.id === t._c.who ? ' selected' : ''}>${esc(i.name)}</option>`).join('')}</select>` : ''}
+          ${t._c.manual ? '<span class="tag">set by you</span>' : ''}</div>
+        </div>`).join('') || '<p class="muted">Nothing found.</p>'}</div>
+    </div>`;
+  }
+
+  // ---------- Import ----------
+  function viewImport() {
+    const log = (state.importLog || []).slice(0, 12);
+    return `<div class="card">
+      <h2>Import files</h2>
+      <label class="drop" id="drop">
+        <input type="file" id="file" multiple accept=".pdf,.csv,.json">
+        <b>Drop files here or tap to choose</b>
+        <span class="muted small">Several at once is fine. Anything already imported is skipped. Files are read on this device and never uploaded.</span>
+      </label>
+      <div id="importResult"></div>
+    </div>
+    <div class="card">
+      <h2>Once a month (about 5 minutes)</h2>
+      <ol class="steps">
+        <li><b>Bank: George Business</b> → account → <i>Kontoauszüge</i> → download the statement PDF of the month. Statements are checked against their opening and closing balance.</li>
+        <li><b>Eversports → Financials → Reports → Revenue report (based on income & expenses)</b>, period: the month (or the whole year; duplicates are skipped).</li>
+        <li><b>Eversports → Financials → Reports → Voucher sales report</b>, same period.</li>
+        <li><b>Eversports → Activities → Export activity & booking data → Activity overview of all appointments</b>. Include next month too: the classes already planned drive the instructor forecast.</li>
+      </ol>
+      <p class="muted small">George exports (CSV or JSON) also work; duplicates with the PDF statements are recognised by date and amount.</p>
+    </div>
+    ${log.length ? `<div class="card"><h2>Recent imports</h2><table class="t"><tbody>${log.map((l) => `<tr><td>${dmy(new Date(l.at).toISOString().slice(0, 10))}</td><td>${esc(l.file)}</td><td class="muted">${esc(l.what)}</td></tr>`).join('')}</tbody></table></div>` : ''}`;
+  }
+  async function importFiles(files) {
+    const res = [];
+    for (const f of files) {
+      try {
+        const r = await importOne(f);
+        res.push(`<li><b>${esc(f.name)}</b>: ${r}</li>`);
+        state.importLog = [{ id: LL.hash(f.name + Date.now()), at: Date.now(), file: f.name, what: r.replace(/<[^>]+>/g, '') }, ...(state.importLog || [])].slice(0, 60);
+      } catch (e) { res.push(`<li class="negc"><b>${esc(f.name)}</b>: ${esc(e.message)}</li>`); }
+    }
+    save(); render();
+    const box = $('#importResult'); if (box) box.innerHTML = `<ul class="result">${res.join('')}</ul>`;
+  }
+  async function importOne(f) {
+    const name = f.name.toLowerCase();
+    if (name.endsWith('.pdf')) {
+      const pages = await readPdf(f);
+      const { statements, tx } = LLParse.parseStatementPages(pages);
+      if (!statements.length) throw new Error('This PDF doesn\'t look like an Erste / Sparkasse account statement.');
+      const r = LL.importBank(state, tx, statements, f.name);
+      return `${r.statements} statement${r.statements > 1 ? 's' : ''} (${r.stBad.length ? `<span class="negc">${r.stBad.join(', ')} don't add up</span>` : '<span class="okc">all add up</span>'}), ${r.added} new payments${r.skipped ? `, ${r.skipped} already there` : ''}`;
+    }
+    const text = await f.text();
+    if (name.endsWith('.json')) {
+      const j = JSON.parse(text);
+      if (j && j.schema && j.settings && j.bank) { state = LL.migrate(Sync.merge(state, Object.assign({}, j, { settings: Object.assign({}, j.settings, { updatedAt: Math.max(j.settings.updatedAt || 0, (state.settings.updatedAt || 0) + 1) }) }))); return 'backup restored and merged'; }
+      const arr = Array.isArray(j) ? j : j.transactions || j.collection || j.items || [];
+      const tx = LLParse.parseGeorgeJSON(arr);
+      if (!tx.length) throw new Error('No bank payments found in this JSON.');
+      const r = LL.importBank(state, tx, [], f.name);
+      return `${r.added} new payments, ${r.skipped} already there`;
+    }
+    const rows = LLParse.parseCSV(text);
+    const kind = LLParse.detectCSV(rows);
+    if (kind === 'sales') { const r = LL.importSales(state, LLParse.parseSales(rows), f.name); return `Eversports sales: ${r.added} new, ${r.skipped} already there`; }
+    if (kind === 'vouchers') { const r = LL.importVouchers(state, LLParse.parseVouchers(rows), f.name); return `gift vouchers: ${r.added} new, ${r.skipped} already there`; }
+    if (kind === 'classes') { const r = LL.importClasses(state, LLParse.parseClasses(rows), f.name); return `${r.added} classes from ${dmy(r.from)} to ${dmy(r.to)}${r.replaced ? ' (replaced the earlier export for these dates)' : ''}`; }
+    if (kind === 'georgecsv') { const r = LL.importBank(state, LLParse.parseGeorgeCSV(rows), [], f.name); return `${r.added} new payments, ${r.skipped} already there`; }
+    throw new Error('File type not recognised. Expected an Erste statement PDF, a George export, or an Eversports revenue, voucher or activity export.');
+  }
+  // pdf.js is loaded only when a PDF is imported, from jsDelivr, checked against its published fingerprint
+  const PDFJS = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/';
+  const SRI = { lib: 'sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e', worker: 'sha384-SnzOobpRMLXZ52iJvZm/C0fYw0OQemTXzTjIsdsfMcrCtCEe9qgzxTd3RSklO5x2' };
+  let pdfReady;
+  function loadPdfJs() {
+    if (pdfReady) return pdfReady;
+    pdfReady = new Promise((ok, fail) => {
+      const s = document.createElement('script'); s.src = PDFJS + 'pdf.min.js'; s.integrity = SRI.lib; s.crossOrigin = 'anonymous';
+      s.onload = async () => {
+        try {
+          const w = await fetch(PDFJS + 'pdf.worker.min.js', { integrity: SRI.worker });
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([await w.text()], { type: 'text/javascript' }));
+          ok(window.pdfjsLib);
+        } catch (e) { fail(new Error('Could not load the PDF reader. Check the internet connection.')); }
+      };
+      s.onerror = () => { pdfReady = null; fail(new Error('Could not load the PDF reader. Check the internet connection.')); };
+      document.head.appendChild(s);
+    });
+    return pdfReady;
+  }
+  async function readPdf(f) {
+    const lib = await loadPdfJs();
+    const doc = await lib.getDocument({ data: new Uint8Array(await f.arrayBuffer()) }).promise;
+    const pages = [];
+    for (let p = 1; p <= doc.numPages; p++) { const tc = await (await doc.getPage(p)).getTextContent(); pages.push(tc.items.map((i) => ({ str: i.str, x: i.transform[4], y: i.transform[5], w: i.width }))); }
+    return pages;
+  }
+
+  // ---------- Settings ----------
+  function viewSettings() {
+    const ins = state.settings.instructors.filter((i) => !i.deleted).sort((a, b) => ['unknown', 'paid', 'unpaid', 'excluded'].indexOf(a.status) - ['unknown', 'paid', 'unpaid', 'excluded'].indexOf(b.status) || a.name.localeCompare(b.name));
+    const c = Sync.cfg();
+    return `<div class="card">
+      <h2>Instructors${help('Names come in automatically from the Eversports activity export. Set who is paid and their rate per class. “Bank name” is how their pay shows on the statement, so payments are matched to them. “Not in tool” hides someone completely.')}</h2>
+      <div class="tablewrap"><table class="t ins">
+        <thead><tr><th>Name</th><th>Status</th><th class="r">Rate / class</th><th>Bank name</th><th>Active</th></tr></thead>
+        <tbody>${ins.map((i) => `<tr class="${i.status === 'unknown' ? 'warnrow' : ''}">
+          <td><input class="in" value="${esc(i.name)}" data-act="insSet" data-id="${i.id}" data-f="name" aria-label="Name"><div class="muted small">${esc((i.evNames || []).join(', '))}</div></td>
+          <td><select data-act="insSet" data-id="${i.id}" data-f="status">${[['unknown', 'Not set'], ['paid', 'Paid'], ['unpaid', 'Unpaid'], ['excluded', 'Not in tool']].map(([k, l]) => `<option value="${k}"${k === i.status ? ' selected' : ''}>${l}</option>`).join('')}</select></td>
+          <td class="r"><input class="in num" inputmode="decimal" value="${i.rate ? nf2.format(i.rate / 100) : ''}" data-act="insSet" data-id="${i.id}" data-f="rate" ${i.status !== 'paid' ? 'disabled' : ''} aria-label="Rate"></td>
+          <td><input class="in" value="${esc((i.bankNames || []).join(', '))}" data-act="insSet" data-id="${i.id}" data-f="bankNames" placeholder="as on the statement" ${i.status !== 'paid' ? 'disabled' : ''} aria-label="Bank name"></td>
+          <td><input type="checkbox" ${i.active !== false ? 'checked' : ''} data-act="insSet" data-id="${i.id}" data-f="active" aria-label="Active"></td></tr>`).join('') || '<tr><td colspan="5" class="muted">Import the Eversports activity export first.</td></tr>'}</tbody>
+      </table></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h2>Sync with your co-owner${help('Both of you connect with the same token, Sync ID and passphrase. Your data is encrypted on the device before it reaches GitHub; without the passphrase nobody can read it, GitHub included.')}</h2>
+        ${c ? `<p><span class="okc">● Connected.</span> ${Sync.cfg().last ? 'Last sync ' + new Date(Sync.cfg().last).toLocaleString('de-AT') : ''}</p>
+          <label class="fld">Sync ID<div class="row gap"><input class="in mono" readonly value="${esc(c.gistId)}" id="sid"><button class="btn sm" data-act="copy" data-v="${esc(c.gistId)}">Copy</button></div></label>
+          ${syncErr ? `<p class="negc small">${esc(syncErr)}</p>` : ''}
+          <div class="row gap"><button class="btn" data-act="syncNow">Sync now</button><button class="btn" data-act="showToken">Show token</button><button class="btn ghost" data-act="disconnect">Disconnect this device</button></div>`
+        : `<p class="muted small">First device: paste the token, choose a passphrase, leave Sync ID empty → <b>Create sync file</b>. Every other device: same token, the Sync ID and the passphrase → <b>Connect</b>.</p>
+          <label class="fld">GitHub token<input class="in mono" id="sTok" type="password" autocomplete="off" placeholder="ghp_…"></label>
+          <label class="fld">Passphrase<input class="in" id="sPass" type="password" autocomplete="new-password" placeholder="at least 10 characters"></label>
+          <label class="fld">Sync ID <span class="muted small">(empty on the first device)</span><input class="in mono" id="sId" autocomplete="off"></label>
+          <p id="sErr" class="negc small"></p>
+          <div class="row gap"><button class="btn primary" data-act="syncCreate">Create sync file</button><button class="btn" data-act="syncConnect">Connect</button></div>`}
+      </div>
+      <div class="card">
+        <h2>General</h2>
+        <label class="fld">Opening day<input class="in" type="date" value="${state.settings.openingDate}" data-act="setSetting" data-f="openingDate"></label>
+        <label class="fld">Safety buffer (months of running costs)<input class="in num" inputmode="numeric" value="${state.settings.bufferMonths}" data-act="setSetting" data-f="bufferMonths"></label>
+        <h2 class="mt">Backup</h2>
+        <p class="muted small">A backup file is <b>not encrypted</b>. Keep it somewhere private. With sync on, the encrypted copy on GitHub is your everyday backup.</p>
+        <div class="row gap wrap"><button class="btn" data-act="backup">Download backup</button><label class="btn">Restore from backup<input type="file" accept=".json" id="restore" hidden></label></div>
+        <h2 class="mt">Rules you've made</h2>
+        ${(state.settings.rules || []).filter((r) => !r.deleted).length ? `<ul class="rules">${state.settings.rules.map((r, ix) => r.deleted ? '' : `<li><code>${esc(r.m)}</code> → ${CATS[r.c] ? CATS[r.c].label : r.c} <button class="x" data-act="delRule" data-v="${ix}" aria-label="Delete rule">×</button></li>`).join('')}</ul>` : '<p class="muted small">None yet. When you change a category in Transactions you can make it a rule.</p>'}
+        <p class="muted small mt">Lab Ledger ${LL.APP_VERSION}. <a data-act="erase">Erase data on this device</a></p>
+      </div>
+    </div>`;
+  }
+
+  // ---------- events ----------
+  function afterRender() {
+    const fi = $('#file'); if (fi) fi.onchange = () => importFiles([...fi.files]);
+    const rs = $('#restore'); if (rs) rs.onchange = () => importFiles([...rs.files]);
+    const q = $('#txQ'); if (q) q.oninput = () => { ui.txQ = q.value; saveUI(); const pos = q.selectionStart; render(); const n = $('#txQ'); n.focus(); n.setSelectionRange(pos, pos); };
+  }
+  document.addEventListener('dragover', (e) => { e.preventDefault(); const d = $('#drop'); if (d) d.classList.add('over'); });
+  document.addEventListener('dragleave', () => { const d = $('#drop'); if (d) d.classList.remove('over'); });
+  document.addEventListener('drop', (e) => { e.preventDefault(); if (e.dataTransfer.files.length) { ui.page = 'import'; saveUI(); render(); importFiles([...e.dataTransfer.files]); } });
+
+  const ACT = {
+    page: (el) => { ui.page = el.dataset.v; if (el.dataset.cat) { ui.txCat = el.dataset.cat; ui.txMonth = ''; } saveUI(); render(); window.scrollTo(0, 0); },
+    cfAll: (el) => { ui.cfAll = el.dataset.v === '1'; saveUI(); render(); },
+    salesNet: (el) => { ui.salesNet = el.dataset.v === '1'; saveUI(); render(); },
+    teamMonth: (el) => { ui.teamMonth = el.dataset.v; saveUI(); render(); },
+    drill: (el) => { ui.page = 'tx'; ui.txMonth = el.dataset.m; ui.txCat = el.dataset.cat; ui.txQ = ''; saveUI(); render(); window.scrollTo(0, 0); },
+    txClear: () => { ui.txQ = ''; ui.txMonth = ''; ui.txCat = ''; saveUI(); render(); },
+    help: (el) => { const t = $('#tip'); showTip(el, el.dataset.tip, true); },
+    copy: (el) => { navigator.clipboard && navigator.clipboard.writeText(el.dataset.v); toast('Copied'); },
+    syncNow: () => syncNow(),
+    showToken: () => toast(`Token: <code class="mono">${esc(Sync.cfg().token)}</code> <button class="btn sm" data-act="copy" data-v="${esc(Sync.cfg().token)}">Copy</button>`, 15000),
+    disconnect: () => { if (confirm('Disconnect this device from sync? Data on this device stays.')) { Sync.disconnect(); render(); } },
+    syncCreate: async () => {
+      const tok = $('#sTok').value.trim(), pass = $('#sPass').value, err = $('#sErr');
+      if (!tok || pass.length < 10) { err.textContent = 'Paste the token and choose a passphrase of at least 10 characters.'; return; }
+      err.textContent = 'Creating…';
+      try { const id = await Sync.create(tok, pass, state); toast('Sync file created. Sync ID: ' + id); render(); } catch (e) { err.textContent = e.message; }
+    },
+    syncConnect: async () => {
+      const tok = $('#sTok').value.trim(), pass = $('#sPass').value, id = $('#sId').value.trim(), err = $('#sErr');
+      if (!tok || !pass || !id) { err.textContent = 'Token, passphrase and Sync ID are all needed to connect.'; return; }
+      err.textContent = 'Connecting…';
+      try { const remote = await Sync.connect(tok, id, pass); state = LL.migrate(Sync.merge(state, remote)); save(true); await Sync.push(state); toast('Connected. Your data is in.'); render(); } catch (e) { err.textContent = e.message; }
+    },
+    backup: () => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(state)], { type: 'application/json' }));
+      a.download = 'lab-ledger-backup-' + today() + '.json'; a.click();
+    },
+    delRule: (el) => { const r = state.settings.rules[+el.dataset.v]; r.deleted = true; state.settings.updatedAt = Date.now(); save(); render(); },
+    erase: () => { if (confirm('Erase all data on this device? Synced data on GitHub and other devices stays.')) { localStorage.removeItem(STORE); Sync.disconnect(); state = LL.migrate(null); render(); } },
+    makeRule: (el) => {
+      const party = el.dataset.party, cat = el.dataset.cat;
+      state.settings.rules = state.settings.rules || [];
+      state.settings.rules.unshift({ m: '^' + party.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), c: cat });
+      // the rule now decides for the others; keep manual choices only where they differ
+      for (const t of LL.live(state.bank)) if (t.party === party && t.cat === cat) { delete t.cat; t.updatedAt = Date.now(); }
+      state.settings.updatedAt = Date.now(); save(); render(); toast('Rule saved. Future payments from ' + esc(party) + ' are sorted the same way.');
+    },
+  };
+  const CHANGE = {
+    txMonth: (el) => { ui.txMonth = el.value; saveUI(); render(); },
+    txCat: (el) => { ui.txCat = el.value; saveUI(); render(); },
+    setCat: (el) => {
+      const t = state.bank[el.dataset.id]; t.cat = el.value; t.updatedAt = Date.now(); save(); render();
+      const same = LL.live(state.bank).filter((x) => x.party === t.party).length;
+      toast(`Saved. ${same > 1 || true ? `<button class="btn sm" data-act="makeRule" data-party="${esc(t.party)}" data-cat="${t.cat}">Always sort “${esc(t.party.slice(0, 28))}” as ${CATS[t.cat].label}</button>` : ''}`, 9000);
+    },
+    setWho: (el) => {
+      const t = state.bank[el.dataset.id]; t.cat = 'instructors'; t.who = el.value || null; t.updatedAt = Date.now();
+      const i = state.settings.instructors.find((x) => x.id === t.who);
+      if (i && t.party && !(i.bankNames || []).some((b) => b.toLowerCase() === t.party.toLowerCase())) { i.bankNames = [...(i.bankNames || []), t.party]; state.settings.updatedAt = Date.now(); }
+      save(); render();
+    },
+    insSet: (el) => {
+      const i = state.settings.instructors.find((x) => x.id === el.dataset.id); const f = el.dataset.f;
+      if (f === 'rate') i.rate = Math.round(parseFloat(el.value.replace(/\./g, '').replace(',', '.')) * 100) || 0;
+      else if (f === 'bankNames') i.bankNames = el.value.split(',').map((s) => s.trim()).filter(Boolean);
+      else if (f === 'active') i.active = el.checked;
+      else i[f] = el.value;
+      state.settings.updatedAt = Date.now(); save(); render();
+    },
+    setSetting: (el) => { const f = el.dataset.f; state.settings[f] = f === 'bufferMonths' ? Math.max(0, +el.value || 0) : el.value; state.settings.updatedAt = Date.now(); save(); render(); },
+  };
+  document.addEventListener('click', (e) => { const el = e.target.closest('[data-act]'); if (!el || el.tagName === 'SELECT' || (el.tagName === 'INPUT' && el.type !== 'button')) return; const f = ACT[el.dataset.act]; if (f) { e.preventDefault(); f(el); } });
+  document.addEventListener('change', (e) => { const el = e.target.closest('[data-act]'); if (!el) return; const f = CHANGE[el.dataset.act]; if (f) f(el); });
+
+  // tooltips: hover on desktop, tap on touch
+  function showTip(el, html, sticky) {
+    const t = $('#tip'); t.innerHTML = html; t.hidden = false;
+    const r = el.getBoundingClientRect(); const tw = Math.min(280, window.innerWidth - 24);
+    t.style.maxWidth = tw + 'px';
+    let x = r.left + r.width / 2 - t.offsetWidth / 2; x = Math.max(12, Math.min(x, window.innerWidth - t.offsetWidth - 12));
+    let y = r.top - t.offsetHeight - 8; if (y < 8) y = r.bottom + 8;
+    t.style.left = x + 'px'; t.style.top = y + window.scrollY + 'px'; t.dataset.sticky = sticky ? '1' : '';
+  }
+  document.addEventListener('mouseover', (e) => { const g = e.target.closest('.hov'); if (g) showTip(g, g.dataset.tip); });
+  document.addEventListener('mouseout', (e) => { const g = e.target.closest('.hov'); if (g && !$('#tip').dataset.sticky) $('#tip').hidden = true; });
+  document.addEventListener('click', (e) => { const g = e.target.closest('.hov'); if (g) showTip(g, g.dataset.tip, true); else if (!e.target.closest('.q')) $('#tip').hidden = true; }, true);
+
+  let rsT; window.addEventListener('resize', () => { clearTimeout(rsT); rsT = setTimeout(() => { if (!document.activeElement || !['INPUT', 'SELECT'].includes(document.activeElement.tagName)) render(); }, 200); });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') syncNow(); });
+
+  render();
+  if (Sync.on()) syncNow();
+})();
+
+</script>
+</body>
+</html>
