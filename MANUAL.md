@@ -1,6 +1,6 @@
 # Lab Ledger — manual
 
-*Version 1.5*
+*Version 1.6*
 
 Lab Ledger is the studio's finance tool: cash, monthly results, sales, instructor pay and a 3-month forecast. It is one web page (`index.html`) hosted on GitHub Pages. **The code contains no data.** Your numbers live on each device and travel between devices only as an encrypted file in the studio's GitHub account.
 
@@ -114,6 +114,14 @@ Every bank line gets a category automatically. To change one: **Transactions** �
 - **Adding classes fixed**: a class added with *+ Add class* now always stays, also on days Eversports already covers, and the schedule jumps to that week.
 - **Found in Eversports** only lists one-offs with their own ticket (regular classes booked with packs are not events).
 - **Logo** on the lock screen (adapts to light and dark) and on exported schedules and reports. It comes with the update file, not with the app code.
+
+## 6f. New in 1.6
+
+- **Schedule** on a computer is a real calendar: each box as long as it lasts, rentals one block, rooms side by side when things happen at the same time. Legend: rooms, no instructor, event.
+- **Classes already paid** (Growth → Clients): open classes from packs and trials, their value, packs running out in 14 days (copy emails), and everyone with open classes. Needs the products export imported once more.
+- **Pay sheet for the accountant** (Planning → Team): classes × rate per instructor for a month, payroll and invoice separately, with the class dates; print/PDF or Excel (CSV). Settings → Instructors → *Paid via* (Payroll / Invoice).
+- **VAT per month** (Business → Cash flow): expected VAT per return vs what the bank shows for the tax office.
+- **Monthly update** checklist on the Overview from the 3rd, plus a reminder message on the 3rd of each month.
 
 ## 7. Updating the app
 
