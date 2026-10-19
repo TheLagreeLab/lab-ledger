@@ -172,7 +172,11 @@ table.t { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .drop { display: flex; flex-direction: column; gap: 6px; align-items: center; justify-content: center; text-align: center; border: 2px dashed var(--line); border-radius: 14px; padding: 34px 16px; cursor: pointer; background: var(--surface2); }
 .drop.over { border-color: var(--accent); background: color-mix(in srgb, var(--blush) 40%, var(--surface)); }
 .drop input { display: none; }
-.result { padding-left: 18px; } .result li { margin: 6px 0; }
+.result { list-style: none; padding: 0; margin: 12px 0 0; } .result li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-top: 1px solid var(--line); } .result li:first-child { border-top: 0; }
+.imp { flex: none; display: inline-block; font: 600 12px/1 var(--sans); padding: 5px 9px; border-radius: 99px; white-space: nowrap; }
+.imp.ok { background: color-mix(in srgb, var(--pos) 16%, var(--surface)); color: var(--pos); }
+.imp.bad { background: color-mix(in srgb, var(--neg) 14%, var(--surface)); color: var(--neg); }
+.imp.sm { padding: 2px 6px; font-size: 11px; }
 .steps { padding-left: 20px; } .steps li { margin: 8px 0; }
 .hero-empty { max-width: 560px; margin: 60px auto; text-align: center; }
 .hero-empty h1 { font: 500 40px/1.1 var(--serif); margin: 0 0 12px; }
@@ -469,7 +473,7 @@ ol.focus { margin: 0; padding-left: 20px; } ol.focus li { margin: 6px 0; }
 .kpis > div { background: var(--surface2); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .kpis b { font: 500 26px/1.1 var(--serif); }
 .kpis span { font-size: 12.5px; color: var(--ink2); }
-.grid2.in { gap: 24px; margin-bottom: 8px; }
+.grid2.inner { gap: 24px; margin-bottom: 8px; }
 .hbars { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
 .hbr { display: grid; grid-template-columns: minmax(70px, 38%) 1fr auto; gap: 8px; align-items: center; font-size: 13px; }
 .hl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink2); }
@@ -501,6 +505,14 @@ table.watch td:first-child { min-width: 150px; }
 @media print { body.printing .rep { max-width: none; } .rep h3 { break-after: avoid; } .rep table { break-inside: avoid; } }
 .idealist .btn { white-space: nowrap; flex: none; }
 .tgrid .in.num { flex: none; width: 90px; }
+.omrow { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; width: 100%; text-align: left; background: none; border: 0; border-top: 1px solid var(--line); padding: 9px 2px; font: 14px var(--sans); color: var(--ink); cursor: pointer; }
+.omrow:first-of-type { border-top: 0; } .omrow:hover { background: var(--surface2); } .omrow > span:last-child { white-space: nowrap; }
+.omrow.dim { color: var(--muted); }
+.t tr.memo th, .t tr.memo td { font-size: 12.5px; color: var(--muted); border-bottom: 0; background: var(--surface); }
+.omrow.static { cursor: default; } .omrow.static:hover { background: none; } .omrow.static > span:last-child { white-space: normal; flex: none; }
+.budget { gap: 0; } .budget .fld { margin: 6px 0; }
+table.bgt { margin-top: 6px; } .bgt td { padding: 4px 6px; }
+.ilog td { overflow-wrap: anywhere; } .ilog td:first-child { white-space: nowrap; } .result li > span:last-child { min-width: 0; overflow-wrap: anywhere; }
 
 </style>
 </head>
@@ -751,7 +763,7 @@ table.watch td:first-child { min-width: 150px; }
 /* Lab Ledger — data model, import merge, categories, monthly aggregation. No DOM. */
 (function (G) {
   'use strict';
-  const APP_VERSION = '1.3';
+  const APP_VERSION = '1.4';
   const SCHEMA = 1;
 
   // ---------- categories ----------
@@ -777,6 +789,7 @@ table.watch td:first-child { min-width: 150px; }
     license:     { label: 'Lagree licence', group: 'out' },
     memberships: { label: 'Chamber & fees', group: 'out' },
     travel:      { label: 'Travel', group: 'out' },
+    events_out:  { label: 'Events & catering', group: 'out' },
     other_out:   { label: 'Other costs', group: 'out' },
     uncat:       { label: 'Not sorted yet', group: 'out' },
     setup:       { label: 'Build-out & setup', group: 'setup' },
@@ -813,7 +826,7 @@ table.watch td:first-child { min-width: 150px; }
     { m: 'amazon|ikea|jysk|bauhaus|dm-fil|lidl|spar |billa|hofer|temu|kaufland|zara ?home|deichmann|dehner|blumen|etsy|sklum|kenay|sport-tec|lampenwelt|obi |hornbach|müller|brunos|wolt|colibri|ryzon|sb supply|abraham|sanitino|eufy|dji', c: 'supplies' },
   ];
 
-  const COLLS = ['bank', 'statements', 'sales', 'vouchers', 'classes', 'avail', 'plans', 'events', 'growth'];
+  const COLLS = ['bank', 'statements', 'sales', 'vouchers', 'classes', 'avail', 'plans', 'events', 'growth', 'bills', 'tenants'];
   // Is this instructor paid for a class in month m? ('paid from' lets someone start unpaid and switch to invoices)
   const paidIn = (ins, m) => !!ins && ins.status === 'paid' && (!ins.paidFrom || m >= ins.paidFrom);
 
@@ -835,7 +848,7 @@ table.watch td:first-child { min-width: 150px; }
         patches: [],
         updatedAt: 0,
       },
-      bank: {}, statements: {}, sales: {}, vouchers: {}, classes: {}, avail: {}, plans: {}, events: {}, growth: {},
+      bank: {}, statements: {}, sales: {}, vouchers: {}, classes: {}, avail: {}, plans: {}, events: {}, growth: {}, bills: {}, tenants: {},
     };
   }
   function migrate(s) {
@@ -1079,6 +1092,30 @@ table.watch td:first-child { min-width: 150px; }
         b.planned = (b.planned || 0) + 1;
       }
     }
+    // classes in the next months that have no instructor yet: estimate with whoever usually teaches that slot
+    if (G.LLS) {
+      const usual = G.LLS.usualHolder(state);
+      const curM = mk(today);
+      for (let k = 0; k < 4; k++) {
+        const m = addMonths(curM, k);
+        const plan = state.plans && state.plans[m] && !state.plans[m].deleted ? state.plans[m] : null;
+        const list = plan ? Object.values(plan.classes || {}).filter((c) => !c.deleted && c.src !== 'ev') : G.LLS.datesOf(m).flatMap((d) => (state.settings.slots || []).filter((s) => !s.deleted && s.day === G.LLS.weekday(d)).map((s) => ({ date: d, start: s.start, title: s.title })));
+        const mm = M(m);
+        for (const c of list) {
+          if (c.ins || c.date <= today || (until && c.date <= until) || G.LLS.kindOf(state, c.title) === 'rental') continue;
+          const id = usual[G.LLS.weekday(c.date) + '|' + G.LLS.hhmm(c.start) + '|' + G.LLS.norm(c.title)];
+          const ins = id && insById[id]; if (!ins || ins.status === 'excluded') { mm.classes.open = (mm.classes.open || 0) + 1; continue; }
+          mm.classes.estimated = (mm.classes.estimated || 0) + 1;
+          const b = (mm.classes.byIns[ins.id] = mm.classes.byIns[ins.id] || { classes: 0, attendees: 0, capacity: 0, planned: 0 });
+          b.est = (b.est || 0) + 1;
+          if (paidIn(ins, m)) {
+            mm.ins.est = (mm.ins.est || 0) + (ins.rate || 0);
+            const bi = (mm.ins.byIns[ins.id] = mm.ins.byIns[ins.id] || { classes: 0, expected: 0, paid: 0 });
+            bi.estClasses = (bi.estClasses || 0) + 1; bi.est = (bi.est || 0) + (ins.rate || 0);
+          }
+        }
+      }
+    }
     // fill gaps & balances
     const keys = Object.keys(months).sort();
     const startM = state.settings.startMonth || (startDate ? mk(startDate) : keys[0]);
@@ -1111,6 +1148,7 @@ table.watch td:first-child { min-width: 150px; }
   // ---------- forecast v2 ----------
   const FIXED = ['rent', 'utilities', 'insurance', 'software', 'bank', 'loan_fees', 'license', 'memberships', 'loan_repay'];
   const VARIABLE = ['supplies', 'marketing', 'travel', 'other_out', 'accounting'];
+  const evTag = (e) => e.kind !== 'rental' && e.kind !== 'tenant';
   // known rhythm when there's only one payment so far (months)
   const DEFAULT_EVERY = { loan_repay: 1, rent: 1, license: 12, memberships: 12, insurance: 12 };
   const daysIn = (m) => new Date(+m.slice(0, 4), +m.slice(5, 7), 0).getDate();
@@ -1157,7 +1195,7 @@ table.watch td:first-child { min-width: 150px; }
   };
   // VAT (Austria, monthly UVA): payable on the 15th of the second month after. Rough: 1/6 of gross sales and rent income,
   // minus 1/6 of costs that carry Austrian VAT (rent, Eversports fee, utilities, accounting, supplies, build-out).
-  const VAT_IN = ['rent', 'platform', 'utilities', 'accounting', 'supplies', 'setup', 'software'];
+  const VAT_IN = ['rent', 'platform', 'utilities', 'accounting', 'supplies', 'setup', 'software', 'events_out'];
   function vatFor(state, agg, M, fcCats, startM) {
     const mm = agg.byMonth[M];
     const actual = !fcCats && mm && mm.tx > 0 && M < startM;
@@ -1167,6 +1205,93 @@ table.watch td:first-child { min-width: 150px; }
     const inVat = VAT_IN.reduce((a, k) => a + Math.max(0, -(cats[k] || 0)), 0) / 6;
     return -(outVat - inVat); // negative = to pay, positive = refund
   }
+  // ---------- events: budget ----------
+  function eventBudget(state, e, feeRatio) {
+    const b = e.budget || {};
+    const people = +b.people || 0, price = +b.price || 0;
+    const tickets = price * people;
+    const fee = tickets * Math.abs(feeRatio === undefined ? 0.07 : feeRatio);
+    const catering = (+b.caterPer || 0) * people + (+b.caterFixed || 0);
+    const ins = b.classIns ? state.settings.instructors.find((i) => i.id === b.classIns) : null;
+    const instructor = ins && paidIn(ins, mk(e.date || '2000-01-01')) ? (ins.rate || 0) * (+b.classes || 1) : 0;
+    const other = (b.other || []).reduce((a, x) => a + (+x.amount || 0), 0) + (+e.cost || 0);
+    const extra = (+b.extra || 0) + (+e.income || 0);
+    const costs = catering + instructor + other + fee;
+    const result = tickets + extra - costs;
+    const perHead = (+b.caterPer || 0) + (price ? price * Math.abs(feeRatio || 0.07) : 0);
+    const fixed = (+b.caterFixed || 0) + instructor + other;
+    const margin = price - perHead;
+    const breakEven = margin > 0 ? Math.ceil(Math.max(0, fixed - extra) / margin) : null;
+    // actual tickets from Eversports (product name)
+    let sold = 0, revenue = 0;
+    if (b.product) for (const x of live(state.sales)) if (norm(x.product) === norm(b.product)) { sold++; revenue += x.gross; }
+    return { people, price, tickets, fee, catering, instructor, other, extra, costs, result, perPerson: people ? costs / people : 0, breakEven, sold, revenue, ins };
+  }
+  // one-off events found in Eversports (class names that aren't a regular class type)
+  function foundEvents(state) {
+    const types = new Set((state.settings.classTypes || []).filter((t) => !t.deleted).map((t) => norm(t.name)));
+    const ignore = new Set((state.settings.evIgnore || []).map(norm));
+    const linked = new Set(live(state.events).flatMap((e) => [norm((e.budget || {}).product || ''), norm(e.title) + '|' + (e.date || '')]));
+    const byTitle = {};
+    for (const c of live(state.classes)) { if (c.cancelled) continue; const k = norm(c.title); (byTitle[k] = byTitle[k] || []).push(c); }
+    const out = [];
+    for (const list of Object.values(byTitle)) {
+      const t = list[0].title, k = norm(t);
+      const dates = [...new Set(list.map((c) => c.date))];
+      if (types.has(k) || ignore.has(k) || dates.length > 3 || /^private|first lagree|probe/i.test(t)) continue;
+      for (const d of dates) {
+        if (linked.has(k) || linked.has(k + '|' + d)) continue;
+        const cs = list.filter((c) => c.date === d);
+        const sales = live(state.sales).filter((x) => norm(x.product) === k);
+        out.push({ title: t, date: d, start: cs[0].start, end: cs[0].end, people: cs.reduce((a, c) => a + (c.registered || 0), 0), sold: sales.length, revenue: sales.reduce((a, x) => a + x.gross, 0), price: sales.length ? Math.round(sales.reduce((a, x) => a + x.gross, 0) / sales.length) : 0, trainer: cs[0].trainer });
+      }
+    }
+    return out.sort((a, b) => (a.date < b.date ? 1 : -1));
+  }
+  // ---------- tenants & open bills ----------
+  const tenantRx = (t) => { try { return new RegExp(t.match || t.name, 'i'); } catch (e) { return /$^/; } };
+  function tenantReceived(state, t, until) {
+    const rx = tenantRx(t);
+    return live(state.bank).filter((x) => x.amount > 0 && x.date >= addDays(t.from, -31) && (!until || x.date <= until) && rx.test(x.party + ' ' + x.text));
+  }
+  // rent due per month: due on the 1st, the first month pro rata from the start day
+  function tenantDue(t, m) {
+    const fm = mk(t.from); if (m < fm) return 0;
+    if (m === fm) { const d = +t.from.slice(8, 10), n = daysIn(m); return Math.round(t.monthly * (n - d + 1) / n); }
+    return t.monthly;
+  }
+  function tenantStatus(state, t, today) {
+    if (!t.from || !t.monthly) return { owed: 0, due: 0, received: 0, months: [] };
+    const months = monthRange(mk(t.from), mk(today));
+    const due = months.reduce((a, m) => a + tenantDue(t, m), 0);
+    const rec = tenantReceived(state, t, today); const received = rec.reduce((a, x) => a + x.amount, 0);
+    return { due, received, owed: Math.max(0, due - received), months, payments: rec };
+  }
+  // expected payments: regular rent from payFrom, plus the back rent as agreed
+  function tenantSchedule(state, t, agg) {
+    if (!t.from || !t.monthly || !t.payFrom) return [];
+    const out = []; const pm = mk(t.payFrom);
+    for (let i = 0; i < 6; i++) { const m = addMonths(pm, i); out.push([m + '-01' > t.payFrom ? m + '-01' : t.payFrom, tenantDue(t, m)]); }
+    const backDue = monthRange(mk(t.from), addMonths(pm, -1)).reduce((a, m) => a + tenantDue(t, m), 0);
+    const back = Math.max(0, backDue - tenantReceived(state, t).reduce((a, x) => a + x.amount, 0));
+    const n = Math.max(1, +t.backMonths || 1), start = t.backFrom || t.payFrom;
+    if (back > 0 && t.backPlan !== 'none') for (let i = 0; i < n; i++) out.push([addMonths(mk(start), i) + start.slice(7), Math.round(back / n)]);
+    return out;
+  }
+  // tick off open bills when the payment shows up in the bank
+  function matchBills(state) {
+    const used = new Set(live(state.bills).map((b) => b.txId).filter(Boolean));
+    let changed = 0;
+    for (const b of live(state.bills)) {
+      if (b.paidOn || b.noMatch) continue;
+      const words = norm(b.match || b.party).split(/[^a-z0-9äöüß]+/).filter((w) => w.length >= 3);
+      const tx = live(state.bank).find((x) => !used.has(x.id) && (b.dir === 'in' ? x.amount > 0 : x.amount < 0) && Math.abs(Math.abs(x.amount) - b.amount) <= Math.max(100, b.amount * 0.01)
+        && x.date >= addDays(b.created || b.due || '2000-01-01', -45) && (!words.length || words.some((w) => norm(x.party + ' ' + x.text).includes(w))));
+      if (tx) { b.paidOn = tx.date; b.txId = tx.id; b.updatedAt = now(); used.add(tx.id); changed++; }
+    }
+    return changed;
+  }
+
   function forecast(state, agg, n = 3) {
     const ref = lastFullMonths(agg, 3);
     const ratio = onCostRatio(agg);
@@ -1206,13 +1331,9 @@ table.watch td:first-child { min-width: 150px; }
       for (const k of VARIABLE) if (avgCat[k]) cats[k] = avgCat[k];
       cats.platform = salesGross * feeRatio;
       // instructors: planned classes of the month before × rate × (1 + social security), paid this month
-      const plannedIns = prev && prev.ins.expected > 0 ? -prev.ins.expected * ratio : insAvg;
+      const prevPay = prev ? prev.ins.expected + (prev.ins.est || 0) : 0;
+      const plannedIns = prevPay > 0 ? -prevPay * ratio : insAvg;
       cats.instructors = plannedIns * sI; cats.payroll = plannedIns * (1 - sI);
-      // agreed rentals and planned events
-      for (const e of live(state.events || {})) {
-        for (const pay of e.payments || []) if (mk(pay.due) === m) cats.rental_in = (cats.rental_in || 0) + pay.amount;
-        if (e.kind !== 'rental' && e.date && mk(e.date) === m) { if (e.income) cats.other_in = (cats.other_in || 0) + e.income; if (e.cost) cats.other_out = (cats.other_out || 0) - e.cost; }
-      }
       let partial = false;
       if (m === lastM && mm && mm.tx) {
         // part of this month is already in the bank: actuals + the rest of the month
@@ -1225,6 +1346,23 @@ table.watch td:first-child { min-width: 150px; }
           else if (cats[k] !== undefined && (CATS[k].group === 'in' || CATS[k].group === 'out')) cats[k] = act + cats[k] * left;
           else if (act) cats[k] = act;
         }
+      }
+      // agreed rentals, planned events, tenants and open bills (after the actuals, so they count in full)
+      const add = (k, v) => { if (v) cats[k] = (cats[k] || 0) + v; };
+      const paidBy = partial ? last : '';
+      for (const e of live(state.events || {})) {
+        for (const pay of e.payments || []) if (mk(pay.due) === m && pay.due > paidBy) add('rental_in', pay.amount);
+        if (evTag(e) && e.date && mk(e.date) === m) {
+          const b = eventBudget(state, e, feeRatio);
+          if (e.date > sEnd) { add('sales', b.tickets * payoutRatio); add('platform', b.tickets * feeRatio); }
+          if (e.date > paidBy) { add('other_in', b.extra); add('events_out', -(b.catering + b.other)); }
+        }
+      }
+      for (const t of live(state.tenants || {})) for (const [due, amt] of tenantSchedule(state, t, agg)) if (mk(due) === m && due > paidBy) add('rental_in', amt);
+      for (const b of live(state.bills || {})) {
+        if (b.paidOn) continue;
+        const dm = b.due && mk(b.due) > startM ? mk(b.due) : startM;
+        if (dm === m) add(b.cat || (b.dir === 'in' ? 'other_in' : 'other_out'), b.dir === 'in' ? b.amount : -b.amount);
       }
       cats._salesGross = salesGross;
       fcCatsBy[m] = cats;
@@ -1418,6 +1556,9 @@ table.watch td:first-child { min-width: 150px; }
     }
     if (p.slots && !(st.slots || []).length) st.slots = p.slots;
     if (p.studioName && !st.studioName) st.studioName = p.studioName;
+    if (p.address && !st.address) st.address = p.address;
+    for (const t of p.tenants || []) if (!state.tenants[t.id]) state.tenants[t.id] = Object.assign({ updatedAt: now() }, t);
+    for (const b of p.bills || []) if (!state.bills[b.id]) state.bills[b.id] = Object.assign({ updatedAt: now(), created: new Date().toISOString().slice(0, 10) }, b);
     for (const t of p.classTypes || []) { const ex = (st.classTypes || []).find((x) => norm(x.name) === norm(t.name)); if (!ex) st.classTypes = [...(st.classTypes || []), t]; }
     for (const s2 of p.slotRooms || []) for (const sl of st.slots || []) if (norm(sl.title) === norm(s2.title)) sl.room = s2.room;
     for (const e of p.events || []) if (!state.events[e.id]) state.events[e.id] = Object.assign({ updatedAt: now() }, e);
@@ -1441,7 +1582,7 @@ table.watch td:first-child { min-width: 150px; }
     return { burn, pace, fixed, runway, buffer: fixed * (state.settings.bufferMonths || 3), ref, fc };
   }
 
-  G.LL = { APP_VERSION, SCHEMA, CATS, GROUPS, BUILTIN_RULES, PRODUCT_GROUPS, defaultState, migrate, categorize, serviceMonth, importBank, importSales, importVouchers, importClasses, aggregate, forecast, keyFigures, trialConversion, insights, growthSnapshot, eventIdeas, adsSummary, applyPatch, paidIn, COLLS, onCostRatio, lastFullMonths, productGroup, findInstructor, ensureInstructor, trainerName, addMonths, monthRange, mk, live, slug, hash };
+  G.LL = { APP_VERSION, SCHEMA, CATS, GROUPS, BUILTIN_RULES, PRODUCT_GROUPS, defaultState, migrate, categorize, serviceMonth, importBank, importSales, importVouchers, importClasses, aggregate, forecast, keyFigures, trialConversion, insights, growthSnapshot, eventIdeas, adsSummary, applyPatch, paidIn, COLLS, eventBudget, foundEvents, tenantStatus, tenantSchedule, tenantDue, matchBills, onCostRatio, lastFullMonths, productGroup, findInstructor, ensureInstructor, trainerName, addMonths, monthRange, mk, live, slug, hash };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -1719,6 +1860,9 @@ table.watch td:first-child { min-width: 150px; }
     { k: 'afternoon', label: 'Afternoon 13-17:30', from: 13 * 60, to: 17 * 60 + 30, re: /afternoon|nachmittag|mittag/i },
     { k: 'evening', label: 'Evening 17:30-21', from: 17 * 60 + 30, to: 24 * 60, re: /evening|abend/i },
   ];
+  // the availability form's grid columns: a class counts if it STARTS inside the window
+  const GRID = ['Early 6:30-8:00', 'Morning 8:00-10:00', 'Late morning 10:00-12:30', 'Afternoon 12:30-17:00', 'Evening 17:00-18:30', 'Late evening 18:30-21:00'];
+  const rangeOf = (t) => { const m = String(t).match(/(\d{1,2})(?:[:.](\d{2}))?\s*[-–]\s*(\d{1,2})(?:[:.](\d{2}))?/); if (!m) return null; const a = +m[1] * 60 + +(m[2] || 0), b = +m[3] * 60 + +(m[4] || 0); return b > a ? a + '-' + b : null; };
   const mins = (t) => { const m = String(t).match(/(\d{1,2})[:.](\d{2})/); return m ? +m[1] * 60 + +m[2] : null; };
   const hhmm = (t) => { const v = typeof t === 'number' ? t : mins(t); return v === null ? null : String(Math.floor(v / 60)).padStart(2, '0') + ':' + String(v % 60).padStart(2, '0'); };
   const windowOf = (start) => { const v = mins(start); return (WINDOWS.find((w) => v >= w.from && v < w.to) || WINDOWS[3]).k; };
@@ -1931,10 +2075,11 @@ table.watch td:first-child { min-width: 150px; }
       }
       const days = {};
       for (const g of dayC) {
-        const toks = String(r[g.x] || '').split(/[,;]\s*(?=\d|early|morning|afternoon|evening|früh|vormittag|nachmittag|abend|all|any|alle)/i).map((t) => t.trim()).filter(Boolean);
-        const d = (days[g.day] = days[g.day] || { windows: [], times: [], slots: [], all: false });
+        const toks = String(r[g.x] || '').split(/\s*[;,]\s*/).map((t) => t.trim()).filter(Boolean);
+        const d = (days[g.day] = days[g.day] || { windows: [], times: [], slots: [], ranges: [], all: false });
         for (const t of toks) {
           if (/^(all|any|alle)\b/i.test(t)) { d.all = true; continue; }
+          const rg = rangeOf(t); if (rg) { d.ranges.push(rg); continue; }
           const w = WINDOWS.find((w) => w.re.test(t));
           if (w) { d.windows.push(w.k); continue; }
           const tm = hhmm(t); if (!tm) continue;
@@ -1973,6 +2118,8 @@ table.watch td:first-child { min-width: 150px; }
     const d = av.days && av.days[weekday(date)]; if (!d) return false;
     if (d.all) return true;
     if ((d.slots || []).length && (d.slots.includes(c.start + '|' + norm(c.title)) || d.slots.some((s) => s.split('|')[0] === c.start))) return true;
+    const v = mins(c.start);
+    if ((d.ranges || []).some((r) => { const [a, b] = r.split('-').map(Number); return v >= a && v < b; })) return true;
     return (d.times || []).includes(c.start) || (d.windows || []).includes(windowOf(c.start));
   }
 
@@ -2059,43 +2206,52 @@ table.watch td:first-child { min-width: 150px; }
 
   // ---------- the Google Form, built from the current timetable ----------
   function formScript(state, months) {
-    const slots = (state.settings.slots || []).filter((s) => kindOf(state, s.title) !== 'rental');
     const names = state.settings.instructors.filter((i) => !i.deleted && i.active !== false).map((i) => i.name).sort((a, b) => a.localeCompare(b));
-    const perDay = DAYS.map((d, i) => [...new Set(slots.filter((s) => s.day === i).map((s) => s.start))].sort((a, b) => mins(a) - mins(b)));
     const studio = state.settings.studioName || 'Studio';
     const J = (x) => JSON.stringify(x);
     return `/**
- * Creates the availability form for ${studio}: one question per day with that day's class times.
- * Built by Lab Ledger from your weekly timetable. Paste into script.google.com → Save → Run.
- * When the timetable changes, copy a new script from Lab Ledger and run it again (it makes a new form).
+ * Creates the availability form for ${studio}, plus a sheet for the answers.
+ * Built by Lab Ledger. Paste into script.google.com → Save → Run.
+ * Keep the time columns as they are: Lab Ledger reads them (a class counts if it starts inside a window).
  */
 function createAvailabilityForm() {
   var instructors = ${J(names)};
   var months = ${J(months)};
   var days = ${J(DAYS)};
-  var classes = ${J(perDay)};
+  var windows = ${J(GRID)};
 
   var form = FormApp.create(${J(studio + ' · Availability')});
-  form.setDescription('Tick every time you could teach next month. Fill it in once per month; ' +
+  form.setDescription('Tell us when you can teach next month. Fill it in once per month; ' +
                       'if something changes, just send it again (the latest answer counts).');
   form.setCollectEmail(false);
   form.setConfirmationMessage('Thank you! We\\'ll send the schedule soon.');
+
   form.addListItem().setTitle('Your name').setChoiceValues(instructors).setRequired(true);
   form.addListItem().setTitle('Month').setChoiceValues(months).setRequired(true);
-  for (var i = 0; i < days.length; i++) {
-    if (!classes[i].length) continue;
-    form.addCheckboxItem()
-        .setTitle(days[i] + ': which times can you teach?')
-        .setChoiceValues(classes[i].concat(['All of them']));
-  }
-  form.addTextItem().setTitle('Max classes per week').setHelpText('A number, e.g. 4')
-      .setValidation(FormApp.createTextValidation().setHelpText('Please enter a number between 1 and 30.').requireNumberBetween(1, 30).build())
+
+  form.addCheckboxGridItem()
+      .setTitle('When can you teach?')
+      .setHelpText('Tick every time window you could teach a class that starts in it. Leave a day empty if you can\\'t teach that day.')
+      .setRows(days)
+      .setColumns(windows);
+
+  form.addTextItem()
+      .setTitle('Max classes per week')
+      .setHelpText('A number, e.g. 4')
+      .setValidation(FormApp.createTextValidation()
+          .setHelpText('Please enter a number between 1 and 30.')
+          .requireNumberBetween(1, 30).build())
       .setRequired(true);
-  form.addTextItem().setTitle('Days you\\'re away').setHelpText('Dates separated by commas, e.g. 3.11, 20.-24.11.  Leave empty if none.');
+
+  form.addParagraphTextItem()
+      .setTitle('Dates I\\'m away')
+      .setHelpText('Days you can\\'t teach at all this month, e.g. 3.11, 20.-24.11. Leave empty if none.');
+
   form.addParagraphTextItem().setTitle('Notes').setHelpText('Anything else we should know (optional).');
 
   var sheet = SpreadsheetApp.create(${J(studio + ' · Availability (answers)')});
   form.setDestination(FormApp.DestinationType.SPREADSHEET, sheet.getId());
+
   Logger.log('Link to send to the team:  ' + form.getPublishedUrl());
   Logger.log('Edit the form:             ' + form.getEditUrl());
   Logger.log('Answers sheet:             ' + sheet.getUrl());
@@ -2103,7 +2259,7 @@ function createAvailabilityForm() {
 `;
   }
 
-  G.LLS = { DAYS, ROOMS, WINDOWS, windowOf, weekday, weekKey, datesOf, hhmm, mins, overlaps, classTypes, roomOf, kindOf, guessRoom, rooms, slotsFromClasses, getPlan, ensurePlan, resetPlan, liveClasses, updateClass, addClass, deleteClass, parseAvailability, importAvailability, isAvailable, teachesOf, canTeach, propose, clearInstructors, planWeeks, formScript, matchInstructor, upgradePlan, fallbackOf, coveredUntil, repairPlans };
+  G.LLS = { usualHolder, norm, DAYS, ROOMS, WINDOWS, GRID, windowOf, weekday, weekKey, datesOf, hhmm, mins, overlaps, classTypes, roomOf, kindOf, guessRoom, rooms, slotsFromClasses, getPlan, ensurePlan, resetPlan, liveClasses, updateClass, addClass, deleteClass, parseAvailability, importAvailability, isAvailable, teachesOf, canTeach, propose, clearInstructors, planWeeks, formScript, matchInstructor, upgradePlan, fallbackOf, coveredUntil, repairPlans };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -2347,15 +2503,15 @@ function createAvailabilityForm() {
 
   // ---------- pages ----------
   const ICONS = {
-    money: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
+    business: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M3 12.5h18" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
     growth: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 17l5-5 4 3 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 8h5v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
-    studio: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    planning: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
     setup: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7" r="2" fill="var(--bg)" stroke="currentColor" stroke-width="1.8"/><circle cx="15" cy="12" r="2" fill="var(--bg)" stroke="currentColor" stroke-width="1.8"/><circle cx="8" cy="17" r="2" fill="var(--bg)" stroke="currentColor" stroke-width="1.8"/></svg>',
   };
   const SECTIONS = [
-    { k: 'money', label: 'Money', pages: [['overview', 'Overview'], ['cashflow', 'Cash flow'], ['tx', 'Transactions']] },
-    { k: 'growth', label: 'Growth', pages: [['growth', 'Clients & funnel'], ['sales', 'Sales'], ['events', 'Events']] },
-    { k: 'studio', label: 'Studio', pages: [['schedule', 'Schedule'], ['team', 'Team & classes']] },
+    { k: 'business', label: 'Business', pages: [['overview', 'Overview'], ['cashflow', 'Cash flow'], ['tx', 'Transactions']] },
+    { k: 'growth', label: 'Growth', pages: [['growth', 'Clients'], ['sales', 'Sales']] },
+    { k: 'planning', label: 'Planning', pages: [['schedule', 'Schedule'], ['events', 'Events'], ['team', 'Team']] },
     { k: 'setup', label: 'Setup', pages: [['import', 'Import'], ['settings', 'Settings'], ['help', 'Help']] },
   ];
   const PAGES = SECTIONS.flatMap((x) => x.pages);
@@ -2377,9 +2533,10 @@ function createAvailabilityForm() {
     applyTheme();
     if (Lock.isLocked()) { $('#nav').innerHTML = ''; $('#main').innerHTML = viewLock(); afterRender(); return; }
     LLS.repairPlans(state);
+    if (LL.matchBills(state)) save(true);
     agg = LL.aggregate(state, today());
     const sec = sectionOf(ui.page);
-    $('#secnav').innerHTML = SECTIONS.map((x) => `<button class="sec${x.k === sec.k ? ' on' : ''}" data-act="section" data-v="${x.k}">${ICONS[x.k]}<span>${x.label}</span>${x.k === 'money' && unsorted().length ? '<i class="sdot"></i>' : ''}</button>`).join('');
+    $('#secnav').innerHTML = SECTIONS.map((x) => `<button class="sec${x.k === sec.k ? ' on' : ''}" data-act="section" data-v="${x.k}">${ICONS[x.k]}<span>${x.label}</span>${x.k === 'business' && unsorted().length ? '<i class="sdot"></i>' : ''}</button>`).join('');
     $('#nav').innerHTML = sec.pages.map(([k, l]) => `<button class="tab${ui.page === k ? ' on' : ''}" data-act="page" data-v="${k}">${l}${k === 'tx' && unsorted().length ? ` <span class="dot">${unsorted().length}</span>` : ''}</button>`).join('');
     const empty = !Object.keys(state.bank).length && !Object.keys(state.sales).length;
     const views = { overview: viewOverview, cashflow: viewCashflow, sales: viewSales, growth: viewGrowth, events: viewEvents, team: viewTeam, schedule: viewSchedule, tx: viewTx, import: viewImport, settings: viewSettings, help: viewHelp };
@@ -2474,6 +2631,7 @@ function createAvailabilityForm() {
     </div>
 
     ${attn.length ? `<div class="card attn"><h2>Needs a look</h2><ul>${attn.map((a) => `<li>${a}</li>`).join('')}</ul></div>` : ''}
+    ${openMoneyCard()}
     ${insightsCard(LL.insights(state, agg), true)}
 
     <div class="grid2">
@@ -2503,6 +2661,60 @@ function createAvailabilityForm() {
     if (!rec.length) return '';
     const every = (n) => ({ 0: 'irregular, averaged', 1: 'monthly', 3: 'every 3 months', 6: 'every 6 months', 12: 'yearly' }[n] || `every ${n} months`);
     return `<details class="mt"><summary class="small"><b>Regular payments the forecast uses (${rec.length})</b></summary><div class="tablewrap"><table class="t"><tbody>${rec.map((r) => `<tr><td>${esc(r.label || r.party || r.cat)}<div class="muted small">${esc((LL.CATS[r.cat] || {}).label || r.cat)} · ${every(r.every)}</div></td><td class="r nw">${eur(r.amount)}</td></tr>`).join('')}</tbody></table></div></details>`;
+  }
+  function openMoneyCard() {
+    const t = today();
+    const bills = LL.live(state.bills);
+    const owe = bills.filter((b) => b.dir !== 'in' && !b.paidOn).sort((a, b) => (a.due || '9') < (b.due || '9') ? -1 : 1);
+    const inBills = bills.filter((b) => b.dir === 'in' && !b.paidOn);
+    const tenants = LL.live(state.tenants).filter((x) => x.from && x.monthly).map((x) => ({ x, st: LL.tenantStatus(state, x, t) })).filter((y) => y.st.owed > 0);
+    const paid = bills.filter((b) => b.paidOn).sort((a, b) => (a.paidOn < b.paidOn ? 1 : -1)).slice(0, 6);
+    const due = (b) => (b.due ? (b.due < t ? `<span class="negc">overdue since ${dmy(b.due)}</span>` : `due ${dmy(b.due)}`) : 'no due date (counted this month)');
+    const sumOwe = owe.reduce((a, b) => a + b.amount, 0), sumIn = inBills.reduce((a, b) => a + b.amount, 0) + tenants.reduce((a, y) => a + y.st.owed, 0);
+    const row = (b) => `<button class="omrow" data-act="editBill" data-id="${b.id}"><span><b>${esc(b.party || 'Invoice')}</b>${b.note ? ` <span class="muted small">· ${esc(b.note)}</span>` : ''}<br><span class="small muted">${due(b)} · ${esc((CATS[b.cat] || {}).label || '')}</span></span><span class="b">${eur(b.amount)}</span></button>`;
+    return `<div class="card" data-box="openmoney">
+      <div class="row between wrap"><h2>Open money${help('Invoices you still have to pay, and money others owe you. Open invoices go into the forecast in the month they are due (overdue ones this month). When the payment shows up in a bank statement, it is ticked off automatically.')}</h2>
+        <div class="row gap"><button class="btn sm primary" data-act="newBill" data-v="out">+ Invoice to pay</button><button class="btn sm" data-act="newBill" data-v="in">+ Money owed to us</button></div></div>
+      <div class="grid2 inner">
+        <div><h3>We owe · ${eur(sumOwe)}</h3>${owe.map(row).join('') || '<p class="muted small">No open invoices.</p>'}</div>
+        <div><h3>Owed to us · ${eur(sumIn)}</h3>
+          ${tenants.map(({ x, st }) => `<button class="omrow" data-act="editTenant" data-id="${x.id}"><span><b>${esc(x.name)} · rent</b><br><span class="small muted">${eur(x.monthly)} a month since ${dmy(x.from)} · received ${eur(st.received)}${x.payFrom ? ` · pays from ${dmy(x.payFrom)}` : ' · <span class="warnc">no payment date agreed yet (not in forecast)</span>'}</span></span><span class="b warnc">${eur(st.owed)}</span></button>`).join('')}
+          ${inBills.map(row).join('')}${!tenants.length && !inBills.length ? '<p class="muted small">Nothing open.</p>' : ''}</div>
+      </div>
+      ${paid.length ? `<details class="mt"><summary class="small muted">Paid recently (${paid.length})</summary>${paid.map((b) => `<button class="omrow dim" data-act="editBill" data-id="${b.id}"><span>${esc(b.party)}<br><span class="small okc">✓ ${b.dir === 'in' ? 'received' : 'paid'} ${dmy(b.paidOn)}</span></span><span>${eur(b.amount)}</span></button>`).join('')}</details>` : ''}
+    </div>`;
+  }
+  const money = (v) => Math.round(parseFloat(String(v || '').replace(/\s|€/g, '').replace(/\.(?=\d{3}(\D|$))/g, '').replace(',', '.')) * 100) || 0;
+  const money2 = (c) => (c ? nf2.format(c / 100) : '');
+  function billEditor(b, dir) {
+    const isNew = !b; b = b || { dir: dir || 'out', party: '', note: '', amount: 0, due: '', cat: dir === 'in' ? 'other_in' : 'other_out', match: '' };
+    const cats = Object.entries(CATS).filter(([k, c]) => (b.dir === 'in' ? c.group === 'in' : ['out', 'setup', 'tax', 'fin'].includes(c.group)) && k !== 'uncat');
+    return `<h2>${isNew ? (b.dir === 'in' ? 'Money owed to us' : 'Invoice to pay') : b.dir === 'in' ? 'Money owed to us' : 'Invoice'}</h2>
+      <label class="fld">${b.dir === 'in' ? 'From' : 'To (supplier)'}<input class="in" id="biParty" value="${esc(b.party)}" placeholder="${b.dir === 'in' ? 'e.g. a partner' : 'e.g. Steuerberater'}"></label>
+      <label class="fld">What for <span class="muted small">(optional)</span><input class="in" id="biNote" value="${esc(b.note || '')}" placeholder="e.g. invoice 2026-114"></label>
+      <div class="row gap"><label class="fld grow">Amount €<input class="in" id="biAmt" inputmode="decimal" value="${money2(b.amount)}"></label><label class="fld grow">Due date<input class="in" type="date" id="biDue" value="${b.due || ''}"></label></div>
+      <label class="fld">Category<select class="in" id="biCat">${cats.map(([k, c]) => `<option value="${k}"${b.cat === k ? ' selected' : ''}>${c.label}</option>`).join('')}</select></label>
+      <label class="fld">Name on the bank statement <span class="muted small">(optional, helps the automatic tick-off)</span><input class="in" id="biMatch" value="${esc(b.match || '')}"></label>
+      ${b.paidOn ? `<p class="okc small">✓ ${b.dir === 'in' ? 'Received' : 'Paid'} on ${dmy(b.paidOn)}. <a data-act="unpayBill" data-id="${b.id}">Not paid after all</a></p>` : isNew ? '' : `<p><button class="btn sm" data-act="payBill" data-id="${b.id}">Mark as ${b.dir === 'in' ? 'received' : 'paid'}</button></p>`}
+      <p id="biErr" class="negc small"></p>
+      <div class="row between wrap mt">${isNew ? '<span></span>' : `<button class="btn ghost danger" data-act="delBill" data-id="${b.id}">Delete</button>`}<div class="row gap"><button class="btn" data-act="closeModal">Cancel</button><button class="btn primary" data-act="saveBill" data-id="${isNew ? '' : b.id}" data-v="${b.dir}">Save</button></div></div>`;
+  }
+  function tenantEditor(x) {
+    const isNew = !x; x = x || { name: '', match: '', monthly: 0, from: '', payFrom: '', backPlan: 'lump', backMonths: 1, backFrom: '', notes: '' };
+    const st = isNew ? null : LL.tenantStatus(state, x, today());
+    return `<h2>${isNew ? 'New tenant' : esc(x.name)}</h2>
+      <label class="fld">Name<input class="in" id="tnName" value="${esc(x.name)}" placeholder="e.g. the coffee bar"></label>
+      <div class="row gap"><label class="fld grow">Rent per month €<input class="in" id="tnMonthly" inputmode="decimal" value="${money2(x.monthly)}"></label><label class="fld grow">Rent due since<input class="in" type="date" id="tnFrom" value="${x.from || ''}"></label></div>
+      <label class="fld">Regular payments start<input class="in" type="date" id="tnPayFrom" value="${x.payFrom || ''}"><span class="muted small">Leave empty until it's agreed. Then the rent goes into the forecast from this date.</span></label>
+      <fieldset class="scope"><legend>Back rent (everything due before that)</legend>
+        <label><input type="radio" name="tnBack" value="lump"${x.backPlan !== 'split' && x.backPlan !== 'none' ? ' checked' : ''}> Paid in one go</label>
+        <label><input type="radio" name="tnBack" value="split"${x.backPlan === 'split' ? ' checked' : ''}> In <input class="in num" id="tnBackMonths" inputmode="numeric" value="${x.backMonths || 3}" style="width:56px"> monthly instalments</label>
+        <label><input type="radio" name="tnBack" value="none"${x.backPlan === 'none' ? ' checked' : ''}> Not agreed yet (not in forecast)</label>
+        <label class="fld">First back-rent payment on<input class="in" type="date" id="tnBackFrom" value="${x.backFrom || ''}"></label></fieldset>
+      <label class="fld">Name on their bank transfers<input class="in" id="tnMatch" value="${esc(x.match || '')}" placeholder="as it appears in the bank"><span class="muted small">Payments with this name count as rent received.</span></label>
+      <label class="fld">Notes<textarea class="in" id="tnNotes" rows="2">${esc(x.notes || '')}</textarea></label>
+      ${st ? `<p class="small">Due so far ${eur(st.due)} · received ${eur(st.received)} · <b class="${st.owed ? 'warnc' : 'okc'}">owed ${eur(st.owed)}</b></p>` : ''}
+      <div class="row between wrap mt">${isNew ? '<span></span>' : `<button class="btn ghost danger" data-act="delTenant" data-id="${x.id}">Delete</button>`}<div class="row gap"><button class="btn" data-act="closeModal">Cancel</button><button class="btn primary" data-act="saveTenant" data-id="${isNew ? '' : x.id}">Save</button></div></div>`;
   }
   function attention(kf) {
     const out = [];
@@ -2594,6 +2806,7 @@ function createAvailabilityForm() {
 
   // ---------- Cash flow ----------
   const CAT_HELP = {
+    events_out: 'Catering, drinks, decoration and other costs of events and workshops.',
     sales: 'Money Eversports (via Stripe) pays into the bank, usually once a week. Eversports bills its own fee separately.',
     terminal: 'Card payments taken in the studio with the SumUp reader.',
     other_in: 'Anything else coming in that isn\'t a sale, a loan or a tax refund (e.g. a supplier refund).',
@@ -2645,8 +2858,9 @@ function createAvailabilityForm() {
           ${catsBy('fin').length ? head('Financing') + rows('fin') : ''}
           ${sum('Net change', (c) => c.net, 'strong')}
           <tr class="sum strong"><th class="rl">Cash at month end</th>${cols.map((c) => `<td class="r${c.fc ? ' fc' : ''} ${c.end < 0 ? 'neg' : ''}">${eur(c.end)}</td>`).join('')}<td></td></tr>
+          ${LL.live(state.tenants).filter((t) => t.from && t.monthly).map((t) => { let run = 0; const rec = (m) => LL.tenantStatus(state, t, today()).payments.filter((x) => LL.mk(x.date) === m).reduce((a, x) => a + x.amount, 0); const owedTo = (m) => { run = 0; for (const mm of LL.monthRange(LL.mk(t.from), m)) run += LL.tenantDue(t, mm) - rec(mm); return run; }; return `<tr class="memo"><th class="rl">${esc(t.name)} rent owed to us${help('Not cash: rent that was due but hasn\'t arrived yet (cumulative, at month end). It turns into money in when they pay.')}</th>${cols.map((c) => { const v = c.fc || c.m < LL.mk(t.from) ? null : owedTo(c.m); return `<td class="r${c.fc ? ' fc' : ''}">${v ? `<span class="warnc">${eur(v)}</span>` : '<span class="muted">·</span>'}</td>`; }).join('')}<td></td></tr>`; }).join('')}
         </tbody></table></div>
-      <p class="muted small">Actual months up to ${dmy(agg.lastBankDate)}, the last day with bank data. Forecast: average of the last 3 complete months; instructor pay from the planned classes (Eversports or the Schedule page); loan repayment as last paid.</p>
+      <p class="muted small">Actual months up to ${dmy(agg.lastBankDate)}, the last day with bank data. Forecast: sales at the pace of the last 6 weeks; fixed costs when they are due; instructor pay from the planned classes; events, rentals, rent from tenants and open bills when they are due. Details: Help → Result, runway, buffer.</p>
     </div>`;
   }
 
@@ -2697,8 +2911,10 @@ function createAvailabilityForm() {
   function viewTeam() {
     const ins = state.settings.instructors.filter((i) => !i.deleted);
     const byId = Object.fromEntries(ins.map((i) => [i.id, i]));
-    const cm = agg.months.filter((m) => m.classes.taught || m.classes.planned || m.ins.expected || m.ins.paidNet);
-    if (!cm.length) return `<div class="card"><h2>Team & classes</h2><p class="muted">Import the Eversports “Activity overview of all appointments” to see classes and instructor pay.</p></div>`;
+    const next4 = [0, 1, 2, 3].map((k) => LL.addMonths(LL.mk(today()), k));
+    const cm = agg.months.filter((m) => m.classes.taught || m.classes.planned || m.classes.estimated || m.ins.expected || m.ins.paidNet || next4.includes(m.m));
+    const exp = (m) => m.ins.expected + (m.ins.est || 0);
+    if (!cm.length) return `<div class="card"><h2>Team</h2><p class="muted">Import the Eversports “Activity overview of all appointments” to see classes and instructor pay.</p></div>`;
     const cur = LL.mk(today());
     if (!ui.teamMonth || !cm.find((m) => m.m === ui.teamMonth)) ui.teamMonth = cm.filter((m) => m.m <= cur).slice(-1)[0]?.m || cm[0].m;
     const M = agg.byMonth[ui.teamMonth];
@@ -2707,7 +2923,7 @@ function createAvailabilityForm() {
     const rows = [...ids].map((id) => {
       const i = byId[id]; const c = M.classes.byIns[id] || { classes: 0, attendees: 0, capacity: 0 }; const p = M.ins.byIns[id] || { classes: 0, expected: 0, paid: 0 };
       const st = i ? (LL.paidIn(i, M.m) ? 'paid' : i.status === 'paid' ? 'unpaid' : i.status) : 'unknown';
-      return { id, name: i ? i.name : id.replace(/^x/, ''), status: st, classes: Math.max(c.classes + (c.planned || 0), p.classes), taught: c.classes, att: c.attendees, cap: c.capacity, expected: p.expected, paid: p.paid };
+      return { id, name: i ? i.name : id.replace(/^x/, ''), status: st, classes: Math.max(c.classes + (c.planned || 0), p.classes) + (c.est || 0), est: c.est || 0, taught: c.classes, att: c.attendees, cap: c.capacity, expected: p.expected + (p.est || 0), paid: p.paid };
     }).sort((a, b) => (a.status === 'paid') === (b.status === 'paid') ? b.classes - a.classes : a.status === 'paid' ? -1 : 1);
     const stLabel = { paid: 'paid', unpaid: 'unpaid', unknown: 'not set', excluded: '' };
     // one bar per instructor: length = classes, colour = how full their classes were
@@ -2716,25 +2932,26 @@ function createAvailabilityForm() {
     const step = (f) => (f < 0.2 ? 1 : f < 0.35 ? 2 : f < 0.5 ? 3 : f < 0.65 ? 4 : 5);
     const barsHtml = `<div class="ibars">${bars.map((r) => { const f = r.cap ? r.att / r.cap : null; return `<div class="ibar hov" data-tip="${esc(`<b>${esc(r.name)}</b><br>${r.classes} classes (${pct(r.classes / totalC)} of all)${r.taught < r.classes ? `<br>${r.classes - r.taught} still planned` : ''}${f !== null ? `<br>${pct(f)} full, ${nf2.format(r.att / r.taught)} guests per class` : ''}`)}"><span class="iname">${esc(r.name)}</span><span class="itrack"><span class="ifill ${f === null ? 'seq0' : 'seq' + step(f)}" style="width:${Math.max(3, (r.classes / maxC) * 100)}%"></span></span><span class="ival"><b>${r.classes}</b> <span class="muted">${pct(r.classes / totalC)}</span>${f !== null ? ` · ${pct(f)} full` : ' · planned'}</span></div>`; }).join('')}</div>
       <div class="seqlegend"><span class="muted small">How full:</span>${['under 20%', '20–35%', '35–50%', '50–65%', '65%+'].map((l, i) => `<span><i class="sw seq${i + 1}"></i>${l}</span>`).join('')}<span><i class="sw seq0"></i>planned</span></div>`;
-    const fut = M.m > cur || (M.m === cur && M.classes.planned);
+    const fut = M.m > cur || (M.m === cur && (M.classes.planned || M.classes.estimated));
     return `<div class="card">
       <div class="row between wrap"><h2>Instructors${help('Classes from the Eversports activity export. Expected pay = classes × rate (Settings). Paid = what left the bank for that month (payroll is paid early the following month).')}</h2>
         <div class="chips">${cm.map((m) => `<button class="chip${m.m === ui.teamMonth ? ' on' : ''}" data-act="teamMonth" data-v="${m.m}">${mName(m.m)}${m.m > cur ? ' · plan' : ''}</button>`).join('')}</div></div>
       ${barsHtml}
       <div class="tablewrap mt"><table class="t">
         <thead><tr><th>Instructor</th><th class="r">Classes</th><th class="r">Avg. guests</th><th class="r">Full</th><th class="r">Expected pay</th><th class="r">Paid (bank)</th></tr></thead>
-        <tbody>${rows.map((r) => `<tr class="${r.status !== 'paid' ? 'dim' : ''}"><td>${esc(r.name)} ${r.status !== 'paid' ? `<span class="tag">${stLabel[r.status] || ''}</span>` : ''}</td><td class="r">${r.classes}${r.taught < r.classes ? ` <span class="muted small">(${r.classes - r.taught} planned)</span>` : ''}</td><td class="r">${r.taught ? nf2.format(r.att / r.taught).replace(/,0+$/, '') : '·'}</td><td class="r">${r.cap ? pct(r.att / r.cap) : '·'}</td><td class="r">${r.status === 'paid' ? eur(r.expected) : '·'}</td><td class="r">${r.paid ? eur(r.paid, true) : '<span class="muted">·</span>'}</td></tr>`).join('')}</tbody>
-        <tfoot><tr class="sum"><th>Total</th><th class="r">${M.classes.taught + M.classes.planned}</th><th class="r">${M.classes.taught ? nf2.format(M.classes.attendees / M.classes.taught) : '·'}</th><th class="r">${M.classes.capacity ? pct(M.classes.attendees / M.classes.capacity) : '·'}</th><th class="r">${eur(M.ins.expected)}</th><th class="r">${M.ins.paidNet ? eur(M.ins.paidNet, true) : '·'}</th></tr>
-        <tr><td colspan="5">Social security & payroll tax for ${mName(M.m)}</td><td class="r">${M.ins.payroll ? eur(M.ins.payroll, true) : fut || !M.ins.paidNet ? `<span class="muted">≈ ${eur(M.ins.expected * (ratio - 1))}</span>` : '·'}</td></tr>
-        <tr class="sum strong"><td colspan="4">Instructor cost${fut || !M.ins.paidNet ? ' (expected)' : ''}</td><td class="r">${eur(M.ins.expected * ratio)}</td><td class="r">${M.ins.paidNet ? eur(M.ins.paidNet + M.ins.payroll) : '·'}</td></tr></tfoot>
+        <tbody>${rows.map((r) => `<tr class="${r.status !== 'paid' ? 'dim' : ''}"><td>${esc(r.name)} ${r.status !== 'paid' ? `<span class="tag">${stLabel[r.status] || ''}</span>` : ''}</td><td class="r">${r.classes}${r.taught < r.classes - r.est ? ` <span class="muted small">(${r.classes - r.taught - r.est} planned)</span>` : ''}${r.est ? ` <span class="muted small">(${r.est} estimated)</span>` : ''}</td><td class="r">${r.taught ? nf2.format(r.att / r.taught).replace(/,0+$/, '') : '·'}</td><td class="r">${r.cap ? pct(r.att / r.cap) : '·'}</td><td class="r">${r.status === 'paid' ? eur(r.expected) : '·'}</td><td class="r">${r.paid ? eur(r.paid, true) : '<span class="muted">·</span>'}</td></tr>`).join('')}</tbody>
+        <tfoot><tr class="sum"><th>Total</th><th class="r">${M.classes.taught + M.classes.planned + (M.classes.estimated || 0)}</th><th class="r">${M.classes.taught ? nf2.format(M.classes.attendees / M.classes.taught) : '·'}</th><th class="r">${M.classes.capacity ? pct(M.classes.attendees / M.classes.capacity) : '·'}</th><th class="r">${eur(exp(M))}</th><th class="r">${M.ins.paidNet ? eur(M.ins.paidNet, true) : '·'}</th></tr>
+        <tr><td colspan="5">Social security & payroll tax for ${mName(M.m)}</td><td class="r">${M.ins.payroll ? eur(M.ins.payroll, true) : fut || !M.ins.paidNet ? `<span class="muted">≈ ${eur(exp(M) * (ratio - 1))}</span>` : '·'}</td></tr>
+        <tr class="sum strong"><td colspan="4">Instructor cost${fut || !M.ins.paidNet ? ' (expected)' : ''}</td><td class="r">${eur(exp(M) * ratio)}</td><td class="r">${M.ins.paidNet ? eur(M.ins.paidNet + M.ins.payroll) : '·'}</td></tr></tfoot>
       </table></div>
+      ${M.classes.estimated ? `<p class="small attn-in">${M.classes.estimated} classes in ${mName(M.m)} have no instructor yet. They're estimated with whoever usually teaches that slot${M.classes.open ? `; ${M.classes.open} have no usual instructor and aren't counted` : ''}. Assign instructors in the Schedule to make it exact.</p>` : ''}
       <p class="muted small">“Paid” is net pay; payroll tax and social security come on top (recently ${pct(ratio - 1)} of class pay). ${M.m >= LL.addMonths(LL.mk(agg.lastBankDate || today()), 0) ? `Pay for ${mName(M.m)} shows once the bank statement for ${mName(LL.addMonths(M.m, 1))} is imported.` : ''}</p>
     </div>
     <div class="card">
       <h2>Classes per month</h2>
       <div class="tablewrap"><table class="t">
         <thead><tr><th>Month</th><th class="r">Classes</th><th class="r">by paid team</th><th class="r">Guests</th><th class="r">Avg. per class</th><th class="r">Full</th><th class="r">Instructor cost</th><th class="r">Cost per guest</th></tr></thead>
-        <tbody>${cm.map((m) => { const cost = m.ins.paidNet ? m.ins.paidNet + m.ins.payroll : m.ins.expected * ratio; const est = !m.ins.paidNet; return `<tr><td>${mName(m.m, true)}</td><td class="r">${m.classes.taught}${m.classes.planned ? ` <span class="muted small">+${m.classes.planned} planned</span>` : ''}</td><td class="r">${m.classes.paidTaught}</td><td class="r">${m.classes.attendees || '·'}</td><td class="r">${m.classes.taught ? nf2.format(m.classes.attendees / m.classes.taught) : '·'}</td><td class="r">${m.classes.capacity ? pct(m.classes.attendees / m.classes.capacity) : '·'}</td><td class="r">${est ? '≈ ' : ''}${eur(cost)}</td><td class="r">${m.classes.attendees && !m.classes.planned ? (est ? '≈ ' : '') + eur(cost / m.classes.attendees, true) : '·'}</td></tr>`; }).join('')}</tbody>
+        <tbody>${cm.map((m) => { const cost = m.ins.paidNet ? m.ins.paidNet + m.ins.payroll : exp(m) * ratio; const est = !m.ins.paidNet; return `<tr><td>${mName(m.m, true)}</td><td class="r">${m.classes.taught}${m.classes.planned + (m.classes.estimated || 0) ? ` <span class="muted small">+${m.classes.planned + (m.classes.estimated || 0)} planned</span>` : ''}</td><td class="r">${m.classes.paidTaught}</td><td class="r">${m.classes.attendees || '·'}</td><td class="r">${m.classes.taught ? nf2.format(m.classes.attendees / m.classes.taught) : '·'}</td><td class="r">${m.classes.capacity ? pct(m.classes.attendees / m.classes.capacity) : '·'}</td><td class="r">${est ? '≈ ' : ''}${eur(cost)}</td><td class="r">${m.classes.attendees && !m.classes.planned ? (est ? '≈ ' : '') + eur(cost / m.classes.attendees, true) : '·'}</td></tr>`; }).join('')}</tbody>
       </table></div>
     </div>`;
   }
@@ -2791,19 +3008,22 @@ function createAvailabilityForm() {
       </ol>
       <p class="muted small">George exports (CSV or JSON) also work; duplicates with the PDF statements are recognised by date and amount.</p>
     </div>
-    ${log.length ? `<div class="card"><h2>Recent imports</h2><table class="t"><tbody>${log.map((l) => `<tr><td>${dmy(new Date(l.at).toISOString().slice(0, 10))}</td><td>${esc(l.file)}</td><td class="muted">${esc(l.what)}</td></tr>`).join('')}</tbody></table></div>` : ''}`;
+    ${log.length ? `<div class="card"><h2>Recent imports</h2><table class="t ilog"><tbody>${log.map((l) => `<tr><td>${dmy(new Date(l.at).toISOString().slice(0, 10))}</td><td>${esc(l.file)}</td><td><span class="imp ok sm">✓</span> ${esc(l.what)}</td></tr>`).join('')}</tbody></table></div>` : ''}`;
   }
   async function importFiles(files) {
-    const res = [];
+    const res = []; let ok = 0;
+    const box0 = $('#importResult'); if (box0) box0.innerHTML = `<p class="muted">Reading ${files.length} file${files.length > 1 ? 's' : ''}…</p>`;
     for (const f of files) {
       try {
         const r = await importOne(f);
-        res.push(`<li><b>${esc(f.name)}</b>: ${r}</li>`);
+        ok++;
+        res.push(`<li><span class="imp ok">✓ Imported</span><span><b>${esc(f.name)}</b><br><span class="small">${r}</span></span></li>`);
         state.importLog = [{ id: LL.hash(f.name + Date.now()), at: Date.now(), file: f.name, what: r.replace(/<[^>]+>/g, '') }, ...(state.importLog || [])].slice(0, 60);
-      } catch (e) { res.push(`<li class="negc"><b>${esc(f.name)}</b>: ${esc(e.message)}</li>`); }
+      } catch (e) { res.push(`<li><span class="imp bad">✗ Not imported</span><span><b>${esc(f.name)}</b><br><span class="small negc">${esc(e.message)}</span></span></li>`); }
     }
     save(); render();
     const box = $('#importResult'); if (box) box.innerHTML = `<ul class="result">${res.join('')}</ul>`;
+    toast(ok === files.length ? `✓ ${ok === 1 ? 'File' : ok + ' files'} imported` : `${ok} of ${files.length} files imported. ${box ? 'See the list.' : 'Open Setup → Import to see why.'}`, 2600);
   }
   async function importOne(f) {
     const name = f.name.toLowerCase();
@@ -2835,12 +3055,12 @@ function createAvailabilityForm() {
       // keep only what the Growth page needs: no birthdays, phone numbers or addresses
       const keep = kind === 'gproducts' ? ['Name', 'Purchased on', 'E-mail', 'Number of participations', 'Remaining units', 'Status'] : ['First Name', 'Last Name', 'Email', 'Accepts Newsletter', 'Total bookings in timeframe', / Bookings$/];
       state.growth[id] = { id, text: LLParse.minimiseCSV(rows, keep), file: f.name, at: Date.now(), updatedAt: Date.now() };
-      return kind === 'gproducts' ? `products & trials export: ${rows.length} purchases (Growth tab)` : `customers export: ${rows.length} clients (Growth tab)`;
+      return kind === 'gproducts' ? `products & trials export: ${rows.length} purchases (Growth → Clients)` : `customers export: ${rows.length} clients (Growth → Clients)`;
     }
     if (kind === 'ads') {
       state.growth.ads = { id: 'ads', text: LLParse.minimiseCSV(rows, ['Age', 'Gender', /^Amount spent/, 'Reach', 'Impressions', 'Link clicks', 'Website landing page views', 'Reporting starts', 'Reporting ends']), file: f.name, at: Date.now(), updatedAt: Date.now() };
       const a = LL.adsSummary(state);
-      return `Meta ads report: ${eur(Math.round(a.spend * 100))} spent, ${nf0.format(a.clicks)} link clicks (Growth tab)`;
+      return `Meta ads report: ${eur(Math.round(a.spend * 100))} spent, ${nf0.format(a.clicks)} link clicks (Growth → Clients)`;
     }
     if (kind === 'availability') {
       const m = ui.schedMonth || LL.addMonths(LL.mk(today()), 1);
@@ -2998,7 +3218,13 @@ function createAvailabilityForm() {
     const wd = DAYS_LONG[LLS.weekday(d)];
     return `<h2>${isNew ? 'Add a class' : 'Edit class · ' + dShort(d)}</h2>
       ${isNew ? `<label class="fld">Day<input class="in" type="date" id="ceDate" value="${d}"></label>` : ''}
-      <label class="fld">Class<input class="in" id="ceTitle" list="ceTypes" value="${esc(c ? c.title : '')}" placeholder="e.g. Lagree Burn"><datalist id="ceTypes">${types.map((t) => `<option value="${esc(t.name)}">`).join('')}</datalist></label>
+      ${(() => {
+        const curT = c ? c.title : 'Lagree Burn';
+        const known = types.some((t) => t.name === curT);
+        const byRoom = {}; for (const t of types) { const r = t.kind === 'rental' ? 'Room rental' : (t.room || 'Other'); (byRoom[r] = byRoom[r] || []).push(t); }
+        return `<label class="fld">Class<select class="in" id="ceType" data-act="ceType">${!known ? `<option selected>${esc(curT)}</option>` : ''}${Object.entries(byRoom).map(([r, ts]) => `<optgroup label="${esc(r.replace(/^The /, ''))}">${ts.map((t) => `<option${t.name === curT ? ' selected' : ''}>${esc(t.name)}</option>`).join('')}</optgroup>`).join('')}<option value="__other">Other… type a name</option></select></label>
+      <label class="fld" id="ceOtherRow" hidden>New class name<input class="in" id="ceTitle" placeholder="e.g. Sunday Lagree & Coffee"><span class="muted small">It's added to your class types.</span></label>`;
+      })()}
       <div class="row gap"><label class="fld grow">Start<input class="in" id="ceStart" value="${c ? c.start : ''}" placeholder="07:40" inputmode="numeric"></label><label class="fld grow">End<input class="in" id="ceEnd" value="${c ? c.end || '' : ''}" placeholder="08:30" inputmode="numeric"></label></div>
       <label class="fld">Room<select class="in" id="ceRoom">${LLS.rooms(state).map((r) => `<option${(c ? c.room : LLS.rooms(state)[0]) === r ? ' selected' : ''}>${esc(r)}</option>`).join('')}</select></label>
       <label class="fld">Instructor<select class="in" id="ceIns"><option value="">— no instructor yet —</option>${ok.length ? `<optgroup label="Available & teaches this">${ok.map((i) => `<option value="${i.id}"${cur === i.id ? ' selected' : ''}>${esc(i.name)}${i.status === 'unpaid' ? ' (unpaid)' : ''}</option>`).join('')}</optgroup>` : ''}<optgroup label="${ok.length ? 'Others' : 'Team'}">${rest.map((i) => `<option value="${i.id}"${cur === i.id ? ' selected' : ''}>${esc(i.name)}</option>`).join('')}</optgroup></select></label>
@@ -3034,7 +3260,7 @@ function createAvailabilityForm() {
     const snap = LL.growthSnapshot(state, t);
     const dataIdeas = LL.eventIdeas(state, agg, snap);
     const mine = (state.settings.ideas || []).filter((i) => !i.deleted);
-    const evCard = (e) => `<button class="evrow" data-act="editEvent" data-id="${e.id}"><span class="evd"><b>${e.date ? (+e.date.slice(8, 10)) + '.' + (+e.date.slice(5, 7)) + '.' : '—'}</b><em>${e.date ? DAYS[LLS.weekday(e.date)] : ''}</em></span><span class="evb"><b>${esc(e.title)}</b><span class="muted small">${[e.start ? e.start + (e.end ? '–' + e.end : '') : '', e.room ? e.room.replace(/^The /, '') : '', e.internal ? 'internal' : 'public'].filter(Boolean).join(' · ')}</span>${e.notes ? `<span class="small">${esc(e.notes).slice(0, 160)}${e.notes.length > 160 ? '…' : ''}</span>` : ''}</span><span class="eva">${e.income ? `<span class="pos">+${eur(e.income)}</span>` : ''}${e.cost ? `<span class="neg">${eur(-e.cost)}</span>` : ''}</span></button>`;
+    const evCard = (e) => `<button class="evrow" data-act="editEvent" data-id="${e.id}"><span class="evd"><b>${e.date ? (+e.date.slice(8, 10)) + '.' + (+e.date.slice(5, 7)) + '.' : '—'}</b><em>${e.date ? DAYS[LLS.weekday(e.date)] : ''}</em></span><span class="evb"><b>${esc(e.title)}</b><span class="muted small">${[e.start ? e.start + (e.end ? '–' + e.end : '') : '', e.room ? e.room.replace(/^The /, '') : '', e.internal ? 'internal' : 'public'].filter(Boolean).join(' · ')}</span>${e.notes ? `<span class="small">${esc(e.notes).slice(0, 160)}${e.notes.length > 160 ? '…' : ''}</span>` : ''}</span><span class="eva">${(() => { const r = LL.eventBudget(state, e, feeR()); return (r.sold ? `<span class="okc">${r.sold} sold · ${eur(r.revenue)}</span>` : '') + (r.tickets || r.costs || r.extra ? `<span class="${r.result < 0 ? 'neg' : 'pos'}">${r.result < 0 ? '' : '+'}${eur(r.result)}</span><span class="muted small">${e.date && e.date < today() ? 'planned' : 'expected'}</span>` : ''); })()}</span></button>`;
     const months4 = [0, 1, 2, 3].map((i) => LL.addMonths(LL.mk(t), i));
     if (!months4.includes(ui.evMonth)) ui.evMonth = months4[0];
     const EM = ui.evMonth, first = EM + '-01', lead = LLS.weekday(first), nd = LLS.datesOf(EM).length;
@@ -3053,6 +3279,8 @@ function createAvailabilityForm() {
       <div class="evlist">${up.map(evCard).join('') || '<p class="muted">Nothing planned yet.</p>'}</div>
       ${past.length ? `<details class="mt"><summary class="muted small">Past events (${past.length})</summary><div class="evlist">${past.reverse().map(evCard).join('')}</div></details>` : ''}
     </div>
+    ${(() => { const f = LL.foundEvents(state); return f.length ? `<div class="card" data-box="found"><h2>Found in Eversports${help('One-off classes in your Eversports data that aren\'t a regular class type: pop-ups, specials, get-togethers. Add them to keep the event history complete (tickets and revenue come from the sales report), or ignore them.')}</h2>
+      ${f.map((x) => `<div class="omrow static"><span><b>${esc(x.title)}</b><br><span class="small muted">${dShort(x.date)}${x.start ? ' · ' + x.start : ''} · ${x.people} booked${x.sold ? ` · ${x.sold} tickets sold · ${eur(x.revenue)}` : ''}</span></span><span class="row gap"><button class="btn sm primary" data-act="addFound" data-v="${esc(x.title)}" data-d="${x.date}">Add</button><button class="btn sm ghost" data-act="ignoreFound" data-v="${esc(x.title)}">Ignore</button></span></div>`).join('')}</div>` : ''; })()}
     ${rentals.length ? `<div class="card"><h2>Room rentals${help('Rentals block the room in the Schedule on each booked date. The agreed payments go into the forecast in the month they are due.')}</h2>${rentals.map((r) => { const next = (r.dates || []).filter((d) => d >= t).sort()[0]; const tot = (r.payments || []).reduce((a, p) => a + p.amount, 0); return `<button class="evrow" data-act="editEvent" data-id="${r.id}"><span class="evd"><b>${(r.dates || []).length}×</b><em>dates</em></span><span class="evb"><b>${esc(r.title)}</b><span class="muted small">${esc((r.room || '').replace(/^The /, ''))} · ${r.start}–${r.end} · next: ${next ? dShort(next) : 'done'}</span><span class="small">Payments: ${(r.payments || []).map((p) => `${eur(p.amount, true)} due ${dmy(p.due)}`).join(' · ')}</span></span><span class="eva"><span class="pos">+${eur(tot, true)}</span></span></button>`; }).join('')}</div>` : ''}
     <div class="card"><h2>Ideas</h2>
       <div class="ideas2">
@@ -3060,6 +3288,46 @@ function createAvailabilityForm() {
           <div class="row gap mt"><input class="in grow" id="newIdea" placeholder="New idea…"><button class="btn sm" data-act="addIdea">Add</button></div></div>
         <div><h3>From your numbers</h3><ul class="idealist why">${dataIdeas.map((i) => `<li><span><b>${esc(i.title)}</b><span class="muted small">${esc(i.why)}</span></span><button class="btn sm" data-act="planIdea" data-v="${esc(i.title)}" data-why="${esc(i.why)}">Plan it</button></li>`).join('')}</ul></div>
       </div></div>`;
+  }
+  const feeR = () => { const ref = LL.lastFullMonths(agg, 3); const sg = ref.reduce((a, m) => a + m.sales.gross, 0), f = ref.reduce((a, m) => a + (m.cats.platform || 0), 0); return sg > 0 ? Math.abs(f / sg) : 0.07; };
+  function gcalUrl(e) {
+    const d = e.date.replace(/-/g, '');
+    let dates;
+    if (e.start) { const st = LLS.mins(e.start), en = e.end && LLS.mins(e.end) > st ? LLS.mins(e.end) : st + 120; const f = (v) => String(Math.floor(v / 60)).padStart(2, '0') + String(v % 60).padStart(2, '0') + '00'; dates = `${d}T${f(st)}/${d}T${f(Math.min(en, 23 * 60 + 59))}`; }
+    else { const nx = new Date(new Date(e.date + 'T12:00:00').getTime() + 864e5).toISOString().slice(0, 10).replace(/-/g, ''); dates = `${d}/${nx}`; }
+    const loc = [state.settings.studioName, e.room, state.settings.address].filter(Boolean).join(', ');
+    const q = new URLSearchParams({ action: 'TEMPLATE', text: e.title, dates, ctz: 'Europe/Vienna', details: e.notes || '', location: loc });
+    return 'https://calendar.google.com/calendar/render?' + q.toString();
+  }
+  function budgetForm(e) {
+    const b = e.budget || {};
+    const team = state.settings.instructors.filter((i) => !i.deleted && i.active !== false);
+    const prods = [...new Set(LL.live(state.sales).map((x) => x.product))].sort();
+    return `<fieldset class="scope budget"><legend>Budget</legend>
+      <div class="row gap"><label class="fld grow">Ticket price €<input class="in" id="bgPrice" data-calc inputmode="decimal" value="${money2(b.price)}" placeholder="e.g. 35"></label><label class="fld grow">People<input class="in" id="bgPeople" data-calc inputmode="numeric" value="${b.people || ''}" placeholder="e.g. 12"></label></div>
+      <div class="row gap"><label class="fld grow">Catering € per person<input class="in" id="bgCaterPer" data-calc inputmode="decimal" value="${money2(b.caterPer)}" placeholder="e.g. 15"></label><label class="fld grow">Catering fixed €<input class="in" id="bgCaterFixed" data-calc inputmode="decimal" value="${money2(b.caterFixed)}"></label></div>
+      <div class="row gap"><label class="fld grow">Lagree class: instructor<select class="in" id="bgIns" data-calc><option value="">— nobody / no class —</option>${team.map((i) => `<option value="${i.id}"${b.classIns === i.id ? ' selected' : ''}>${esc(i.name)}${LL.paidIn(i, LL.mk(e.date || today())) ? ` (${eur(i.rate)})` : ' (unpaid)'}</option>`).join('')}</select></label><label class="fld" style="width:80px">Classes<input class="in" id="bgClasses" data-calc inputmode="numeric" value="${b.classes || 1}"></label></div>
+      <label class="fld">Other costs <span class="muted small">(one per line, e.g. Prosecco 60)</span><textarea class="in" id="bgOther" data-calc rows="2">${(b.other || []).map((x) => `${x.label} ${money2(x.amount)}`).join('\n')}${e.cost && !b.other ? 'Costs ' + money2(e.cost) : ''}</textarea></label>
+      <label class="fld">Other income € <span class="muted small">(e.g. a partner pays)</span><input class="in" id="bgExtra" data-calc inputmode="decimal" value="${money2((b.extra || 0) + (!e.budget && e.income ? e.income : 0))}"></label>
+      <label class="fld">Tickets in Eversports <span class="muted small">(for the real numbers afterwards)</span><select class="in" id="bgProduct" data-calc><option value="">— not linked —</option>${prods.map((p) => `<option${b.product === p ? ' selected' : ''}>${esc(p)}</option>`).join('')}</select></label>
+      <div id="bgCalc">${budgetCalc(e)}</div></fieldset>`;
+  }
+  function readBudget() {
+    const lines = ($('#bgOther').value || '').split('\n').map((l) => { const m = l.trim().match(/^(.*?)\s*(-?[\d.,]+)\s*€?$/); return m ? { label: m[1] || 'Other', amount: money(m[2]) } : null; }).filter((x) => x && x.amount);
+    return { price: money($('#bgPrice').value), people: parseInt($('#bgPeople').value, 10) || 0, caterPer: money($('#bgCaterPer').value), caterFixed: money($('#bgCaterFixed').value), classIns: $('#bgIns').value, classes: parseInt($('#bgClasses').value, 10) || 1, other: lines, extra: money($('#bgExtra').value), product: $('#bgProduct').value };
+  }
+  function budgetCalc(e) {
+    const r = LL.eventBudget(state, Object.assign({}, e, { income: 0, cost: 0 }), feeR());
+    if (!r.tickets && !r.costs && !r.extra && !r.sold) return '<p class="muted small">Fill in price, people and costs to see the result.</p>';
+    const line = (l, v, cl = '') => `<tr><td>${l}</td><td class="r ${cl}">${eur(v)}</td></tr>`;
+    return `<table class="t bgt"><tbody>
+      ${line(`Tickets (${r.people} × ${eur(r.price)})`, r.tickets)}${r.extra ? line('Other income', r.extra) : ''}
+      ${r.catering ? line('Catering', -r.catering, 'neg') : ''}${r.instructor ? line(`Lagree class (${esc(r.ins.name)})`, -r.instructor, 'neg') : r.ins ? `<tr><td>Lagree class (${esc(r.ins.name)})</td><td class="r muted">unpaid</td></tr>` : ''}
+      ${r.other ? line('Other costs', -r.other, 'neg') : ''}${r.fee ? line('Eversports fee', -r.fee, 'neg') : ''}
+      <tr class="sum"><td>Result</td><td class="r ${r.result < 0 ? 'negc' : 'okc'}">${eurS(r.result)}</td></tr></tbody></table>
+      <p class="small">${r.people ? `Costs per person ${eur(r.perPerson)}. ` : ''}${r.breakEven !== null && r.price ? `Break-even at <b>${r.breakEven} people</b>.` : r.price ? 'The ticket price doesn\'t cover the catering per person.' : ''}</p>
+      ${r.sold ? `<p class="small okc">Actually sold in Eversports: ${r.sold} tickets · ${eur(r.revenue)}</p>` : ''}
+      ${r.instructor ? '<p class="muted small">The instructor is paid with the monthly pay, so the forecast counts it there, not twice.</p>' : ''}`;
   }
   function eventEditor(e, preset) {
     const isNew = !e; e = e || Object.assign({ title: '', date: '', start: '', end: '', room: '', internal: false, notes: '', income: 0, cost: 0 }, preset || {});
@@ -3072,8 +3340,9 @@ function createAvailabilityForm() {
       <div class="row gap"><label class="fld grow">Start<input class="in" id="evStart" value="${esc(e.start || '')}" placeholder="17:00" inputmode="numeric"></label><label class="fld grow">End<input class="in" id="evEnd" value="${esc(e.end || '')}" placeholder="20:00" inputmode="numeric"></label></div>
       <label class="fld">Room<select class="in" id="evRoom"><option value="">Whole studio / not set</option>${LLS.rooms(state).map((r) => `<option${e.room === r ? ' selected' : ''}>${esc(r)}</option>`).join('')}</select></label>
       ${rental ? '' : `<label class="chk"><input type="checkbox" id="evInt"${e.internal ? ' checked' : ''}> Internal (team only)</label>
-      <div class="row gap"><label class="fld grow">Expected income €<input class="in" id="evInc" inputmode="decimal" value="${e.income ? nf2.format(e.income / 100) : ''}"></label><label class="fld grow">Expected cost €<input class="in" id="evCost" inputmode="decimal" value="${e.cost ? nf2.format(e.cost / 100) : ''}"></label></div>`}
+      ${budgetForm(e)}`}
       <label class="fld">Notes / to-dos<textarea class="in" id="evNotes" rows="4">${esc(e.notes || '')}</textarea></label>
+      ${!isNew && !rental && e.date ? `<p><a class="btn sm" href="${gcalUrl(e)}" target="_blank" rel="noopener">＋ Add to Google Calendar</a></p>` : ''}
       <div class="row between wrap mt">${isNew ? '<span></span>' : `<button class="btn ghost danger" data-act="delEvent" data-id="${e.id}">Delete</button>`}<div class="row gap"><button class="btn" data-act="closeModal">Cancel</button><button class="btn primary" data-act="saveEvent" data-id="${isNew ? '' : e.id}">Save</button></div></div>`;
   }
 
@@ -3151,7 +3420,7 @@ function createAvailabilityForm() {
     ${g.f ? `<div class="card" data-box="trials"><h2>1 · Trials → regulars</h2>
       <p class="lead">The first class works: ${pc(g.f.attendedPct)} show up. The step after it doesn't: ${g.last ? pc(g.last.conv30Pct) : '—'} buy again within 30 days.</p>
       <div class="kpis"><div><b>${g.lastTrials ? g.lastTrials.trials : '—'}</b><span>new trials in ${g.lastTrials ? mName(g.lastTrials.month) : '—'}</span></div><div><b>${g.last ? pc(g.last.conv30Pct) : '—'}</b><span>bought anything within 30 days</span></div><div><b>${g.last ? pc(g.last.commit30Pct) : '—'}</b><span>bought a pack or membership</span></div><div><b>${g.f.medianDaysToSecondPurchase ?? '—'}</b><span>days to 2nd purchase (median)</span></div></div>
-      <div class="grid2 in"><div><h3>Bought again within 30 days, by trial month</h3>${hbar(g.f.byMonth.filter((x) => x.conv30Pct !== null).map((x) => [mName(x.month), x.conv30Pct]), Math.max(g.T.conv30, ...g.f.byMonth.map((x) => x.conv30Pct || 0)), (v) => pc(v))}<p class="muted small">Target ${g.T.conv30}%. Months younger than 30 days aren't counted yet.</p></div>
+      <div class="grid2 inner"><div><h3>Bought again within 30 days, by trial month</h3>${hbar(g.f.byMonth.filter((x) => x.conv30Pct !== null).map((x) => [mName(x.month), x.conv30Pct]), Math.max(g.T.conv30, ...g.f.byMonth.map((x) => x.conv30Pct || 0)), (v) => pc(v))}<p class="muted small">Target ${g.T.conv30}%. Months younger than 30 days aren't counted yet.</p></div>
       <div><h3>What they buy next</h3>${hbar(Object.entries(g.f.nextProducts).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k, v]) => [k, v]), Math.max(...Object.values(g.f.nextProducts), 1), (v) => String(v))}</div></div>
       ${what(['One clear next step with a deadline: the pack discount only for new clients, valid 10 days after the trial.', 'Two minutes after every first class: greet by name, ask how it felt, book the second class right there.', 'A short personal follow-up: day 0 thank you + offer, day 4 nudge, day 9 "ends tomorrow".', 'Ask for newsletter consent right after a good first class.'])}
     </div>` : ''}
@@ -3168,13 +3437,13 @@ function createAvailabilityForm() {
     </div>` : ''}
     ${g.o ? `<div class="card" data-box="full"><h2>3 · How full classes are</h2>
       <p class="lead">Classes run ${pc(g.o.overall.occupancyPct)} full (${n1(g.o.overall.avgBooked)} of 12 booked on average); ${pc(g.o.overall.nearlyEmptyPct)} have 2 people or fewer.${g.latino && g.lagree ? ` A named format pulls people in: Latino Burn ${n1(g.latino.avgBooked)} vs Lagree Burn ${n1(g.lagree.avgBooked)}.` : ''}</p>
-      <div class="grid2 in"><div><h3>By weekday · last 8 weeks</h3>${hbar(g.o.recentByWeekday.slice().sort((a, b) => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(a.key) - ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(b.key)).map((x) => [x.key, x.avgBooked, x.avgBooked < 3.5 ? 'low' : '']), 12, (v) => n1(v) + ' / 12')}</div>
+      <div class="grid2 inner"><div><h3>By weekday · last 8 weeks</h3>${hbar(g.o.recentByWeekday.slice().sort((a, b) => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(a.key) - ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(b.key)).map((x) => [x.key, x.avgBooked, x.avgBooked < 3.5 ? 'low' : '']), 12, (v) => n1(v) + ' / 12')}</div>
       <div><h3>Fullest times · last 8 weeks</h3>${slotTable(g.o.recentBySlot.slice(0, 4))}<h3 class="mt">Emptiest times</h3>${slotTable(g.o.recentBySlot.filter((x) => x.classes >= 3).slice(-4).reverse())}</div></div>
       ${what(['Cut or merge the weakest slots; keep a few early classes for the early crowd.', 'Add where demand is: another Latino Burn, one more class in the busy evening band.', 'A class of 7 feels alive and sells the next class; a class of 2 does neither, and costs the same instructor fee.'])}
     </div>` : ''}
     ${g.rv ? `<div class="card" data-box="mix"><h2>4 · Discounts & recurring income</h2>
       <p class="lead">${g.rv.packsSoldBelowListPct !== null ? `${pc(g.rv.packsSoldBelowListPct)} of packs were sold below list price. ` : ''}Memberships bring in about ${g.lastRev ? eur(Math.round((g.lastRev.byCategory.Membership || 0) * 100)) : '—'} a month.${g.credits !== null ? ` About ${g.credits} prepaid classes are still open on packs.` : ''}</p>
-      <div class="grid2 in"><div><h3>Revenue mix since opening</h3>${hbar(mixRows, Math.max(...mixRows.map((x) => x[1]), 1), (v) => pc(v))}</div>
+      <div class="grid2 inner"><div><h3>Revenue mix since opening</h3>${hbar(mixRows, Math.max(...mixRows.map((x) => x[1]), 1), (v) => pc(v))}</div>
       <div><h3>Membership income per month</h3>${hbar(g.rv.byMonth.map((x) => [mName(x.month), Math.round((x.byCategory.Membership || 0))]), Math.max(...g.rv.byMonth.map((x) => x.byCategory.Membership || 0), 1), (v) => eur(v * 100))}</div></div>
       ${what(['When a discount is always on, nobody has a reason to buy now: keep it for new clients, with a deadline.', 'A multi-class intro (like Summer Burn) builds the habit better than a single class.', 'Unused prepaid classes are the easiest renewals: remind before they expire.'])}
     </div>` : ''}
@@ -3267,6 +3536,10 @@ function createAvailabilityForm() {
           <p id="lockSetErr" class="negc small"></p><button class="btn primary" data-act="lockOn">Turn on app lock</button>`}
       </div>
       <div class="card">
+        <div class="row between wrap"><h2>Tenants${help('Anyone who rents space from you every month (e.g. the coffee bar). Rent that is due but not paid shows under Overview → Open money and in Cash flow. One-off room rentals are under Planning → Events.')}</h2><button class="btn sm" data-act="newTenant">+ Add tenant</button></div>
+        ${LL.live(state.tenants).map((x) => { const st = LL.tenantStatus(state, x, today()); return `<button class="omrow" data-act="editTenant" data-id="${x.id}"><span><b>${esc(x.name)}</b><br><span class="small muted">${eur(x.monthly)} a month${x.from ? ' since ' + dmy(x.from) : ''}${x.payFrom ? ' · pays from ' + dmy(x.payFrom) : ''}</span></span><span class="${st.owed ? 'warnc' : 'okc'} b">${st.owed ? 'owes ' + eur(st.owed) : 'paid up'}</span></button>`; }).join('') || '<p class="muted small">None yet.</p>'}
+      </div>
+      <div class="card">
         <h2>General</h2>
         <label class="fld">Opening day<input class="in" type="date" value="${state.settings.openingDate}" data-act="setSetting" data-f="openingDate"></label>
         <label class="fld">Safety buffer (months of running costs)<input class="in num" inputmode="numeric" value="${state.settings.bufferMonths}" data-act="setSetting" data-f="bufferMonths"></label>
@@ -3296,14 +3569,14 @@ function createAvailabilityForm() {
       <li><b>For the Growth page</b> (optional, same drop): Products → Analysis → <i>Export activity & booking data</i>; Analytics → Reports → <i>Customers with bookings</i> (this year); and from Meta Ads Manager the report <i>by age and gender</i> as CSV.</li>
       <li>Open <b>Setup → Import</b> and drop all files in at once. Anything already there is skipped.</li>
       <li>Look at <b>Overview → Needs a look</b> and sort anything new.</li></ol>`, true)}
-    ${sec('pages', 'What each page shows', `<p>The app has four sections (top on a computer, bottom bar on the phone): <b>Money</b> (Overview, Cash flow, Transactions), <b>Growth</b> (Clients & funnel, Sales, Events), <b>Studio</b> (Schedule, Team & classes) and <b>Setup</b> (Import, Settings, Help).</p>
+    ${sec('pages', 'What each page shows', `<p>The app has four sections (top on a computer, bottom bar on the phone): <b>Business</b> (Overview, Cash flow, Transactions), <b>Growth</b> (Clients, Sales), <b>Planning</b> (Schedule, Events, Team) and <b>Setup</b> (Import, Settings, Help).</p>
       <p><b>Boxes:</b> tap a box title to fold it away or open it again; the app remembers. <i>Arrange boxes</i> at the bottom of each page lets you move boxes up or down; tap <i>Done arranging</i> when finished.</p>
-      <p><b>Overview:</b> cash in the bank, last month's result, how long the cash lasts, and the next 3 months.</p>
+      <p><b>Overview:</b> cash in the bank, last month's result, how long the cash lasts, <i>Open money</i> (invoices to pay, money owed to you), and the next 3 months.</p>
       <p><b>Cash flow:</b> every month by category, like your spreadsheet. The shaded columns on the right are the forecast. Tap an amount to see the payments behind it.</p>
       <p><b>Sales:</b> what you sold by product, compared with what reached the bank.</p>
-      <p><b>Clients & funnel:</b> the short version, the numbers to watch against your targets, and five sections (trials, returning clients, how full classes are, discounts & recurring income, ads). <i>Export report</i> makes the monthly report as a PDF.</p>
-      <p><b>Events:</b> a calendar of events and room rentals (this month and 3 ahead), the lists, and ideas.</p>
-      <p><b>Team & classes:</b> classes per instructor, how full they were, expected pay vs what was paid.</p>
+      <p><b>Clients:</b> the short version, the numbers to watch against your targets, and five sections (trials, returning clients, how full classes are, discounts & recurring income, ads). <i>Export report</i> makes the monthly report as a PDF.</p>
+      <p><b>Events:</b> a calendar of events and room rentals (this month and 3 ahead), each event's budget, one-off classes found in Eversports, and ideas.</p>
+      <p><b>Team:</b> classes per instructor, how full they were, expected pay vs what was paid. This month and the next 3 always show; classes without an instructor yet are estimated with whoever usually teaches them.</p>
       <p><b>Schedule:</b> one week at a time, times on the left: real classes from Eversports, then your standard week. Change classes, add classes, fill instructors, export for the team.</p>
       <p><b>Transactions:</b> every bank payment. Change a category if it's wrong.</p>`)}
     ${sec('result', 'Result, runway, buffer: what they mean', `<p><b>Result</b> = money in from classes minus running costs (rent, instructors, fees…). One-off build-out, certification, VAT refunds and loan money are left out, so you see how the studio itself is doing.</p>
@@ -3315,7 +3588,9 @@ function createAvailabilityForm() {
         <li><b>Variable costs</b> (supplies, marketing, accounting …): average of recent months.</li>
         <li><b>Instructors</b>: the classes of the month before × rate, plus social security at the rate you actually paid.</li>
         <li><b>VAT</b> (filed monthly): 20% of sales and rent income minus the VAT on costs, due on the 15th of the second month after. Change this in Settings.</li>
-        <li><b>Events and room rentals</b>: their agreed payments in the month they are due.</li></ul>`)}
+        <li><b>Events</b>: tickets and costs from each event's budget, in the event's month.</li>
+        <li><b>Room rentals and tenants</b>: their agreed payments in the month they are due (a tenant only once a payment date is agreed).</li>
+        <li><b>Open invoices</b> (Overview → Open money): in the month they are due, overdue ones this month. When the payment is in the bank, they are ticked off and drop out.</li></ul>`)}
     ${sec('categories', 'Categories explained', `<table class="t"><tbody>${Object.entries(CATS).map(([k, c]) => `<tr><td><b>${c.label}</b></td><td>${esc(CAT_HELP[k] || '')}</td></tr>`).join('')}</tbody></table>
       <p class="muted small mt">To change a payment: Transactions → choose another category → tap “Always sort … as …” so it happens automatically next time.</p>`)}
     ${sec('schedule', 'Schedule: how it works', `<ol class="steps">
@@ -3326,9 +3601,11 @@ function createAvailabilityForm() {
       <li><b>Instructors:</b> pick them by tapping a class, or More → <b>Fill open classes from availability</b>. The app uses only people who are free and teach that class: unpaid instructors first, then whoever usually has the slot, within each person's max per week. Without answers, More → <i>Copy usual instructors</i> puts everyone on their usual slots (it asks first). <i>Remove planned instructors</i> clears them again.</li>
       <li><b>Specialist classes:</b> A format like Latino Burn has one specialist. If someone else gets the slot, it becomes Lagree Burn automatically (Settings → Class types & rooms).</li>
       <li><b>Export for team</b> → Print / save as PDF, or copy the text for WhatsApp. Then create the classes in Eversports.</li></ol>
-      <p><b>Availability form:</b> Schedule → More → <i>Google Form script</i>. It builds a form with one question per day listing that day's <b>times</b> (no class names). Run it once in script.google.com and send the link to the team. Each month: in the answers sheet File → Download → CSV, then <b>Import availability</b> on the Schedule page (pick the month first). When your times change, make a new form the same way.</p>
+      <p><b>Availability form:</b> Schedule → More → <i>Google Form script</i>. It builds a form with a grid: days down the side, six time windows across (Early 6:30–8:00, Morning 8–10, Late morning 10–12:30, Afternoon 12:30–17, Evening 17–18:30, Late evening 18:30–21), plus max classes per week and <i>Dates I'm away</i>. A class counts as possible if it <b>starts</b> inside a ticked window. Run the script once in script.google.com and send the link to the team. Each month: in the answers sheet File → Download → CSV, then <b>Import availability</b> on the Schedule page (pick the month first).</p>
       <p><b>Rooms:</b> red = ${esc(LLS.rooms(state)[0])}, blue = ${esc(LLS.rooms(state)[1] || '')}. An orange ring means two things are booked in the same room at the same time.</p>`)}
-    ${sec('events', 'Events & room rentals', `<p><b>Events</b> (tab): add workshops, parties, get-togethers with date, time, room, notes and expected income or costs. They appear in the Schedule, and the money goes into the forecast.</p>
+    ${sec('events', 'Events & room rentals', `<p><b>Events</b> (Planning → Events): add workshops, parties, get-togethers with date, time, room and notes. They appear in the Schedule. <b>＋ Add to Google Calendar</b> in an event opens Google Calendar with everything filled in.</p>
+      <p><b>Budget:</b> ticket price and people, catering (per person and/or fixed), the Lagree class (the instructor's rate, €0 if unpaid), other costs and other income. The app shows the result, costs per person and how many people you need to break even, live while you type. The money goes into the forecast in the event's month; after the event the real numbers from Eversports and the bank take over. Link the Eversports ticket to see how many were actually sold.</p>
+      <p><b>Found in Eversports:</b> one-off classes (pop-ups, specials) that aren't a regular class type. <i>Add</i> puts them in your events with tickets and revenue; <i>Ignore</i> hides them.</p>
       <p><b>Room rentals</b> (e.g. a teacher renting a room on Saturdays) block the room on each booked date, and the agreed payments appear in the forecast in the month they're due.</p>
       <p><b>Calendar:</b> the month at a glance; the arrows go up to 3 months ahead. Gold = event, purple = internal, blue = room rental. Tap one to edit it.</p>
       <p><b>Ideas:</b> keep your own list, and see suggestions from your numbers with the reason behind them. <i>Plan it</i> turns an idea into an event.</p>`)}
@@ -3337,6 +3614,8 @@ function createAvailabilityForm() {
       <p>For this page, export two extra files from Eversports once a month (Products → Analysis → Export activity & booking data; Analytics → Reports → Customers with bookings) and drop them into Import. The <b>win-back list</b> shows people with 2+ visits who haven't booked this month. Email only those with newsletter consent; reach the others personally.</p>
       <p><b>Ads</b> come from the Meta report by age and gender: spend, clicks, how many clicks actually load the page, and how much went outside your main audience (women 25–54).</p>
       <p><b>Export report</b> (top of the page): last month's report with the short version, the money, the numbers to watch and what to do next. Print it or save it as PDF.</p>`)}
+    ${sec('open', 'Open money: invoices and tenants', `<p><b>Overview → Open money</b> lists invoices you still have to pay (<i>+ Invoice to pay</i>) and money others owe you. Each open invoice goes into the forecast in the month it is due. When the payment appears in an imported bank statement (same amount, matching name) it is ticked off automatically; you can also mark it paid by hand.</p>
+      <p><b>Tenants</b> (Settings → Tenants): monthly rent, since when it is due, when regular payments start, and how the back rent is paid (in one go or in instalments). Until it is paid, the rent owed shows in Open money and as a grey line at the bottom of Cash flow. It goes into the forecast once a payment date is set.</p>`)}
     ${sec('team', 'Instructors: paid, unpaid, invoices', `<p>In <b>Settings → Instructors</b> set each person to <i>Paid</i>, <i>Unpaid</i> or <i>Not in tool</i> (hidden from the money, still schedulable). For paid instructors enter the rate per class and the name that appears on the bank statement. <i>Paid from</i> is for someone who starts unpaid and later sends invoices. <b>+ Add instructor</b> adds someone new.</p>`)}
     ${sec('share', 'Sharing with your co-owner', `<p>Both of you use the same app link. In <b>Settings → Sync</b>, each device connects with the same <b>token</b>, <b>Sync ID</b> and <b>passphrase</b>. Changes appear on the other devices within seconds. Share these three through a password manager, not one chat message.</p>`)}
     ${sec('lock', 'Face ID and PIN', `<p><b>Settings → App lock</b>: choose a PIN and tick Face ID / Touch ID. From then on the app asks every time you open it, and after 2 minutes away. Set it up on each device. Forgot the PIN? Remove the app from the device and connect sync again: your data comes back from the encrypted sync file.</p>`)}
@@ -3400,7 +3679,7 @@ function createAvailabilityForm() {
     schedDay: (el) => { ui.schedDay = el.dataset.v; saveUI(); render(); },
     closeModal: () => closeModal(),
     saveClass: (el) => {
-      const title = $('#ceTitle').value.trim(), start = LLS.hhmm($('#ceStart').value), end = LLS.hhmm($('#ceEnd').value), room = $('#ceRoom').value, ins = $('#ceIns').value;
+      const tSel = $('#ceType').value, title = (tSel === '__other' ? $('#ceTitle').value : tSel).trim(), start = LLS.hhmm($('#ceStart').value), end = LLS.hhmm($('#ceEnd').value), room = $('#ceRoom').value, ins = $('#ceIns').value;
       const scope = (document.querySelector('input[name=ceScope]:checked') || {}).value || 'once';
       if (!title || !start) { $('#ceErr').textContent = 'A class name and a start time (e.g. 07:40) are needed.'; return; }
       const e2 = end && LLS.mins(end) > LLS.mins(start) ? end : LLS.hhmm(LLS.mins(start) + 50);
@@ -3425,6 +3704,33 @@ function createAvailabilityForm() {
       if (!confirm(scope === 'weekly' ? `Delete ${c.title} at ${c.start} every ${DAYS_LONG[LLS.weekday(c.date)]} from ${dShort(c.date)} on?` : `Delete ${c.title} on ${dShort(c.date)} at ${c.start}?`)) return;
       LLS.deleteClass(state, M, el.dataset.id, scope === 'weekly'); closeModal(); save(); render();
     },
+    newBill: (el) => openModal(billEditor(null, el.dataset.v)),
+    editBill: (el) => { const b = state.bills[el.dataset.id]; if (b) openModal(billEditor(b)); },
+    saveBill: (el) => {
+      const party = $('#biParty').value.trim(), amount = money($('#biAmt').value);
+      if (!party || !amount) { $('#biErr').textContent = 'A name and an amount are needed.'; return; }
+      const id = el.dataset.id || newId('b'); const b = state.bills[id] || { id, dir: el.dataset.v, created: today() };
+      Object.assign(b, { party, note: $('#biNote').value.trim(), amount: Math.abs(amount), due: $('#biDue').value, cat: $('#biCat').value, match: $('#biMatch').value.trim(), updatedAt: Date.now() });
+      state.bills[id] = b; LL.matchBills(state); closeModal(); save(); render(); toast(b.paidOn ? `Saved. Already paid on ${dmy(b.paidOn)} (found in the bank).` : 'Saved. It\'s in the forecast.');
+    },
+    payBill: (el) => { const b = state.bills[el.dataset.id]; b.paidOn = today(); b.txId = ''; b.updatedAt = Date.now(); closeModal(); save(); render(); },
+    unpayBill: (el) => { const b = state.bills[el.dataset.id]; b.paidOn = ''; b.txId = ''; b.noMatch = true; b.updatedAt = Date.now(); closeModal(); save(); render(); },
+    delBill: (el) => { const b = state.bills[el.dataset.id]; if (b && confirm('Delete this entry?')) { b.deleted = true; b.updatedAt = Date.now(); closeModal(); save(); render(); } },
+    newTenant: () => openModal(tenantEditor(null)),
+    editTenant: (el) => { const x = state.tenants[el.dataset.id]; if (x) openModal(tenantEditor(x)); },
+    saveTenant: (el) => {
+      const id = el.dataset.id || newId('t'); const x = state.tenants[id] || { id };
+      Object.assign(x, { name: $('#tnName').value.trim() || 'Tenant', monthly: money($('#tnMonthly').value), from: $('#tnFrom').value, payFrom: $('#tnPayFrom').value, backPlan: (document.querySelector('input[name=tnBack]:checked') || {}).value || 'lump', backMonths: Math.max(1, parseInt($('#tnBackMonths').value, 10) || 1), backFrom: $('#tnBackFrom').value, match: $('#tnMatch').value.trim(), notes: $('#tnNotes').value, updatedAt: Date.now() });
+      state.tenants[id] = x; closeModal(); save(); render(); toast('Saved.');
+    },
+    delTenant: (el) => { const x = state.tenants[el.dataset.id]; if (x && confirm('Delete ' + x.name + '?')) { x.deleted = true; x.updatedAt = Date.now(); closeModal(); save(); render(); } },
+    addFound: (el) => {
+      const x = LL.foundEvents(state).find((f) => f.title === el.dataset.v && f.date === el.dataset.d); if (!x) return;
+      const id = newId('e');
+      state.events[id] = { id, kind: 'event', title: x.title, date: x.date, start: x.start || '', end: x.end || '', room: LLS.roomOf(state, x.title) || '', internal: false, notes: '', budget: { product: x.sold ? x.title : '', price: x.price, people: Math.max(x.sold, x.people), classes: 1, other: [] }, updatedAt: Date.now() };
+      save(); render(); toast('Added to events.');
+    },
+    ignoreFound: (el) => { state.settings.evIgnore = [...(state.settings.evIgnore || []), el.dataset.v]; state.settings.updatedAt = Date.now(); save(); render(); },
     newEvent: () => openModal(eventEditor(null)),
     editEvent: (el) => { const e = state.events[el.dataset.id]; if (e) openModal(eventEditor(e)); },
     planIdea: (el) => openModal(eventEditor(null, { title: el.dataset.v, notes: el.dataset.why || '' })),
@@ -3433,11 +3739,10 @@ function createAvailabilityForm() {
       const e = Object.assign({}, ex || { id: newId('e'), kind: 'event' });
       e.title = $('#evTitle').value.trim(); if (!e.title) { toast('Give the event a title.'); return; }
       e.start = LLS.hhmm($('#evStart').value) || ''; e.end = LLS.hhmm($('#evEnd').value) || ''; e.room = $('#evRoom').value; e.notes = $('#evNotes').value;
-      const money = (v) => Math.round(parseFloat(String(v || '').replace(/\./g, '').replace(',', '.')) * 100) || 0;
       if (e.kind === 'rental') {
         e.dates = $('#evDates').value.split(/[,\n]+/).map((x) => LLParse.isoDate(x.trim())).filter(Boolean).sort();
         e.payments = $('#evPays').value.split('\n').map((l) => { const m = l.trim().match(/^(\S+)\s+(.+)$/); return m && LLParse.isoDate(m[1]) ? { due: LLParse.isoDate(m[1]), amount: money(m[2]) } : null; }).filter(Boolean);
-      } else { e.date = $('#evDate').value; e.internal = $('#evInt').checked; e.income = money($('#evInc').value); e.cost = money($('#evCost').value); }
+      } else { e.date = $('#evDate').value; e.internal = $('#evInt').checked; e.budget = readBudget(); delete e.income; delete e.cost; }
       e.updatedAt = Date.now(); state.events[e.id] = e; closeModal(); save(); render(); toast('Saved.');
     },
     delEvent: (el) => { const e = state.events[el.dataset.id]; if (e && confirm('Delete “' + e.title + '”?')) { e.deleted = true; e.updatedAt = Date.now(); closeModal(); save(); render(); } },
@@ -3521,6 +3826,10 @@ function createAvailabilityForm() {
     },
   };
   const CHANGE = {
+    ceType: (el) => {
+      const other = el.value === '__other'; $('#ceOtherRow').hidden = !other; if (other) { $('#ceTitle').focus(); return; }
+      const r = LLS.roomOf(state, el.value); const rs = $('#ceRoom'); if (r && rs && [...rs.options].some((o) => o.value === r || o.text === r)) rs.value = r;
+    },
     txMonth: (el) => { ui.txMonth = el.value; saveUI(); render(); },
     txCat: (el) => { ui.txCat = el.value; saveUI(); render(); },
     setCat: (el) => {
@@ -3564,6 +3873,7 @@ function createAvailabilityForm() {
     if (el.dataset.act === 'fold' && e.target.closest('.q')) el = e.target.closest('.q');
     const f = ACT[el.dataset.act]; if (f) { e.preventDefault(); f(el, e); }
   });
+  document.addEventListener('input', (e) => { if (e.target.closest('[data-calc]')) { const box = $('#bgCalc'), id = $('[data-act=saveEvent]') && $('[data-act=saveEvent]').dataset.id; const base = (id && state.events[id]) || { date: $('#evDate') ? $('#evDate').value : today() }; if (box) box.innerHTML = budgetCalc(Object.assign({}, base, { date: $('#evDate') ? $('#evDate').value || base.date : base.date, budget: readBudget() })); } });
   document.addEventListener('change', (e) => { const el = e.target.closest('[data-act]'); if (!el) return; const f = CHANGE[el.dataset.act]; if (f) f(el); });
 
   // tooltips: hover on desktop, tap on touch

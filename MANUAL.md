@@ -1,6 +1,6 @@
 # Lab Ledger — manual
 
-*Version 1.3*
+*Version 1.4*
 
 Lab Ledger is the studio's finance tool: cash, monthly results, sales, instructor pay and a 3-month forecast. It is one web page (`index.html`) hosted on GitHub Pages. **The code contains no data.** Your numbers live on each device and travel between devices only as an encrypted file in the studio's GitHub account.
 
@@ -36,7 +36,7 @@ Give them the app link, the **token**, the **Sync ID** (Settings → Copy) and t
 
 ## 2. Once a month (about 5 minutes)
 
-Download these and drop them all into **Setup → Import** together:
+Download these and drop them all into **Setup → Import** together (each file shows a green ✓ Imported):
 
 1. **George Business** → account → *Kontoauszüge* → the statement PDF of the month.
 2. **Eversports → Financials → Reports → Revenue report (based on income & expenses)**, period = the month.
@@ -95,6 +95,18 @@ Every bank line gets a category automatically. To change one: **Transactions** �
 - **Forecast**: sales at the pace of the last 6 weeks with a ±15% range, fixed costs at their real amount in the month they are due, VAT filed monthly, rentals and events. *Regular payments the forecast uses* lists what it assumes.
 - **Growth**: the short version, numbers to watch against targets (Settings → Growth targets), five sections (trials, returning clients, how full classes are, discounts & recurring income, ads), and **Export report** for a monthly PDF.
 - **Meta ads report** import. Growth exports are trimmed on import: birthdays, phone numbers and other unneeded columns are not stored.
+
+## 6d. New in 1.4
+
+- **Sections renamed**: Business (Overview, Cash flow, Transactions) · Growth (Clients, Sales) · Planning (Schedule, Events, Team) · Setup (Import, Settings, Help).
+- **Import**: every file shows a green **✓ Imported** (or a red **✗ Not imported** with the reason).
+- **Open money** (Overview): invoices to pay and money owed to you. Open invoices go into the forecast in the month they are due and are ticked off automatically when the payment is in the bank.
+- **Tenants** (Settings → Tenants): monthly rent, since when it is due, when payments start, back rent in one go or in instalments. Unpaid rent shows in Open money and as a grey line in Cash flow; it goes into the forecast once a payment date is set.
+- **Event budget**: ticket price × people, catering per person or fixed, the Lagree class (instructor rate), other costs and income. Live result, cost per person and break-even; goes into the forecast. **＋ Add to Google Calendar** in each saved event.
+- **Found in Eversports**: one-off classes (pop-ups, specials) can be added to Events with their tickets and revenue.
+- **Schedule**: the class field is a dropdown with every class type, plus *Other… type a name*.
+- **Team**: this month and the next 3 always show; classes without an instructor are estimated with whoever usually teaches them.
+- **Availability form**: grid with six time windows (Early 6:30–8:00, Morning 8–10, Late morning 10–12:30, Afternoon 12:30–17, Evening 17–18:30, Late evening 18:30–21) and *Dates I'm away*. A class counts if it starts inside a ticked window. Old answers still import.
 
 ## 7. Updating the app
 
