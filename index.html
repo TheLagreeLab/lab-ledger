@@ -45,6 +45,7 @@
   --line: #3A3737; --accent: #E3B8AF; --accent-ink: #252525; --blush: #3A2523; --link: #E8B4AA;
   --hero: #3B0A0A; --hero-ink: #F4F0F0;
   --in: #4C94CC; --out: #D06A55; --pos: #74C394; --neg: #F08A76; --warn: #E3B04B;
+  --room1: #D98C80; --room2: #7FB3C4; --room1bg: #33201E; --room2bg: #1F2C30;
   --seq0: #4A4747; --seq1: #4E2A26; --seq2: #723A32; --seq3: #9E5145; --seq4: #C9776A; --seq5: #EDB3A8;
   --grid: #333131; --shadow: none; color-scheme: dark;
 }
@@ -256,8 +257,7 @@ details.card[open] > summary::after { content: '▴'; }
 .pr-list p { font-size: 12px; margin: 4px 0; }
 body.printing { overflow: hidden; }
 @media print {
-  body.printing > *:not(#main) { display: none !important; }
-  body.printing #main > *:not(#print) { display: none !important; }
+  body.printing > *:not(#print) { display: none !important; }
   body.printing #print { position: static; padding: 0; background: #fff; overflow: visible; }
   body.printing .pr-bar { display: none; }
   body.printing .pr-body { padding: 0; max-width: none; }
@@ -372,17 +372,149 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
 }
 @media (max-width: 520px) { .tiles.t5 { grid-template-columns: 1fr; } .typerow { grid-template-columns: 1fr 1fr; } }
 
+/* ---------- 1.3 ---------- */
+:root { --ev-pub: #8E5A00; --ev-int: #6B4C8A; --ev-rent: var(--room2); }
+:root[data-theme="dark"] { --ev-pub: #E3B04B; --ev-int: #B49AD6; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ev-pub: #E3B04B; --ev-int: #B49AD6; } }
+/* sections */
+nav#secnav { display: flex; gap: 6px; margin-top: 12px; }
+.sec { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); background: var(--surface); color: var(--ink2); border-radius: 99px; padding: 6px 14px 6px 11px; font: 500 14px var(--sans); cursor: pointer; position: relative; }
+.sec svg { width: 18px; height: 18px; }
+.sec.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.sdot { position: absolute; top: 3px; right: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--neg); }
+.sec.on .sdot { background: var(--accent-ink); }
+nav#nav { margin-top: 6px; }
+@media (max-width: 760px) {
+  header.top { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--bg); }
+  nav#secnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; margin: 0; gap: 0; background: color-mix(in srgb, var(--surface) 96%, transparent); border-top: 1px solid var(--line); padding: 4px 4px calc(4px + env(safe-area-inset-bottom)); }
+  .sec { flex: 1; flex-direction: column; gap: 2px; border: 0; background: none; border-radius: 10px; padding: 6px 2px; font-size: 11px; }
+  .sec svg { width: 22px; height: 22px; }
+  .sec.on { background: none; color: var(--accent); }
+  .sec.on svg { background: color-mix(in srgb, var(--accent) 14%, transparent); border-radius: 99px; padding: 2px 10px; width: 44px; box-sizing: content-box; height: 22px; }
+  .sdot { top: 4px; right: calc(50% - 20px); }
+  .sec.on .sdot { background: var(--neg); }
+  main { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+  nav#nav .tab { padding: 10px 10px 11px; }
+}
+/* boxes: fold & arrange */
+.foldable { cursor: pointer; user-select: none; -webkit-user-select: none; }
+.fold { display: inline-block; width: 16px; margin-left: -2px; margin-right: 4px; color: var(--muted); font-size: 12px; transition: transform .15s; }
+.card.collapsed .fold { transform: rotate(-90deg); }
+.card.collapsed > *:not(.chead):not(.mv) { display: none !important; }
+.card.collapsed { padding-bottom: 6px; }
+.card.collapsed > .chead, .card.collapsed > .chead h2 { margin-bottom: 8px; }
+.arrange-foot { display: flex; justify-content: center; gap: 8px; margin: 8px 0 0; }
+.arranging > [data-bid] { outline: 1.5px dashed color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 3px; border-radius: 14px; }
+.mv { display: flex; gap: 6px; justify-content: flex-end; margin: 0 0 6px; }
+.mv .btn { min-width: 40px; }
+.grid2 > .mv, .tiles > .mv { grid-column: 1 / -1; }
+/* schedule grid */
+.schedcard { padding-left: 14px; padding-right: 14px; }
+.weeknav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 2px 0 8px; }
+.weeknav > b { font-weight: 600; font-size: 14px; min-width: 9em; text-align: center; }
+.weeknav .chips { margin-left: auto; }
+table.sg { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; font-size: 12.5px; }
+.sg th, .sg td { border-bottom: 1px solid var(--line); padding: 3px; vertical-align: top; }
+.sg td { border-left: 1px solid var(--grid); }
+.sg thead th { position: sticky; top: 0; background: var(--surface); font: 600 12.5px var(--sans); color: var(--ink2); padding: 6px 4px; text-align: left; z-index: 1; }
+.sg thead th.today { color: var(--accent); box-shadow: inset 0 -2px 0 var(--accent); }
+.sg .tcol { width: 52px; font: 600 12px var(--sans); color: var(--muted); text-align: right; padding-right: 8px; white-space: nowrap; }
+.sg tr.part th { text-align: left; font: 600 11px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); background: color-mix(in srgb, var(--blush) 45%, var(--surface)); padding: 5px 8px; border-bottom: 0; }
+.sg tr.allday td, .sg tr.allday th { background: var(--surface2); }
+.gc { display: flex; flex-direction: column; width: 100%; text-align: left; border: 1px solid var(--line); border-left: 4px solid var(--room1); background: var(--room1bg); color: var(--ink); border-radius: 7px; padding: 4px 6px; margin: 0 0 3px; font: 12px/1.3 var(--sans); cursor: pointer; min-width: 0; }
+.gc .gn { color: var(--ink2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gc b { font-weight: 600; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gc.r2 { border-left-color: var(--room2); background: var(--room2bg); }
+.gc.r3 { border-left-color: var(--muted); background: var(--surface2); }
+.gc.open { border-style: dashed; border-color: var(--neg); border-left-style: solid; }
+.gc.open b { color: var(--neg); font-style: italic; font-weight: 500; }
+.gc.conf { box-shadow: 0 0 0 2px var(--warn); }
+.gc.ev { background: var(--surface); border-left-style: double; border-left-width: 5px; }
+.gc.ev b { color: var(--accent); }
+.gc:hover { filter: brightness(.97); }
+@media (min-width: 761px) and (max-width: 1100px) { .sg .gc .gn { font-size: 11px; } .sg .tcol { width: 44px; padding-right: 4px; } }
+.daychips { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 4px 0 10px; }
+.daychips .chip { display: flex; flex-direction: column; align-items: center; padding: 5px 0; border-radius: 10px; font-size: 12px; }
+.daychips .chip small { font-size: 15px; font-weight: 600; color: inherit; }
+.dpart { font: 600 11px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 12px 0 6px; }
+.drow { display: grid; grid-template-columns: 48px 1fr; gap: 8px; align-items: start; margin-bottom: 6px; }
+.drow .tcol { font: 600 13px var(--sans); color: var(--ink2); padding-top: 8px; }
+.drow .gc { padding: 8px 10px; font-size: 13.5px; margin: 0; }
+.drow .gc b { font-size: 14px; }
+.legend { flex-wrap: wrap; row-gap: 4px; }
+/* events calendar */
+.sw.pub-sw { background: var(--ev-pub); } .sw.int-sw { background: var(--ev-int); } .sw.rent-sw { background: var(--ev-rent); }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cdh { font: 600 11.5px var(--sans); color: var(--muted); text-align: center; padding: 2px 0; }
+.cd { min-height: 78px; border: 1px solid var(--line); border-radius: 8px; padding: 4px; display: flex; flex-direction: column; gap: 3px; min-width: 0; background: var(--surface); }
+.cd.out { border: 0; background: none; }
+.cd.today { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.cdn { font: 600 12px var(--sans); color: var(--ink2); }
+.ce { display: block; width: 100%; text-align: left; border: 0; border-radius: 5px; padding: 2px 5px; font: 500 11.5px/1.3 var(--sans); color: #fff; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ce.pub { background: var(--ev-pub); } .ce.int { background: var(--ev-int); } .ce.rent { background: var(--ev-rent); }
+:root[data-theme="dark"] .ce { color: #1B1B1B; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ce { color: #1B1B1B; } }
+.callist { list-style: none; margin: 12px 0 0; padding: 0; display: none; }
+.callist li { border-top: 1px solid var(--line); }
+.linkish { background: none; border: 0; padding: 8px 0; font: 14px var(--sans); color: var(--ink); text-align: left; width: 100%; cursor: pointer; }
+@media (max-width: 760px) {
+  .cd { min-height: 44px; padding: 3px; gap: 2px; align-items: center; }
+  .cd .ce { font-size: 0; height: 6px; padding: 0; border-radius: 3px; }
+  .callist { display: block; }
+}
+/* growth */
+.lead { font-size: 15.5px; line-height: 1.55; margin: 0 0 12px; }
+ol.focus { margin: 0; padding-left: 20px; } ol.focus li { margin: 6px 0; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 4px 0 16px; }
+.kpis > div { background: var(--surface2); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.kpis b { font: 500 26px/1.1 var(--serif); }
+.kpis span { font-size: 12.5px; color: var(--ink2); }
+.grid2.in { gap: 24px; margin-bottom: 8px; }
+.hbars { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.hbr { display: grid; grid-template-columns: minmax(70px, 38%) 1fr auto; gap: 8px; align-items: center; font-size: 13px; }
+.hl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink2); }
+.htk { height: 12px; background: var(--surface2); border-radius: 3px; overflow: hidden; font: inherit; margin: 0; }
+.hf { display: block; height: 100%; background: var(--seq4); border-radius: 3px; }
+.hf.low { background: var(--seq2); }
+.hv { font-weight: 600; white-space: nowrap; min-width: 3.5em; text-align: right; }
+.todo { background: color-mix(in srgb, var(--blush) 45%, var(--surface)); border-radius: 10px; padding: 10px 14px; margin-top: 8px; font-size: 14px; }
+.todo ul { margin: 4px 0 0; padding-left: 18px; } .todo li { margin: 3px 0; }
+.attn-in { background: color-mix(in srgb, var(--blush) 45%, var(--surface)); border-radius: 10px; padding: 8px 12px; font-size: 13.5px; }
+table.watch td:first-child { min-width: 150px; }
+.tgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0 14px; }
+.tgrid .fld { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 6px 0; }
+@media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 520px) { .hide-sm { display: none; } .lead { font-size: 15px; } }
+/* report */
+.rep { font-size: 13px; line-height: 1.5; max-width: 820px; }
+.rep h3 { color: #3B0A0A; margin: 18px 0 6px; font-size: 12px; }
+.rep p { margin: 4px 0 8px; } .rep ol, .rep ul { margin: 4px 0 8px; padding-left: 20px; }
+.rep .muted { color: #6b6564; }
+.rep table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.rep td, .rep th { border-bottom: 1px solid #e3dcdb; padding: 5px 6px; text-align: left; vertical-align: top; color: #252525; }
+.rep th { color: #6b6564; font-size: 11.5px; }
+.rep .r { text-align: right; white-space: nowrap; }
+.rep .okc { color: #2E6B4A; } .rep .negc { color: #A8321F; }
+.rt td:last-child { text-align: right; white-space: nowrap; }
+@page rep { size: A4 portrait; margin: 14mm; }
+.rep { page: rep; }
+@media print { body.printing .rep { max-width: none; } .rep h3 { break-after: avoid; } .rep table { break-inside: avoid; } }
+.idealist .btn { white-space: nowrap; flex: none; }
+.tgrid .in.num { flex: none; width: 90px; }
+
 </style>
 </head>
 <body>
 <header class="top"><div class="top-in">
   <div class="brand"><h1>Lab Ledger<span>Studio finances</span></h1><div class="hdr-r"><span id="syncBadge" class="sync off">Not synced</span><button id="themeBtn" class="iconbtn" data-act="theme" aria-label="Light or dark">◐</button><button class="iconbtn" data-act="page" data-v="help" aria-label="Help">?</button></div></div>
+  <nav id="secnav" aria-label="Sections"></nav>
   <nav id="nav" aria-label="Pages"></nav>
 </div></header>
 <main id="main"></main>
 <div id="tip" hidden></div>
 <div id="toast" hidden></div>
 <div id="modal" hidden></div>
+<div id="print" hidden></div>
 <script>
 /* Lab Ledger — file parsers. Pure functions, no DOM. Works in browser and Node. */
 (function (G) {
@@ -445,6 +577,7 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
     if (has('Voucher Code') && has('Paid Invoice Amount')) return 'vouchers';
     if (has('Paid Gross') && has('Product Name')) return 'sales';
     if (has('Trainer') && has('Max. participants') && has('Start time')) return 'classes';
+    if (has('Amount spent (EUR)') || (has('Amount spent') && has('Link clicks'))) return 'ads';
     if (has('Number of participations')) return 'gproducts';
     if (has('Total bookings in timeframe')) return 'gcustomers';
     if (k.some((x) => /name/i.test(x)) && k.some((x) => /\[[^\]]+\]\s*$|(monday|tuesday|wednesday|thursday|friday|saturday|sunday|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)/i.test(x)) && !has('Paid Gross')) return 'availability';
@@ -604,7 +737,13 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
     return tx;
   }
 
-  G.LLParse = { parseCSV, detectCSV, parseSales, parseVouchers, parseClasses, parseStatementPages, parseGeorgeCSV, parseGeorgeJSON, isoDate, atAmount, enAmount };
+  // keep only the columns an analysis needs (drops birthdays, phone numbers, etc.)
+  function minimiseCSV(rows, keep) {
+    const cols = Object.keys(rows[0] || {}).filter((c) => keep.some((k) => (k instanceof RegExp ? k.test(c) : k === c)));
+    const q = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+    return [cols.map(q).join(';'), ...rows.map((r) => cols.map((c) => q(r[c])).join(';'))].join('\n');
+  }
+  G.LLParse = { minimiseCSV, parseCSV, detectCSV, parseSales, parseVouchers, parseClasses, parseStatementPages, parseGeorgeCSV, parseGeorgeJSON, isoDate, atAmount, enAmount };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -612,7 +751,7 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
 /* Lab Ledger — data model, import merge, categories, monthly aggregation. No DOM. */
 (function (G) {
   'use strict';
-  const APP_VERSION = '1.2';
+  const APP_VERSION = '1.3';
   const SCHEMA = 1;
 
   // ---------- categories ----------
@@ -691,6 +830,8 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
         classTypes: [],
         rooms: ['The Lagree Room', 'The Movement Room'],
         ideas: [],
+        vatMode: 'monthly',
+        targets: { conv30: 35, commit30: 20, trials: 150, returning: 180, avgBooked: 6, membership: 300000, newsletter: 40 },
         patches: [],
         updatedAt: 0,
       },
@@ -702,7 +843,7 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
     s = Object.assign(d, s || {});
     s.settings = Object.assign(defaultState().settings, s.settings || {});
     for (const k of COLLS) s[k] = s[k] || {};
-    s.settings.slots = s.settings.slots || []; s.settings.patches = s.settings.patches || []; s.settings.classTypes = s.settings.classTypes || []; s.settings.ideas = s.settings.ideas || [];
+    s.settings.slots = s.settings.slots || []; s.settings.patches = s.settings.patches || []; s.settings.classTypes = s.settings.classTypes || []; s.settings.ideas = s.settings.ideas || []; s.settings.targets = Object.assign({ conv30: 35, commit30: 20, trials: 150, returning: 180, avgBooked: 6, membership: 300000, newsletter: 40 }, s.settings.targets || {}); s.settings.vatMode = s.settings.vatMode || 'monthly';
     if (!s.settings.rooms || !s.settings.rooms.length) s.settings.rooms = ['The Lagree Room', 'The Movement Room'];
     s.schema = SCHEMA;
     return s;
@@ -919,11 +1060,11 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
       }
     }
     // months that Eversports doesn't cover yet: use the plan from the Schedule page
-    const covered = new Set(live(state.classes).map((c) => mk(c.date)));
+    let until = ''; for (const c of live(state.classes)) if (!c.cancelled && c.date > until) until = c.date;
     for (const p of live(state.plans)) {
-      if (covered.has(p.month) || p.month < mk(today)) continue;
+      if (p.month < mk(today) || !p.classes) continue;
       const mm = M(p.month);
-      const cls = p.classes ? Object.values(p.classes).filter((c) => !c.deleted) : Object.values(p.cells || {}).map((c) => ({ ins: c.ins === '-' ? '' : c.ins }));
+      const cls = Object.values(p.classes).filter((c) => !c.deleted && c.src !== 'ev' && (!until || c.date > until));
       for (const cell of cls) {
         if (!cell || !cell.ins) continue;
         const ins = insById[cell.ins];
@@ -967,73 +1108,141 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
     return e > 0 ? p / e : 1;
   }
 
-  // Forecast: months after the last bank data, per category, from the last 3 complete months.
-  // Instructor cash in a month pays for the month before, so planned classes (Eversports or the Schedule page) drive it.
+  // ---------- forecast v2 ----------
+  const FIXED = ['rent', 'utilities', 'insurance', 'software', 'bank', 'loan_fees', 'license', 'memberships', 'loan_repay'];
+  const VARIABLE = ['supplies', 'marketing', 'travel', 'other_out', 'accounting'];
+  // known rhythm when there's only one payment so far (months)
+  const DEFAULT_EVERY = { loan_repay: 1, rent: 1, license: 12, memberships: 12, insurance: 12 };
+  const daysIn = (m) => new Date(+m.slice(0, 4), +m.slice(5, 7), 0).getDate();
+  const addDays = (iso, n) => new Date(new Date(iso + 'T12:00:00').getTime() + n * 864e5).toISOString().slice(0, 10);
+  // Payments that repeat: same category + payee, with a regular gap (monthly, quarterly, half-yearly, yearly).
+  const salesEnd = (state, today) => { let e = ''; for (const x of live(state.sales)) if (x.date > e && x.date <= today) e = x.date; return e || today; };
+  function recurring(state, agg) {
+    const since = addDays(agg.lastBankDate || agg.today, -400);
+    const groups = {};
+    for (const t of agg.bank) {
+      if (t.amount >= 0 || t.date < since || !FIXED.includes(t._c.cat)) continue;
+      const k = t._c.cat + '|' + norm(t.party).replace(/[^a-zäöüß]/g, '').slice(0, 8);
+      (groups[k] = groups[k] || []).push(t);
+    }
+    const out = [];
+    for (const [k, list] of Object.entries(groups)) {
+      list.sort((a, b) => (a.date < b.date ? -1 : 1));
+      const cat = k.split('|')[0], last = list[list.length - 1];
+      const gaps = list.slice(1).map((t, i) => (new Date(t.date) - new Date(list[i].date)) / 864e5).sort((a, b) => a - b);
+      const gap = gaps.length ? gaps[Math.floor(gaps.length / 2)] : null;
+      let every = gap === null ? (DEFAULT_EVERY[cat] || null) : gap < 20 ? 0.5 : gap <= 45 ? 1 : gap <= 110 ? 3 : gap <= 200 ? 6 : gap <= 420 ? 12 : null;
+      if (cat === 'memberships' || cat === 'license') every = 12;
+      if (gap === null && !every) continue; // a single one-off payment doesn't repeat
+      const recent = list.slice(-3).map((t) => t.amount);
+      const amount = every === 0.5 ? list.filter((t) => t.date > addDays(last.date, -31)).reduce((a, t) => a + t.amount, 0) : recent.sort((a, b) => a - b)[Math.floor(recent.length / 2)];
+      if (every === 0.5) every = 1;
+      if (every === 12) { const amt = list.filter((t) => t.date > addDays(last.date, -60)).reduce((a, t) => a + t.amount, 0); out.push({ cat, party: last.party, amount: amt, every, last: list.filter((t) => t.date > addDays(last.date, -60))[0].date, day: 1 }); continue; }
+      if (!every) {
+        // irregular: spread over the months it covers (only if it happened recently)
+        if (last.date < addDays(agg.lastBankDate || agg.today, -120)) continue;
+        const months = Math.max(1, (new Date(last.date) - new Date(list[0].date)) / (30.4 * 864e5) + 1);
+        out.push({ cat, party: last.party, amount: list.reduce((a, t) => a + t.amount, 0) / months, every: 0, last: last.date });
+        continue;
+      }
+      out.push({ cat, party: last.party, amount, every, last: last.date, day: +last.date.slice(8, 10) });
+    }
+    return out;
+  }
+  const dueIn = (r, m) => {
+    if (!r.every) return true;
+    let mm = mk(r.last);
+    for (let i = 0; i < 40 && mm <= m; i++) { mm = addMonths(mm, r.every); if (mm === m) return true; }
+    return false;
+  };
+  // VAT (Austria, monthly UVA): payable on the 15th of the second month after. Rough: 1/6 of gross sales and rent income,
+  // minus 1/6 of costs that carry Austrian VAT (rent, Eversports fee, utilities, accounting, supplies, build-out).
+  const VAT_IN = ['rent', 'platform', 'utilities', 'accounting', 'supplies', 'setup', 'software'];
+  function vatFor(state, agg, M, fcCats, startM) {
+    const mm = agg.byMonth[M];
+    const actual = !fcCats && mm && mm.tx > 0 && M < startM;
+    const sales = actual ? mm.sales.gross : fcCats && fcCats._salesGross ? fcCats._salesGross : mm ? mm.sales.gross : 0;
+    const cats = actual ? mm.cats : fcCats || {};
+    const outVat = (sales + Math.max(0, cats.rental_in || 0) + Math.max(0, cats.terminal || 0) * 0) / 6;
+    const inVat = VAT_IN.reduce((a, k) => a + Math.max(0, -(cats[k] || 0)), 0) / 6;
+    return -(outVat - inVat); // negative = to pay, positive = refund
+  }
   function forecast(state, agg, n = 3) {
     const ref = lastFullMonths(agg, 3);
-    const runCats = Object.keys(CATS).filter((k) => (CATS[k].group === 'in' || CATS[k].group === 'out') && k !== 'license'); // the licence is paid once a year
-    const avgCat = {}; for (const k of runCats) avgCat[k] = avg(ref.map((m) => m.cats[k] || 0));
+    const ratio = onCostRatio(agg);
+    const rec = recurring(state, agg);
+    const last = agg.lastBankDate || agg.today, lastM = mk(last), lastDay = +last.slice(8, 10);
+    const startM = lastDay >= daysIn(lastM) ? addMonths(lastM, 1) : lastM;
+    // income: Eversports sales over the last 6 weeks, as a daily pace; payouts track sales closely
+    const sEnd = salesEnd(state, agg.today), t42 = addDays(sEnd, -42);
+    const s42 = live(state.sales).filter((x) => x.date > t42 && x.date <= sEnd && !/^voucher$/i.test(x.method)).reduce((a, x) => a + x.gross, 0)
+      + live(state.vouchers).filter((x) => x.date > t42 && x.date <= sEnd).reduce((a, x) => a + x.gross, 0);
+    const daily = s42 / 42;
+    const payoutRatio = (() => { const sg = ref.reduce((a, m) => a + m.sales.gross, 0), po = ref.reduce((a, m) => a + (m.cats.sales || 0), 0); return sg > 0 && po > 0 ? Math.min(1.1, Math.max(0.85, po / sg)) : 0.97; })();
+    const feeRatio = (() => { const sg = ref.reduce((a, m) => a + m.sales.gross, 0), f = ref.reduce((a, m) => a + (m.cats.platform || 0), 0); return sg > 0 ? f / sg : -0.06; })();
+    const avgCat = {}; for (const k of [...VARIABLE, 'terminal', 'other_in']) avgCat[k] = avg(ref.map((m) => m.cats[k] || 0));
+    avgCat.accounting = avg(lastFullMonths(agg, 6).map((m) => m.cats.accounting || 0));
     const insSum = ref.reduce((a, m) => a + (m.cats.instructors || 0), 0), paySum = ref.reduce((a, m) => a + (m.cats.payroll || 0), 0);
     const sI = insSum + paySum !== 0 ? insSum / (insSum + paySum) : 0.8;
-    const insAvg = (avgCat.instructors || 0) + (avgCat.payroll || 0);
-    const repay = lastFullMonths(agg, 2).map((m) => m.cats.loan_repay || 0).filter((x) => x < 0);
-    const loan = repay.length ? repay[repay.length - 1] : 0;
-    const ratio = onCostRatio(agg);
-    const last = agg.lastBankDate || agg.today;
-    const lastM = mk(last);
-    const daysIn = (m) => new Date(+m.slice(0, 4), +m.slice(5, 7), 0).getDate();
-    const lastDay = +last.slice(8, 10);
-    const startM = lastDay >= daysIn(lastM) ? addMonths(lastM, 1) : lastM;
+    const insAvg = avg(ref.map((m) => (m.cats.instructors || 0) + (m.cats.payroll || 0)));
     const prevEnd = agg.months.find((x) => x.m === addMonths(startM, -1));
-    let bal = prevEnd ? prevEnd.end : agg.cash;
+    let bal = prevEnd ? prevEnd.end : agg.cash, low = bal, high = bal;
+    const out = []; const fcCatsBy = {};
     const sumG = (cats, g) => Object.entries(cats).reduce((a, [k, v]) => a + (CATS[k] && CATS[k].group === g ? v : 0), 0);
-    const out = [];
     for (let i = 0; i < n; i++) {
       const m = addMonths(startM, i);
-      const prev = agg.byMonth[addMonths(m, -1)];
-      const plannedIns = prev && prev.ins.expected > 0 ? -prev.ins.expected * ratio : insAvg;
       const mm = agg.byMonth[m];
+      const prev = agg.byMonth[addMonths(m, -1)];
       const cats = {};
-      for (const k of runCats) if (avgCat[k]) cats[k] = avgCat[k];
-      delete cats.uncat;
+      // sales: what's already sold this month + the pace for the rest
+      const soldSoFar = m === mk(sEnd) && mm ? mm.sales.gross : 0;
+      const rest = m === mk(sEnd) ? daily * Math.max(0, daysIn(m) - +sEnd.slice(8, 10)) : daily * daysIn(m);
+      const salesGross = soldSoFar + rest;
+      cats.sales = salesGross * payoutRatio;
+      for (const k of ['terminal', 'other_in']) if (avgCat[k]) cats[k] = avgCat[k];
+      // fixed payments at their real amount, in the month they're due
+      for (const r of rec) if (dueIn(r, m)) cats[r.cat] = (cats[r.cat] || 0) + r.amount;
+      // variable costs: average of the last 3 months; Eversports fee as a share of sales
+      for (const k of VARIABLE) if (avgCat[k]) cats[k] = avgCat[k];
+      cats.platform = salesGross * feeRatio;
+      // instructors: planned classes of the month before × rate × (1 + social security), paid this month
+      const plannedIns = prev && prev.ins.expected > 0 ? -prev.ins.expected * ratio : insAvg;
       cats.instructors = plannedIns * sI; cats.payroll = plannedIns * (1 - sI);
-      if (loan) cats.loan_repay = loan;
-      let partial = false;
-      if (m === mk(agg.today) && mm && mm.sales.gross > 0 && !(mm.tx > 0)) {
-        // current month without bank data yet: Eversports sales so far, projected to month end
-        const d = Math.max(1, +agg.today.slice(8, 10));
-        cats.sales = mm.sales.gross * daysIn(m) / d;
+      // agreed rentals and planned events
+      for (const e of live(state.events || {})) {
+        for (const pay of e.payments || []) if (mk(pay.due) === m) cats.rental_in = (cats.rental_in || 0) + pay.amount;
+        if (e.kind !== 'rental' && e.date && mk(e.date) === m) { if (e.income) cats.other_in = (cats.other_in || 0) + e.income; if (e.cost) cats.other_out = (cats.other_out || 0) - e.cost; }
       }
+      let partial = false;
       if (m === lastM && mm && mm.tx) {
-        // part of this month is already in the bank: actuals so far + the rest pro rata
+        // part of this month is already in the bank: actuals + the rest of the month
         partial = true;
         const left = Math.max(0, (daysIn(m) - lastDay) / daysIn(m));
-        const doneIns = (mm.cats.instructors || 0) + (mm.cats.payroll || 0);
         for (const k of Object.keys(CATS)) {
           const act = mm.cats[k] || 0;
-          if (k === 'instructors' || k === 'payroll') cats[k] = doneIns ? act : cats[k];
-          else if (k === 'loan_repay') cats[k] = act || loan;
-          else if (runCats.includes(k)) cats[k] = act + (avgCat[k] || 0) * left;
+          if (FIXED.includes(k)) cats[k] = act || cats[k] || 0;
+          else if (k === 'instructors' || k === 'payroll') cats[k] = act || cats[k] || 0;
+          else if (cats[k] !== undefined && (CATS[k].group === 'in' || CATS[k].group === 'out')) cats[k] = act + cats[k] * left;
           else if (act) cats[k] = act;
         }
       }
-      // agreed rentals and planned events in this month (only where the bank doesn't show them yet)
-      if (!partial) {
-        for (const e of live(state.events || {})) {
-          for (const pay of e.payments || []) if (mk(pay.due) === m) cats.rental_in = (cats.rental_in || 0) + pay.amount;
-          if (e.date && mk(e.date) === m && e.kind !== 'rental') { if (e.income) cats.other_in = (cats.other_in || 0) + e.income; if (e.cost) cats.other_out = (cats.other_out || 0) - e.cost; }
-        }
+      cats._salesGross = salesGross;
+      fcCatsBy[m] = cats;
+      // VAT for the month before last
+      if (state.settings.vatMode !== 'off') {
+        const vm = addMonths(m, -2);
+        const v = vatFor(state, agg, vm, fcCatsBy[vm], startM);
+        if (!(partial && mm.cats.vat)) cats.vat = (cats.vat || 0) + v;
       }
-      for (const k of Object.keys(cats)) if (!cats[k]) delete cats[k];
-      const inc = sumG(cats, 'in');
-      const cost = sumG(cats, 'out') + sumG(cats, 'fin') + sumG(cats, 'setup') + sumG(cats, 'tax');
-      const op = inc + sumG(cats, 'out');
-      bal += inc + cost;
-      out.push({ m, cats, inc, cost, net: inc + cost, op, end: bal, plannedIns, partial, groups: { in: inc, out: sumG(cats, 'out'), setup: sumG(cats, 'setup'), tax: sumG(cats, 'tax'), fin: sumG(cats, 'fin') } });
+      const clean = {}; for (const [k, v] of Object.entries(cats)) if (k[0] !== '_' && Math.round(v)) clean[k] = v;
+      const inc = sumG(clean, 'in'), outG = sumG(clean, 'out');
+      const cost = outG + sumG(clean, 'fin') + sumG(clean, 'setup') + sumG(clean, 'tax');
+      const salesIn = (clean.sales || 0);
+      bal += inc + cost; low += inc + cost - salesIn * 0.15; high += inc + cost + salesIn * 0.15;
+      out.push({ m, cats: clean, inc, cost, net: inc + cost, op: inc + outG, end: bal, endLow: low, endHigh: high, plannedIns, partial, salesGross, groups: { in: inc, out: outG, setup: sumG(clean, 'setup'), tax: sumG(clean, 'tax'), fin: sumG(clean, 'fin') } });
     }
     const full = out.filter((x) => !x.partial);
-    const avgNet = avg(full.map((x) => x.net));
-    return { months: out, opIn: sumG(avgCat, 'in'), runCosts: sumG(avgCat, 'out') - (avgCat.instructors || 0) - (avgCat.payroll || 0), insAvg, loan, ratio, avgNet };
+    return { months: out, startM, recurring: rec, daily, payoutRatio, feeRatio, ratio, loan: (rec.find((r) => r.cat === 'loan_repay') || {}).amount || 0, avgNet: avg(full.map((x) => x.net)), salesMonth: daily * 30.4 };
   }
 
   // Share of trial-class buyers who later bought anything else (pack, drop-in, membership...)
@@ -1068,7 +1277,7 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
     // 1. sales pace this month
     const now = agg.byMonth[cur];
     if (now && now.sales.gross > 0 && full.length >= 2) {
-      const d = +today.slice(8, 10), days = new Date(+cur.slice(0, 4), +cur.slice(5, 7), 0).getDate();
+      const se = salesEnd(state, today), d = mk(se) === cur ? +se.slice(8, 10) : +today.slice(8, 10), days = new Date(+cur.slice(0, 4), +cur.slice(5, 7), 0).getDate();
       const pace = now.sales.gross * days / d, base = avg(full.slice(-3).map((m) => m.sales.gross));
       const ch = pace / base - 1;
       if (ch < -0.15) out.push({ tone: 'bad', title: `Sales this month are heading ${pctf(-ch)} below average`, text: `${euro(now.sales.gross)} after ${d} days points to about ${euro(pace)} for the month, against ${euro(base)} on average. Fill the gap now rather than at month end: a short offer to past drop-in and trial clients (e.g. a 5-pack deal valid for 10 days), and a push on your fullest class times, where demand is proven.` });
@@ -1157,6 +1366,22 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
     return out;
   }
 
+  // Meta ads report (by age & gender)
+  function adsSummary(state) {
+    const a = state.growth && state.growth.ads; if (!a || !a.text || !G.LLParse) return null;
+    const rows = G.LLParse.parseCSV(a.text);
+    const n = (v) => parseFloat(String(v || '').replace(/,/g, '')) || 0;
+    const t = { spend: 0, reach: 0, impressions: 0, clicks: 0, lpv: 0, target: 0, from: null, to: null };
+    for (const r of rows) {
+      const sp = n(r['Amount spent (EUR)'] || r['Amount spent']);
+      t.spend += sp; t.reach += n(r['Reach']); t.impressions += n(r['Impressions']); t.clicks += n(r['Link clicks']); t.lpv += n(r['Website landing page views']);
+      if (/female|weiblich/i.test(r['Gender'] || '') && /25-34|35-44|45-54/.test(r['Age'] || '')) t.target += sp;
+      t.from = r['Reporting starts'] || t.from; t.to = r['Reporting ends'] || t.to;
+    }
+    t.cpc = t.clicks ? t.spend / t.clicks : null; t.lpvRate = t.clicks ? t.lpv / t.clicks : null; t.outsideTarget = t.spend ? 1 - t.target / t.spend : null;
+    return t;
+  }
+
   // event ideas that follow from the numbers (each says why)
   function eventIdeas(state, agg, snap) {
     const out = []; const cur = mk(agg.today);
@@ -1183,21 +1408,23 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
     if (!p || p.kind !== 'patch') return false;
     if ((state.settings.patches || []).includes(p.id)) return 'already';
     const st = state.settings;
-    if (p.rules) st.rules = [...p.rules, ...(st.rules || []).filter((r) => !p.rules.some((x) => x.m === r.m))];
-    for (const u of p.instructors || []) {
+    // an update can repeat an earlier one: then the parts a person may have changed since (rules, instructors) are skipped
+    const fresh = !p.unless || !(st.patches || []).includes(p.unless);
+    if (p.rules && fresh) st.rules = [...p.rules, ...(st.rules || []).filter((r) => !p.rules.some((x) => x.m === r.m))];
+    for (const u of fresh ? p.instructors || [] : []) {
       let ins = st.instructors.find((i) => !i.deleted && (norm(i.name) === norm(u.match) || (i.evNames || []).some((e) => norm(trainerName(e)) === norm(u.match))));
       if (!ins) { ins = { id: 'i' + slug(u.match), name: u.match, evNames: [], bankNames: [], status: 'unknown', rate: 0, active: true }; st.instructors.push(ins); }
       Object.assign(ins, u.set);
     }
     if (p.slots && !(st.slots || []).length) st.slots = p.slots;
     if (p.studioName && !st.studioName) st.studioName = p.studioName;
-    for (const t of p.classTypes || []) { const ex = (st.classTypes || []).find((x) => norm(x.name) === norm(t.name)); if (ex) Object.assign(ex, t); else st.classTypes = [...(st.classTypes || []), t]; }
+    for (const t of p.classTypes || []) { const ex = (st.classTypes || []).find((x) => norm(x.name) === norm(t.name)); if (!ex) st.classTypes = [...(st.classTypes || []), t]; }
     for (const s2 of p.slotRooms || []) for (const sl of st.slots || []) if (norm(sl.title) === norm(s2.title)) sl.room = s2.room;
     for (const e of p.events || []) if (!state.events[e.id]) state.events[e.id] = Object.assign({ updatedAt: now() }, e);
     for (const i of p.ideas || []) if (!(st.ideas || []).some((x) => x.id === i.id)) st.ideas = [...(st.ideas || []), i];
     for (const t of live(state.bank)) {
       // drop manual categories that the new rules now cover
-      if (t.cat && (p.rules || []).some((r) => { try { return new RegExp(r.m, 'i').test(norm(t.party + ' | ' + t.text)); } catch (e) { return false; } })) { delete t.cat; t.updatedAt = now(); }
+      if (fresh && t.cat && (p.rules || []).some((r) => { try { return new RegExp(r.m, 'i').test(norm(t.party + ' | ' + t.text)); } catch (e) { return false; } })) { delete t.cat; t.updatedAt = now(); }
     }
     st.patches = [...(st.patches || []), p.id];
     st.updatedAt = now();
@@ -1214,7 +1441,7 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
     return { burn, pace, fixed, runway, buffer: fixed * (state.settings.bufferMonths || 3), ref, fc };
   }
 
-  G.LL = { APP_VERSION, SCHEMA, CATS, GROUPS, BUILTIN_RULES, PRODUCT_GROUPS, defaultState, migrate, categorize, serviceMonth, importBank, importSales, importVouchers, importClasses, aggregate, forecast, keyFigures, trialConversion, insights, growthSnapshot, eventIdeas, applyPatch, paidIn, COLLS, onCostRatio, lastFullMonths, productGroup, findInstructor, ensureInstructor, trainerName, addMonths, monthRange, mk, live, slug, hash };
+  G.LL = { APP_VERSION, SCHEMA, CATS, GROUPS, BUILTIN_RULES, PRODUCT_GROUPS, defaultState, migrate, categorize, serviceMonth, importBank, importSales, importVouchers, importClasses, aggregate, forecast, keyFigures, trialConversion, insights, growthSnapshot, eventIdeas, adsSummary, applyPatch, paidIn, COLLS, onCostRatio, lastFullMonths, productGroup, findInstructor, ensureInstructor, trainerName, addMonths, monthRange, mk, live, slug, hash };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -1504,10 +1731,14 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
   const uid = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
   // ---------- class types & rooms ----------
+  // the usual formats, always available (rename or remove them in Settings)
+  const DEFAULT_TYPES = [['Lagree Burn', 0], ['Latino Burn', 0, 'Lagree Burn'], ['Lagree & Minis', 0], ['Private Lagree Class', 0], ['Mats & Minis', 1], ['Yoga', 1], ['Yoga Flow', 1], ['Sculpt', 1], ['Room rental', 1, null, 'rental']];
   function classTypes(state) {
     const st = state.settings;
+    const removed = new Set((st.classTypes || []).filter((t) => t.deleted).map((t) => norm(t.name)));
     const list = (st.classTypes || []).filter((t) => !t.deleted);
     const names = new Set(list.map((t) => norm(t.name)));
+    for (const [name, r, fb, kind] of DEFAULT_TYPES) if (!names.has(norm(name)) && !removed.has(norm(name))) { list.push({ id: 't' + LL.hash(name), name, room: rooms(state)[r] || ROOMS[r], kind: kind || 'class', fallback: fb || null, auto: true }); names.add(norm(name)); }
     for (const s of st.slots || []) if (!names.has(norm(s.title))) { list.push({ id: 't' + LL.hash(s.title), name: s.title, room: guessRoom(s.title), kind: 'class', auto: true }); names.add(norm(s.title)); }
     return list.sort((a, b) => a.name.localeCompare(b.name));
   }
@@ -1522,7 +1753,9 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
   }
   function fallbackOf(state, title) {
     const t = (state.settings.classTypes || []).find((x) => !x.deleted && norm(x.name) === norm(title));
-    return t && t.fallback ? t.fallback : null;
+    if (t) return t.fallback || null;
+    const d = DEFAULT_TYPES.find((x) => norm(x[0]) === norm(title));
+    return d && d[2] ? d[2] : null;
   }
   const rooms = (state) => (state.settings.rooms && state.settings.rooms.length ? state.settings.rooms : ROOMS);
 
@@ -1561,16 +1794,54 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
   function classFromSlot(state, s, date) {
     return { id: 'c' + LL.hash(date + '|' + s.id), date, start: s.start, end: s.end, title: s.title, room: s.room || roomOf(state, s.title), ins: '', manual: false, slot: s.id };
   }
-  // the standard timetable for a month, without instructors
+  // Eversports has the real classes up to the last date in its export; after that the standard week applies.
+  function coveredUntil(state) {
+    let d = ''; for (const c of LL.live(state.classes)) if (!c.cancelled && c.date > d) d = c.date;
+    return d;
+  }
+  function evClassesOn(state, date) {
+    return LL.live(state.classes).filter((c) => c.date === date && !c.cancelled).map((c) => {
+      const ins = c.trainer ? LL.findInstructor(state, c.trainer) : null;
+      return { id: 'v' + LL.hash(date + '|' + c.start + '|' + c.title + '|' + (c.trainer || '')), date, start: hhmm(c.start), end: hhmm(c.end), title: c.title, room: roomOf(state, c.title), ins: ins ? ins.id : '', manual: false, slot: null, src: 'ev' };
+    });
+  }
+  // the month's classes: Eversports where it has them, otherwise the standard week without instructors
   function ensurePlan(state, month) {
     let p = getPlan(state, month);
-    if (p) return p;
-    p = { id: month, month, classes: {}, updatedAt: Date.now() };
-    for (const date of datesOf(month)) for (const s of state.settings.slots || []) if (s.day === weekday(date)) { const c = classFromSlot(state, s, date); p.classes[c.id] = c; }
-    state.plans[month] = p;
+    const until = coveredUntil(state);
+    if (!p) {
+      p = { id: month, month, classes: {}, updatedAt: Date.now() };
+      for (const date of datesOf(month)) {
+        if (until && date <= until) for (const c of evClassesOn(state, date)) p.classes[c.id] = c;
+        else for (const s of state.settings.slots || []) if (s.day === weekday(date)) { const c = classFromSlot(state, s, date); c.src = 'std'; p.classes[c.id] = c; }
+      }
+      state.plans[month] = p;
+      return p;
+    }
+    // keep covered dates in step with the latest Eversports export (your own edits on those dates stay)
+    if (until && month <= mk(until)) {
+      let changed = false;
+      for (const date of datesOf(month)) {
+        if (date > until) continue;
+        const day = Object.values(p.classes).filter((c) => c.date === date);
+        const ev = evClassesOn(state, date);
+        const keep = day.filter((c) => c.manual);
+        const want = new Set(ev.map((c) => c.id));
+        for (const c of day) if (!c.manual && !want.has(c.id)) { delete p.classes[c.id]; changed = true; }
+        for (const c of ev) if (!p.classes[c.id] && !keep.some((k) => k.start === c.start && norm(k.title) === norm(c.title))) { p.classes[c.id] = c; changed = true; }
+        else if (p.classes[c.id] && !p.classes[c.id].manual && p.classes[c.id].ins !== c.ins) { p.classes[c.id].ins = c.ins; changed = true; }
+      }
+      if (changed) touch(p);
+    }
     return p;
   }
+  const mk = (iso) => iso.slice(0, 7);
   function resetPlan(state, month) { delete state.plans[month]; const p = ensurePlan(state, month); p.updatedAt = Date.now(); return p; }
+  // old plans (before 1.3) were all standard week: rebuild them when Eversports covers the month and nothing was changed by hand
+  function repairPlans(state) {
+    const until = coveredUntil(state); if (!until) return;
+    for (const p of LL.live(state.plans)) { upgradePlan(state, p); if (p.month <= mk(until) && !Object.values(p.classes).some((c) => c.src === 'ev') && !Object.values(p.classes).some((c) => c.manual)) delete state.plans[p.month]; }
+  }
   const touch = (p) => { p.updatedAt = Date.now(); };
   const liveClasses = (p) => Object.values(p.classes || {}).filter((c) => !c.deleted);
 
@@ -1587,7 +1858,8 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
       }
     } else {
       for (const f of fields) if (changes[f] !== undefined) c[f] = changes[f];
-      if (changes.ins !== undefined) { c.ins = changes.ins; c.manual = true; }
+      if (changes.ins !== undefined) c.ins = changes.ins;
+      c.manual = true; // your change stays, also when a new Eversports export comes in
       touch(p);
     }
   }
@@ -1750,6 +2022,7 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
     for (const c of list) {
       if (kindOf(state, c.title) === 'rental') continue;
       total++;
+      if (c.src === 'ev') { if (c.ins) { bump(perWeek, c.ins + weekKey(c.date)); bump(perDay, c.ins + c.date); (busy[c.ins + c.date] = busy[c.ins + c.date] || []).push(c); } else unfilled++; continue; }
       if (c.manual) { if (!c.ins) unfilled++; continue; }
       if (c.renamedFrom) { c.title = c.renamedFrom; delete c.renamedFrom; }
       const fb = fallbackOf(state, c.title);
@@ -1772,7 +2045,7 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
     touch(p);
     return { unfilled, total };
   }
-  function clearInstructors(state, month) { const p = getPlan(state, month); if (!p) return; for (const c of Object.values(p.classes)) { c.ins = ''; c.manual = false; } touch(p); }
+  function clearInstructors(state, month) { const p = getPlan(state, month); if (!p) return; for (const c of Object.values(p.classes)) if (c.src !== 'ev') { c.ins = ''; c.manual = false; } touch(p); }
 
   // classes of a month grouped by week → day, sorted, for display and export
   function planWeeks(state, month) {
@@ -1830,7 +2103,7 @@ function createAvailabilityForm() {
 `;
   }
 
-  G.LLS = { DAYS, ROOMS, WINDOWS, windowOf, weekday, weekKey, datesOf, hhmm, mins, overlaps, classTypes, roomOf, kindOf, guessRoom, rooms, slotsFromClasses, getPlan, ensurePlan, resetPlan, liveClasses, updateClass, addClass, deleteClass, parseAvailability, importAvailability, isAvailable, teachesOf, canTeach, propose, clearInstructors, planWeeks, formScript, matchInstructor, upgradePlan, fallbackOf };
+  G.LLS = { DAYS, ROOMS, WINDOWS, windowOf, weekday, weekKey, datesOf, hhmm, mins, overlaps, classTypes, roomOf, kindOf, guessRoom, rooms, slotsFromClasses, getPlan, ensurePlan, resetPlan, liveClasses, updateClass, addClass, deleteClass, parseAvailability, importAvailability, isAvailable, teachesOf, canTeach, propose, clearInstructors, planWeeks, formScript, matchInstructor, upgradePlan, fallbackOf, coveredUntil, repairPlans };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -2073,10 +2346,20 @@ function createAvailabilityForm() {
   }
 
   // ---------- pages ----------
-  const PAGES = [
-    ['overview', 'Overview'], ['cashflow', 'Cash flow'], ['sales', 'Sales'], ['growth', 'Growth'], ['team', 'Team & classes'], ['schedule', 'Schedule'],
-    ['events', 'Events'], ['tx', 'Transactions'], ['import', 'Import'], ['settings', 'Settings'],
+  const ICONS = {
+    money: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
+    growth: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 17l5-5 4 3 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 8h5v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    studio: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    setup: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7" r="2" fill="var(--bg)" stroke="currentColor" stroke-width="1.8"/><circle cx="15" cy="12" r="2" fill="var(--bg)" stroke="currentColor" stroke-width="1.8"/><circle cx="8" cy="17" r="2" fill="var(--bg)" stroke="currentColor" stroke-width="1.8"/></svg>',
+  };
+  const SECTIONS = [
+    { k: 'money', label: 'Money', pages: [['overview', 'Overview'], ['cashflow', 'Cash flow'], ['tx', 'Transactions']] },
+    { k: 'growth', label: 'Growth', pages: [['growth', 'Clients & funnel'], ['sales', 'Sales'], ['events', 'Events']] },
+    { k: 'studio', label: 'Studio', pages: [['schedule', 'Schedule'], ['team', 'Team & classes']] },
+    { k: 'setup', label: 'Setup', pages: [['import', 'Import'], ['settings', 'Settings'], ['help', 'Help']] },
   ];
+  const PAGES = SECTIONS.flatMap((x) => x.pages);
+  const sectionOf = (page) => (SECTIONS.find((x) => x.pages.some((p) => p[0] === page)) || SECTIONS[0]);
   let agg = null;
   function applyTheme() {
     const r = document.documentElement;
@@ -2093,14 +2376,49 @@ function createAvailabilityForm() {
   function render() {
     applyTheme();
     if (Lock.isLocked()) { $('#nav').innerHTML = ''; $('#main').innerHTML = viewLock(); afterRender(); return; }
+    LLS.repairPlans(state);
     agg = LL.aggregate(state, today());
-    $('#nav').innerHTML = PAGES.map(([k, l]) => `<button class="tab${ui.page === k ? ' on' : ''}" data-act="page" data-v="${k}">${l}${k === 'tx' && unsorted().length ? ` <span class="dot">${unsorted().length}</span>` : ''}</button>`).join('');
+    const sec = sectionOf(ui.page);
+    $('#secnav').innerHTML = SECTIONS.map((x) => `<button class="sec${x.k === sec.k ? ' on' : ''}" data-act="section" data-v="${x.k}">${ICONS[x.k]}<span>${x.label}</span>${x.k === 'money' && unsorted().length ? '<i class="sdot"></i>' : ''}</button>`).join('');
+    $('#nav').innerHTML = sec.pages.map(([k, l]) => `<button class="tab${ui.page === k ? ' on' : ''}" data-act="page" data-v="${k}">${l}${k === 'tx' && unsorted().length ? ` <span class="dot">${unsorted().length}</span>` : ''}</button>`).join('');
     const empty = !Object.keys(state.bank).length && !Object.keys(state.sales).length;
     const views = { overview: viewOverview, cashflow: viewCashflow, sales: viewSales, growth: viewGrowth, events: viewEvents, team: viewTeam, schedule: viewSchedule, tx: viewTx, import: viewImport, settings: viewSettings, help: viewHelp };
     const v = empty && !['import', 'settings', 'help', 'schedule', 'events'].includes(ui.page) ? viewWelcome() : (views[ui.page] || viewOverview)();
-    $('#main').innerHTML = v;
+    $('#main').innerHTML = v + `<div class="arrange-foot">${ui.arrange ? '<button class="btn sm primary" data-act="arrange">Done arranging</button> <button class="btn sm ghost" data-act="arrangeReset">Reset order</button>' : '<button class="btn sm ghost" data-act="arrange">Arrange boxes</button>'}</div>`;
+    decorateBoxes();
     setSyncBadge(syncErr ? 'err' : 'ok');
     afterRender();
+  }
+  // ---------- boxes: collapse (always) and move up/down (in arrange mode) ----------
+  function boxId(el, i) {
+    const h = el.querySelector('h2'); const t = h ? h.childNodes[0] && h.childNodes[0].textContent : '';
+    return ui.page + ':' + (el.dataset.box || (t ? t.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30) : el.className.split(' ')[0] + i));
+  }
+  function decorateBoxes() {
+    const main = $('#main');
+    const kids = [...main.children].filter((el) => !el.classList.contains('arrange-foot') && el.id !== 'print');
+    kids.forEach((el, i) => (el.dataset.bid = boxId(el, i)));
+    // order
+    const order = (ui.order || {})[ui.page];
+    if (order && order.length) {
+      const pos = (el) => { const k = order.indexOf(el.dataset.bid); return k < 0 ? 1000 + kids.indexOf(el) : k; };
+      kids.slice().sort((a, b) => pos(a) - pos(b)).forEach((el) => main.insertBefore(el, main.querySelector('.arrange-foot')));
+    }
+    // collapse: every card with a title
+    main.querySelectorAll('.card').forEach((card, i) => {
+      if (card.tagName === 'DETAILS') return;
+      const h = card.querySelector(':scope > h2, :scope > .row > h2, :scope > .row > .row > h2'); if (!h) return;
+      const id = card.dataset.bid || boxId(card, 'c' + i);
+      card.dataset.cid = id;
+      if (!h.querySelector('.fold')) h.insertAdjacentHTML('afterbegin', '<span class="fold" aria-hidden="true">▾</span>');
+      h.classList.add('foldable'); h.dataset.act = 'fold'; h.dataset.v = id;
+      const head = h.parentElement === card ? h : [...card.children].find((c) => c.contains(h)); if (head) head.classList.add('chead');
+      if ((ui.collapsed || {})[id]) card.classList.add('collapsed');
+    });
+    if (ui.arrange) {
+      main.classList.add('arranging');
+      [...main.children].filter((el) => el.dataset.bid).forEach((el) => el.insertAdjacentHTML('afterbegin', `<div class="mv"><button class="btn sm" data-act="mvBox" data-v="${el.dataset.bid}" data-d="-1" aria-label="Move up">↑</button><button class="btn sm" data-act="mvBox" data-v="${el.dataset.bid}" data-d="1" aria-label="Move down">↓</button></div>`));
+    } else main.classList.remove('arranging');
   }
   const unsorted = () => (agg ? agg.bank.filter((t) => t._c.cat === 'uncat') : []);
   const opMonths = () => {
@@ -2171,13 +2489,20 @@ function createAvailabilityForm() {
     </div>
 
     <div class="card">
-      <h2>Next months${help('Income: average of the last 3 complete months (for the current month: Eversports sales so far, projected). Instructors: classes planned in Eversports × rate, plus social security at the rate you actually paid recently. Loan: the last repayment.')}</h2>
+      <h2>Next months${help('Sales: your Eversports sales pace of the last 6 weeks, paid out after the Eversports fee. Fixed costs (rent, insurance, loan, software …) at their real amount in the month they are usually due; yearly bills only in their month. Variable costs: average of recent months. Instructors: last month\'s pay plus social security. VAT: estimated from sales minus VAT on costs, due on the 15th of the second month after. Events and room rentals: their agreed payments. The range shows sales 15% lower or higher.')}</h2>
       <div class="tablewrap"><table class="t">
-        <thead><tr><th>Month</th><th class="r">In</th><th class="r">Out</th><th class="r hide-sm">Result</th><th class="r">Cash at end</th></tr></thead>
-        <tbody>${fc.months.map((f) => `<tr><td class="nw">${mName(f.m)}${f.partial ? ' <span class="muted small">(partly actual)</span>' : ''}</td><td class="r">${eur(f.inc)}</td><td class="r">${eur(f.cost)}</td><td class="r hide-sm ${cls(f.net)}">${eurS(f.net)}</td><td class="r ${f.end < 0 ? 'negc b' : ''}">${eur(f.end)}</td></tr>`).join('')}</tbody>
+        <thead><tr><th>Month</th><th class="r">In</th><th class="r">Out</th><th class="r hide-sm">Result</th><th class="r">Cash at end</th><th class="r hide-sm">Range</th></tr></thead>
+        <tbody>${fc.months.map((f) => `<tr><td class="nw">${mName(f.m)}${f.partial ? ' <span class="muted small">(partly actual)</span>' : ''}</td><td class="r">${eur(f.inc)}</td><td class="r">${eur(f.cost)}</td><td class="r hide-sm ${cls(f.net)}">${eurS(f.net)}</td><td class="r ${f.end < 0 ? 'negc b' : ''}">${eur(f.end)}</td><td class="r hide-sm muted small nw">${eur(f.endLow)} to ${eur(f.endHigh)}</td></tr>`).join('')}</tbody>
       </table></div>
-      <p class="muted small">Includes the loan repayment of ${eur(-fc.loan)} a month${fc.loan ? '' : ' (none seen yet)'} and instructor social security at ${pct(fc.ratio - 1)} on top of class pay. ${lowPoint ? `<b class="negc">At this pace the account goes below zero in ${mName(lowPoint.m, true)}.</b>` : ''}</p>
+      <p class="muted small">Sales pace: ${eur(Math.round(fc.daily || 0))} a day (last 6 weeks). Includes the loan repayment of ${eur(-fc.loan)} a month${fc.loan ? '' : ' (none seen yet)'}, instructor social security at ${pct(fc.ratio - 1)} on top of class pay${state.settings.vatMode === 'off' ? '' : ', and VAT filed monthly'}. ${lowPoint ? `<b class="negc">At this pace the account goes below zero in ${mName(lowPoint.m, true)}.</b>` : ''}</p>
+      ${fcDetails(fc)}
     </div>`;
+  }
+  function fcDetails(fc) {
+    const rec = (fc.recurring || []).filter((r) => r.amount).slice().sort((a, b) => a.amount - b.amount);
+    if (!rec.length) return '';
+    const every = (n) => ({ 0: 'irregular, averaged', 1: 'monthly', 3: 'every 3 months', 6: 'every 6 months', 12: 'yearly' }[n] || `every ${n} months`);
+    return `<details class="mt"><summary class="small"><b>Regular payments the forecast uses (${rec.length})</b></summary><div class="tablewrap"><table class="t"><tbody>${rec.map((r) => `<tr><td>${esc(r.label || r.party || r.cat)}<div class="muted small">${esc((LL.CATS[r.cat] || {}).label || r.cat)} · ${every(r.every)}</div></td><td class="r nw">${eur(r.amount)}</td></tr>`).join('')}</tbody></table></div></details>`;
   }
   function attention(kf) {
     const out = [];
@@ -2507,8 +2832,15 @@ function createAvailabilityForm() {
     if (kind === 'classes') { const r = LL.importClasses(state, LLParse.parseClasses(rows), f.name); return `${r.added} classes from ${dmy(r.from)} to ${dmy(r.to)}${r.replaced ? ' (replaced the earlier export for these dates)' : ''}`; }
     if (kind === 'gproducts' || kind === 'gcustomers') {
       const id = kind === 'gproducts' ? 'products' : 'customers';
-      state.growth[id] = { id, text, file: f.name, at: Date.now(), updatedAt: Date.now() };
+      // keep only what the Growth page needs: no birthdays, phone numbers or addresses
+      const keep = kind === 'gproducts' ? ['Name', 'Purchased on', 'E-mail', 'Number of participations', 'Remaining units', 'Status'] : ['First Name', 'Last Name', 'Email', 'Accepts Newsletter', 'Total bookings in timeframe', / Bookings$/];
+      state.growth[id] = { id, text: LLParse.minimiseCSV(rows, keep), file: f.name, at: Date.now(), updatedAt: Date.now() };
       return kind === 'gproducts' ? `products & trials export: ${rows.length} purchases (Growth tab)` : `customers export: ${rows.length} clients (Growth tab)`;
+    }
+    if (kind === 'ads') {
+      state.growth.ads = { id: 'ads', text: LLParse.minimiseCSV(rows, ['Age', 'Gender', /^Amount spent/, 'Reach', 'Impressions', 'Link clicks', 'Website landing page views', 'Reporting starts', 'Reporting ends']), file: f.name, at: Date.now(), updatedAt: Date.now() };
+      const a = LL.adsSummary(state);
+      return `Meta ads report: ${eur(Math.round(a.spend * 100))} spent, ${nf0.format(a.clicks)} link clicks (Growth tab)`;
     }
     if (kind === 'availability') {
       const m = ui.schedMonth || LL.addMonths(LL.mk(today()), 1);
@@ -2516,7 +2848,7 @@ function createAvailabilityForm() {
       return `availability for ${mName(m, true)}: ${r.added} answers${r.created.length ? ` (new names: ${r.created.map(esc).join(', ')}. Set them up in Settings)` : ''}`;
     }
     if (kind === 'georgecsv') { const r = LL.importBank(state, LLParse.parseGeorgeCSV(rows), [], f.name); return `${r.added} new payments, ${r.skipped} already there`; }
-    throw new Error('File type not recognised. Expected an Erste statement PDF, a George export, or an Eversports revenue, voucher or activity export.');
+    throw new Error('File type not recognised. Expected an Erste statement PDF, a George export, an Eversports export, a Meta ads report or the Google Form answers.');
   }
   // pdf.js is loaded only when a PDF is imported, from jsDelivr, checked against its published fingerprint
   const PDFJS = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/';
@@ -2564,71 +2896,84 @@ function createAvailabilityForm() {
     }
     return out;
   }
+  const PARTS = [['Morning', 0, 12 * 60], ['Midday', 12 * 60, 17 * 60], ['Afternoon & evening', 17 * 60, 24 * 60]];
+  function weekStartFor(m) {
+    const cur = LLS.weekKey(today());
+    if (LL.mk(today()) === m) return cur;
+    const f = m + '-01'; // a month starting Fri–Sun opens on its first full week
+    return LLS.weekday(f) >= 4 ? LLS.weekKey(new Date(new Date(f + 'T12:00:00').getTime() + 3 * 864e5).toISOString().slice(0, 10)) : LLS.weekKey(f);
+  }
   function viewSchedule() {
     const months = schedMonths();
-    if (!months.includes(ui.schedMonth)) ui.schedMonth = months[1];
-    const M = ui.schedMonth;
     const slots = state.settings.slots || [];
-    const chips = `<div class="chips">${months.map((m) => `<button class="chip${m === M ? ' on' : ''}" data-act="schedMonth" data-v="${m}">${mName(m, true)}</button>`).join('')}</div>`;
+    if (!slots.length && !LL.live(state.classes).length) {
+      return `<div class="card"><h2>Schedule</h2><p>Import the Eversports activity export first, then the schedule fills itself.</p></div>`;
+    }
     if (!slots.length) {
       const wk = latestWeek();
-      return `<div class="card"><h2>Schedule</h2><p>First tell the app your standard week. ${wk ? `The quickest way: copy it from Eversports (week of ${dmy(wk)}). You can change every class afterwards.` : 'Import the Eversports activity export first.'}</p>
-        ${wk ? `<button class="btn primary" data-act="slotsFromEv" data-v="${wk}">Copy standard week from Eversports</button>` : ''}</div>`;
+      return `<div class="card"><h2>Schedule</h2><p>First tell the app your standard week. The quickest way: copy it from Eversports (week of ${dmy(wk)}). You can change every class afterwards.</p>
+        <button class="btn primary" data-act="slotsFromEv" data-v="${wk}">Copy standard week from Eversports</button></div>`;
     }
-    const had = !!LLS.getPlan(state, M);
-    const plan = LLS.ensurePlan(state, M); if (!had) save();
-    const all = LLS.liveClasses(plan);
-    const room = ui.room || 'all';
+    const wFirst = LLS.weekKey(months[0] + '-01'), wLast = LLS.weekKey(LLS.datesOf(months[3]).slice(-1)[0]);
+    if (!ui.schedWeek) ui.schedWeek = LLS.weekKey(today());
+    if (ui.schedWeek < wFirst) ui.schedWeek = wFirst;
+    if (ui.schedWeek > wLast) ui.schedWeek = wLast;
+    const W = ui.schedWeek;
+    const dates = [...Array(7)].map((_, i) => new Date(new Date(W + 'T12:00:00').getTime() + i * 864e5).toISOString().slice(0, 10));
+    const mons = [...new Set(dates.map((d) => LL.mk(d)))];
+    let made = false; for (const m of mons) if (!LLS.getPlan(state, m)) made = true;
+    const plans = mons.map((m) => LLS.ensurePlan(state, m)); if (made) save(true);
+    const all = plans.flatMap((p) => LLS.liveClasses(p)).filter((c) => dates.includes(c.date));
+    const M = ui.schedMonth = LL.mk(dates[3]);
+    const until = LLS.coveredUntil(state);
+    const evs = mons.flatMap((m) => eventsOn(m)).filter((e) => dates.includes(e.date));
     const av = LL.live(state.avail).filter((a) => a.month === M);
-    const avBy = Object.fromEntries(av.map((a) => [a.ins, a]));
     const team = state.settings.instructors.filter((i) => !i.deleted && i.active !== false);
-    const missing = team.filter((i) => !avBy[i.id] && i.status !== 'excluded');
-    const teach = all.filter((c) => LLS.kindOf(state, c.title) !== 'rental');
-    const open = teach.filter((c) => !c.ins).length;
-    const per = {}; teach.forEach((c) => { if (c.ins) per[c.ins] = (per[c.ins] || 0) + 1; });
-    const ratio = LL.onCostRatio(agg);
-    const cost = Object.entries(per).reduce((a, [id, n]) => { const i = insById(id); return a + (LL.paidIn(i, M) ? (i.rate || 0) * n : 0); }, 0);
-    const evs = eventsOn(M);
-    // same room, same time → conflict
+    const missing = team.filter((i) => !av.some((a) => a.ins === i.id) && i.status !== 'excluded');
+    const monthCls = LLS.liveClasses(LLS.ensurePlan(state, M)).filter((c) => LLS.kindOf(state, c.title) !== 'rental');
+    const open = monthCls.filter((c) => !c.ins).length;
     const conflict = new Set();
-    const byDate = {}; [...all.map((c) => ({ k: c.id, date: c.date, start: c.start, end: c.end, room: c.room })), ...evs.filter((e) => e.start && e.room).map((e) => ({ k: 'e' + e.ev.id + e.date, date: e.date, start: e.start, end: e.end, room: e.room }))].forEach((x) => (byDate[x.date] = byDate[x.date] || []).push(x));
-    for (const list of Object.values(byDate)) for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) if (list[i].room && list[i].room === list[j].room && LLS.overlaps(list[i], list[j])) { conflict.add(list[i].k); conflict.add(list[j].k); }
-    const weeks = LLS.planWeeks(state, M);
-    const card = (c) => `<button class="cls ${roomCls(c.room)}${!c.ins && LLS.kindOf(state, c.title) !== 'rental' ? ' open' : ''}${conflict.has(c.id) ? ' conf' : ''}${c.manual ? ' man' : ''}" data-act="editClass" data-id="${c.id}" title="${esc(c.room)}"><span class="ct">${c.start}</span><span class="cn">${esc(c.title)}</span><span class="ci">${c.ins ? esc(shortName(c.ins)) : LLS.kindOf(state, c.title) === 'rental' ? '' : 'open'}</span></button>`;
-    const evCard = (e) => `<button class="cls ev ${roomCls(e.room)}${conflict.has('e' + e.ev.id + e.date) ? ' conf' : ''}" data-act="editEvent" data-id="${e.ev.id}"><span class="ct">${e.start || '★'}</span><span class="cn">${esc(e.title)}</span><span class="ci">${e.ev.kind === 'rental' ? 'rental' : e.ev.internal ? 'internal' : 'event'}</span></button>`;
-    const dayHtml = (d, list) => {
-      const show = list.filter((c) => room === 'all' || c.room === room);
-      const es = evs.filter((e) => e.date === d && (room === 'all' || !e.room || e.room === room));
-      const items = [...show.map((c) => ({ t: LLS.mins(c.start), h: card(c) })), ...es.map((e) => ({ t: LLS.mins(e.start) ?? 9999, h: evCard(e) }))].sort((a, b) => a.t - b.t).map((x) => x.h).join('');
-      return `<div class="dcol"><div class="dh">${dShort(d)}</div>${items}<button class="addc" data-act="newClass" data-date="${d}" aria-label="Add a class on ${dShort(d)}">+ class</button></div>`;
-    };
-    const weekHtml = (w) => {
-      const all7 = [...Array(7)].map((_, i) => new Date(new Date(w.start + 'T12:00:00').getTime() + i * 864e5).toISOString().slice(0, 10));
-      return `<div class="wk">${all7.map((d) => (w.days[d] ? dayHtml(d, w.days[d]) : '<div class="dcol out"></div>')).join('')}</div>`;
-    };
-    const rooms = LLS.rooms(state);
-    return `<div class="card">
-      <div class="row between wrap"><h2>Schedule${help('Your standard week is filled in for every month. Tap a class to change its name, time, room or instructor, for one day or every week. “+ class” adds one. “Fill instructors” uses the team\'s availability. Classes still need to be created in Eversports by hand.')}</h2>${chips}</div>
-      <div class="sbar">
-        <div class="stat"><b>${teach.length}</b> classes · <span class="${open ? 'negc' : 'okc'}">${open ? open + ' without instructor' : 'all covered'}</span>${cost ? ` · ≈ ${eur(cost * ratio)} instructor cost` : ''}</div>
-        <div class="row gap wrap">
-          <button class="btn sm primary" data-act="propose">Fill instructors</button>
-          <label class="btn sm">Import availability<input type="file" id="availFile" accept=".csv" hidden></label>
-          <button class="btn sm" data-act="exportPlan">Export for team</button>
-          <details class="more"><summary class="btn sm ghost">More</summary><div class="menu">
-            <button class="btn sm ghost" data-act="formScript">Google Form script</button>
-            <button class="btn sm ghost" data-act="clearIns">Remove all instructors</button>
-            <button class="btn sm ghost" data-act="resetPlan">Back to standard week</button>
-          </div></details>
-        </div>
-      </div>
-      <p class="muted small">${av.length ? `${av.length} availability answers${missing.length ? ` · missing: ${missing.map((i) => esc(i.name)).join(', ')}` : ''}` : 'No availability answers for this month yet. “Fill instructors” then keeps everyone on their usual slots.'}</p>
-      <div class="row between wrap"><div class="seg">${['all', ...rooms].map((r) => `<button class="${room === r ? 'on' : ''}" data-act="room" data-v="${esc(r)}">${r === 'all' ? 'All rooms' : esc(r.replace(/^The /, ''))}</button>`).join('')}</div>
-      <div class="legend"><span><i class="sw r1"></i>${esc(rooms[0].replace(/^The /, ''))}</span><span><i class="sw r2"></i>${esc((rooms[1] || '').replace(/^The /, ''))}</span><span><i class="sw open-sw"></i>no instructor</span><span><i class="sw conf-sw"></i>room double-booked</span></div></div>
-      ${Object.keys(per).length ? `<div class="chips mt">${Object.entries(per).sort((a, b) => b[1] - a[1]).map(([id, n]) => `<span class="chip static">${esc(insName(id))} · ${n}${avBy[id] && avBy[id].max ? `<span class="muted"> (max ${avBy[id].max}/wk)</span>` : ''}</span>`).join('')}</div>` : ''}
-    </div>
-    ${weeks.map((w) => `<div class="card wkcard"><h2>Week of ${dmy(w.start)}</h2>${weekHtml(w)}</div>`).join('')}
-    <div id="print" hidden></div>`;
+    for (const d of dates) {
+      const list = [...all.filter((c) => c.date === d).map((c) => ({ k: c.id, start: c.start, end: c.end, room: c.room })), ...evs.filter((e) => e.date === d && e.start && e.room).map((e) => ({ k: 'e' + e.ev.id + d, start: e.start, end: e.end, room: e.room }))];
+      for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) if (list[i].room === list[j].room && LLS.overlaps(list[i], list[j])) { conflict.add(list[i].k); conflict.add(list[j].k); }
+    }
+    const cell = (c) => { const rental = LLS.kindOf(state, c.title) === 'rental'; return `<button class="gc ${roomCls(c.room)}${!c.ins && !rental ? ' open' : ''}${conflict.has(c.id) ? ' conf' : ''}" data-act="editClass" data-id="${c.id}" data-m="${LL.mk(c.date)}"><span class="gn">${esc(c.title)}</span><b>${c.ins ? esc(insName(c.ins)) : rental ? '' : 'open'}</b></button>`; };
+    const evCell = (e) => `<button class="gc ev ${roomCls(e.room)}${conflict.has('e' + e.ev.id + e.date) ? ' conf' : ''}" data-act="editEvent" data-id="${e.ev.id}"><span class="gn">${e.ev.kind === 'rental' ? 'Room rental' : e.ev.internal ? 'Internal event' : 'Event'}${e.end ? ' · until ' + e.end : ''}</span><b>${esc(e.ev.kind === 'rental' ? e.title.replace(/^Room rental\s*·\s*/i, '') : e.title)}</b></button>`;
+    const items = [...all.map((c) => ({ date: c.date, t: c.start, h: cell(c) })), ...evs.filter((e) => e.start).map((e) => ({ date: e.date, t: e.start, h: evCell(e) }))];
+    const allDay = evs.filter((e) => !e.start);
+    const times = [...new Set(items.map((x) => x.t))].sort((a, b) => LLS.mins(a) - LLS.mins(b));
+    const narrow = window.innerWidth < 760;
+    if (!ui.schedDay || !dates.includes(ui.schedDay)) ui.schedDay = dates.includes(today()) ? today() : dates[0];
+    let grid;
+    if (!narrow) {
+      grid = `<div class="tablewrap"><table class="sg"><thead><tr><th class="tcol"></th>${dates.map((d) => `<th class="${d === today() ? 'today' : ''}">${dShort(d)}</th>`).join('')}</tr></thead><tbody>
+        ${allDay.length ? `<tr class="allday"><th class="tcol">Events</th>${dates.map((d) => `<td>${allDay.filter((e) => e.date === d).map(evCell).join('')}</td>`).join('')}</tr>` : ''}
+        ${PARTS.map(([label, a, b]) => { const ts = times.filter((t) => LLS.mins(t) >= a && LLS.mins(t) < b); return ts.length ? `<tr class="part"><th colspan="8">${label}</th></tr>` + ts.map((t) => `<tr><th class="tcol">${t}</th>${dates.map((d) => `<td>${items.filter((x) => x.date === d && x.t === t).map((x) => x.h).join('')}</td>`).join('')}</tr>`).join('') : ''; }).join('')}
+      </tbody></table></div>`;
+    } else {
+      const d = ui.schedDay;
+      const di = items.filter((x) => x.date === d);
+      grid = `<div class="daychips">${dates.map((x) => `<button class="chip${x === d ? ' on' : ''}" data-act="schedDay" data-v="${x}">${DAYS[LLS.weekday(x)]}<small>${+x.slice(8, 10)}.</small></button>`).join('')}</div>
+        ${allDay.filter((e) => e.date === d).map((e) => `<div class="drow"><span class="tcol">★</span>${evCell(e)}</div>`).join('')}
+        ${PARTS.map(([label, a, b]) => { const rows = di.filter((x) => LLS.mins(x.t) >= a && LLS.mins(x.t) < b).sort((x, y) => LLS.mins(x.t) - LLS.mins(y.t)); return rows.length ? `<div class="dpart">${label}</div>` + rows.map((x) => `<div class="drow"><span class="tcol">${x.t}</span>${x.h}</div>`).join('') : ''; }).join('') || '<p class="muted">No classes this day.</p>'}`;
+    }
+    const covered = until && dates[0] <= until;
+    return `<div class="card schedcard" data-box="schedule">
+      <div class="row between wrap"><h2>Schedule${help('Times on the left, days across. Tap a class to change its name, time, room or instructor, for one day or every week. Weeks already in Eversports show the real classes; later weeks show your standard week.')}</h2>
+        <div class="row gap wrap"><button class="btn sm primary" data-act="newClass">+ Add class</button><button class="btn sm" data-act="exportPlan">Export for team</button>
+        <details class="more"><summary class="btn sm ghost">More</summary><div class="menu">
+          <button class="btn sm ghost" data-act="propose">${av.length ? 'Fill open classes from availability' : 'Copy usual instructors into open classes'}</button>
+          <label class="btn sm ghost">Import availability (${mName(M)})<input type="file" id="availFile" accept=".csv" hidden></label>
+          <button class="btn sm ghost" data-act="formScript">Google Form script</button>
+          <button class="btn sm ghost" data-act="clearIns">Remove planned instructors (${mName(M)})</button>
+          <button class="btn sm ghost" data-act="resetPlan">Back to standard week (${mName(M)})</button>
+        </div></details></div></div>
+      <div class="weeknav"><button class="btn sm" data-act="schedWeek" data-d="-7" aria-label="Previous week" ${W <= wFirst ? 'disabled' : ''}>‹</button><b>${+dates[0].slice(8, 10)}.${+dates[0].slice(5, 7)}. – ${+dates[6].slice(8, 10)}.${+dates[6].slice(5, 7)}.${dates[6].slice(0, 4)}</b><button class="btn sm" data-act="schedWeek" data-d="7" ${W >= wLast ? 'disabled' : ''} aria-label="Next week">›</button>
+        <span class="chips">${months.map((m) => `<button class="chip${mons.includes(m) ? ' on' : ''}" data-act="schedMonth" data-v="${m}">${mName(m)}</button>`).join('')}</span></div>
+      <p class="muted small">${covered ? 'From Eversports (real classes). ' : 'Standard week, planned. '}${open ? `<span class="negc">${open} classes in ${mName(M)} without instructor.</span> ` : ''}${av.length ? `${av.length} availability answers for ${mName(M)}${missing.length ? `, missing: ${missing.map((i) => esc(i.name)).join(', ')}` : ''}.` : ''}</p>
+      <div class="legend"><span><i class="sw r1"></i>${esc(LLS.rooms(state)[0].replace(/^The /, ''))}</span><span><i class="sw r2"></i>${esc((LLS.rooms(state)[1] || '').replace(/^The /, ''))}</span><span><i class="sw open-sw"></i>no instructor</span><span><i class="sw conf-sw"></i>room double-booked</span></div>
+      ${grid}
+    </div>`;
   }
   function latestWeek() {
     const dates = [...new Set(LL.live(state.classes).map((c) => c.date))].sort();
@@ -2642,7 +2987,7 @@ function createAvailabilityForm() {
   function openModal(html) { const m = $('#modal'); m.innerHTML = `<div class="mbox" role="dialog" aria-modal="true">${html}</div>`; m.hidden = false; document.body.classList.add('modal-open'); const f = m.querySelector('input,select,textarea'); if (f && window.innerWidth > 760) f.focus(); }
   function closeModal() { const m = $('#modal'); m.hidden = true; m.innerHTML = ''; document.body.classList.remove('modal-open'); }
   function classEditor(c, date) {
-    const isNew = !c; const d = isNew ? date : c.date;
+    const isNew = !c; const d = isNew ? (date || ui.schedDay || LLS.weekKey(today())) : c.date;
     const types = LLS.classTypes(state);
     const av = Object.fromEntries(LL.live(state.avail).filter((a) => a.month === LL.mk(d)).map((a) => [a.ins, a]));
     const team = state.settings.instructors.filter((i) => !i.deleted && i.active !== false);
@@ -2651,17 +2996,18 @@ function createAvailabilityForm() {
     const rest = team.filter((i) => !ok.includes(i));
     const cur = c ? c.ins : '';
     const wd = DAYS_LONG[LLS.weekday(d)];
-    return `<h2>${isNew ? 'Add a class' : 'Edit class'} · ${dShort(d)}</h2>
+    return `<h2>${isNew ? 'Add a class' : 'Edit class · ' + dShort(d)}</h2>
+      ${isNew ? `<label class="fld">Day<input class="in" type="date" id="ceDate" value="${d}"></label>` : ''}
       <label class="fld">Class<input class="in" id="ceTitle" list="ceTypes" value="${esc(c ? c.title : '')}" placeholder="e.g. Lagree Burn"><datalist id="ceTypes">${types.map((t) => `<option value="${esc(t.name)}">`).join('')}</datalist></label>
       <div class="row gap"><label class="fld grow">Start<input class="in" id="ceStart" value="${c ? c.start : ''}" placeholder="07:40" inputmode="numeric"></label><label class="fld grow">End<input class="in" id="ceEnd" value="${c ? c.end || '' : ''}" placeholder="08:30" inputmode="numeric"></label></div>
       <label class="fld">Room<select class="in" id="ceRoom">${LLS.rooms(state).map((r) => `<option${(c ? c.room : LLS.rooms(state)[0]) === r ? ' selected' : ''}>${esc(r)}</option>`).join('')}</select></label>
       <label class="fld">Instructor<select class="in" id="ceIns"><option value="">— no instructor yet —</option>${ok.length ? `<optgroup label="Available & teaches this">${ok.map((i) => `<option value="${i.id}"${cur === i.id ? ' selected' : ''}>${esc(i.name)}${i.status === 'unpaid' ? ' (unpaid)' : ''}</option>`).join('')}</optgroup>` : ''}<optgroup label="${ok.length ? 'Others' : 'Team'}">${rest.map((i) => `<option value="${i.id}"${cur === i.id ? ' selected' : ''}>${esc(i.name)}</option>`).join('')}</optgroup></select></label>
       ${isNew || c.slot ? `<fieldset class="scope"><legend>Change applies to</legend>
-        <label><input type="radio" name="ceScope" value="once" checked> Only ${dShort(d)}</label>
-        <label><input type="radio" name="ceScope" value="weekly"> Every ${wd} from ${dShort(d)} on</label></fieldset>` : ''}
+        <label><input type="radio" name="ceScope" value="once" checked> ${isNew ? 'Only this day' : 'Only ' + dShort(d)}</label>
+        <label><input type="radio" name="ceScope" value="weekly"> ${isNew ? 'Every week on this weekday' : 'Every ' + wd + ' from ' + dShort(d) + ' on'}</label></fieldset>` : ''}
       ${c && c.renamedFrom ? `<p class="muted small">Normally “${esc(c.renamedFrom)}”; renamed because the instructor doesn't teach that format.</p>` : ''}
       <p id="ceErr" class="negc small"></p>
-      <div class="row between wrap mt">${isNew ? '<span></span>' : `<button class="btn ghost danger" data-act="delClass" data-id="${c.id}">Delete class</button>`}<div class="row gap"><button class="btn" data-act="closeModal">Cancel</button><button class="btn primary" data-act="saveClass" data-id="${c ? c.id : ''}" data-date="${d}">Save</button></div></div>`;
+      <div class="row between wrap mt">${isNew ? '<span></span>' : `<button class="btn ghost danger" data-act="delClass" data-id="${c.id}" data-m="${LL.mk(d)}">Delete class</button>`}<div class="row gap"><button class="btn" data-act="closeModal">Cancel</button><button class="btn primary" data-act="saveClass" data-id="${c ? c.id : ''}" data-date="${d}" data-m="${LL.mk(d)}">Save</button></div></div>`;
   }
   function exportPlan() {
     const M = ui.schedMonth; const weeks = LLS.planWeeks(state, M);
@@ -2689,7 +3035,20 @@ function createAvailabilityForm() {
     const dataIdeas = LL.eventIdeas(state, agg, snap);
     const mine = (state.settings.ideas || []).filter((i) => !i.deleted);
     const evCard = (e) => `<button class="evrow" data-act="editEvent" data-id="${e.id}"><span class="evd"><b>${e.date ? (+e.date.slice(8, 10)) + '.' + (+e.date.slice(5, 7)) + '.' : '—'}</b><em>${e.date ? DAYS[LLS.weekday(e.date)] : ''}</em></span><span class="evb"><b>${esc(e.title)}</b><span class="muted small">${[e.start ? e.start + (e.end ? '–' + e.end : '') : '', e.room ? e.room.replace(/^The /, '') : '', e.internal ? 'internal' : 'public'].filter(Boolean).join(' · ')}</span>${e.notes ? `<span class="small">${esc(e.notes).slice(0, 160)}${e.notes.length > 160 ? '…' : ''}</span>` : ''}</span><span class="eva">${e.income ? `<span class="pos">+${eur(e.income)}</span>` : ''}${e.cost ? `<span class="neg">${eur(-e.cost)}</span>` : ''}</span></button>`;
-    return `<div class="card">
+    const months4 = [0, 1, 2, 3].map((i) => LL.addMonths(LL.mk(t), i));
+    if (!months4.includes(ui.evMonth)) ui.evMonth = months4[0];
+    const EM = ui.evMonth, first = EM + '-01', lead = LLS.weekday(first), nd = LLS.datesOf(EM).length;
+    const onDay = (d) => LL.live(state.events).flatMap((e) => (e.kind === 'rental' ? (e.dates || []).includes(d) : e.date === d) ? [e] : []);
+    const calCells = [...Array(lead)].map(() => '<div class="cd out"></div>').join('') + LLS.datesOf(EM).map((d) => { const es = onDay(d); return `<div class="cd${d === t ? ' today' : ''}${es.length ? ' has' : ''}"><span class="cdn">${+d.slice(8, 10)}</span>${es.map((e) => `<button class="ce ${e.kind === 'rental' ? 'rent' : e.internal ? 'int' : 'pub'}" data-act="editEvent" data-id="${e.id}" title="${esc(e.title)}">${esc(e.kind === 'rental' ? 'Rental' : e.title)}</button>`).join('')}</div>`; }).join('');
+    const monthList = LLS.datesOf(EM).flatMap((d) => onDay(d).map((e) => ({ d, e })));
+    return `<div class="card" data-box="calendar">
+      <div class="row between wrap"><h2>Calendar${help('Events and room rentals per month, up to 3 months ahead. Tap one to edit it.')}</h2>
+        <div class="weeknav"><button class="btn sm" data-act="evMonth" data-d="-1" ${EM === months4[0] ? 'disabled' : ''} aria-label="Previous month">‹</button><b>${mName(EM, true)}</b><button class="btn sm" data-act="evMonth" data-d="1" ${EM === months4[3] ? 'disabled' : ''} aria-label="Next month">›</button></div></div>
+      <div class="legend"><span><i class="sw pub-sw"></i>Event</span><span><i class="sw int-sw"></i>Internal</span><span><i class="sw rent-sw"></i>Room rental</span></div>
+      <div class="cal"><div class="cdh">Mon</div><div class="cdh">Tue</div><div class="cdh">Wed</div><div class="cdh">Thu</div><div class="cdh">Fri</div><div class="cdh">Sat</div><div class="cdh">Sun</div>${calCells}</div>
+      <ul class="callist">${monthList.map(({ d, e }) => `<li><button class="linkish" data-act="editEvent" data-id="${e.id}"><b>${dShort(d)}</b> ${esc(e.title)}${e.start ? ` · ${e.start}${e.end ? '–' + e.end : ''}` : ''}</button></li>`).join('') || '<li class="muted">Nothing this month.</li>'}</ul>
+    </div>
+    <div class="card">
       <div class="row between wrap"><h2>Upcoming events${help('Events show up in the Schedule so rooms don\'t get double-booked. Expected income and costs go into the forecast.')}</h2><button class="btn sm primary" data-act="newEvent">+ New event</button></div>
       <div class="evlist">${up.map(evCard).join('') || '<p class="muted">Nothing planned yet.</p>'}</div>
       ${past.length ? `<details class="mt"><summary class="muted small">Past events (${past.length})</summary><div class="evlist">${past.reverse().map(evCard).join('')}</div></details>` : ''}
@@ -2706,7 +3065,7 @@ function createAvailabilityForm() {
     const isNew = !e; e = e || Object.assign({ title: '', date: '', start: '', end: '', room: '', internal: false, notes: '', income: 0, cost: 0 }, preset || {});
     const rental = e.kind === 'rental';
     return `<h2>${isNew ? 'New event' : rental ? 'Room rental' : 'Edit event'}</h2>
-      <label class="fld">Title<input class="in" id="evTitle" value="${esc(e.title)}" placeholder="e.g. Matcha Workshop"></label>
+      <label class="fld">Title<input class="in" id="evTitle" value="${esc(e.title)}" placeholder="e.g. Workshop"></label>
       ${rental ? `<label class="fld">Dates <span class="muted small">(dd.mm.yyyy, comma separated)</span><textarea class="in" id="evDates" rows="2">${(e.dates || []).map(dmy).join(', ')}</textarea></label>
         <label class="fld">Payments <span class="muted small">(one per line: due date amount, e.g. 01.12.2026 337,50)</span><textarea class="in" id="evPays" rows="3">${(e.payments || []).map((p) => dmy(p.due) + ' ' + nf2.format(p.amount / 100)).join('\n')}</textarea></label>`
       : `<label class="fld">Date<input class="in" type="date" id="evDate" value="${e.date || ''}"></label>`}
@@ -2719,49 +3078,139 @@ function createAvailabilityForm() {
   }
 
   // ---------- Growth ----------
-  function viewGrowth() {
+  const MONS3 = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const pc = (x) => (x === null || x === undefined || !isFinite(x) ? '—' : Math.round(x) + '%');
+  const n1 = (x) => (x === null || x === undefined ? '—' : nf2.format(x).replace(/,?0+$/, ''));
+  function growthModel(asMonth) {
     const snap = LL.growthSnapshot(state, today()) || {};
-    const hasP = !!(state.growth.products && state.growth.products.text), hasC = !!(state.growth.customers && state.growth.customers.text);
-    const f = snap.funnel, r = snap.retention, o = snap.occupancy, rv = snap.revenue;
-    const fm = f ? f.byMonth.filter((x) => x.conv30Pct !== null && x.maturedTrials >= 10) : [];
-    const lastF = fm[fm.length - 1];
-    const lastFull = (arr, key) => (arr || []).filter((x) => x[key] < LL.mk(today())).slice(-1)[0];
-    const lt = f ? lastFull(f.byMonth, 'month') : null;
-    const rm = r ? r.byMonth.slice(-2, -1)[0] || r.byMonth.slice(-1)[0] : null;
-    const om = o ? lastFull(o.byMonth, 'key') : null;
-    const memM = rv ? lastFull(rv.byMonth, 'month') : null;
-    const tile = (label, big, sub, tip) => `<div class="tile"><div class="label">${label}${tip ? help(tip) : ''}</div><div class="big">${big}</div><div class="sub">${sub || ''}</div></div>`;
-    const months = [...new Set([...(f ? f.byMonth.map((x) => x.month) : []), ...(o ? o.byMonth.map((x) => x.key) : []), ...(rv ? rv.byMonth.map((x) => x.month) : [])])].sort().filter((m) => m >= LL.addMonths(LL.mk(state.settings.openingDate), -1));
-    const get = (arr, k, m) => (arr || []).find((x) => x[k] === m);
-    const rByM = (m) => r ? r.byMonth.find((x) => x.month === MON[+m.slice(5) - 1]) : null;
-    return `${insightsCard(LL.insights(state, agg))}
-    ${!hasP || !hasC ? `<div class="card attn"><h2>Two more Eversports exports for the full picture</h2><p>Trial funnel, returning clients and the win-back list need:</p><ol class="steps">${hasP ? '' : '<li><b>Products → Analysis → Export activity & booking data</b>, from opening until today.</li>'}${hasC ? '' : '<li><b>Analytics → Reports → Customers with bookings</b>, from opening until today.</li>'}</ol><p class="muted small">Drop them into Import with the other files once a month. Customer names and emails are kept only inside the encrypted data, for the win-back list.</p></div>` : ''}
-    <div class="tiles t5">
-      ${tile('New trials', lt ? lt.trials : '—', lt ? mName(lt.month, true) : 'needs the products export')}
-      ${tile('Trial → bought within 30 days', lastF ? Math.round(lastF.conv30Pct) + '%' : '—', lastF ? `${Math.round(lastF.commit30Pct)}% a pack or membership · ${mName(lastF.month)}` : '', 'Of the people whose first class was a trial in that month, how many bought something else within 30 days. Months younger than 30 days aren\'t counted yet.')}
-      ${tile('Active clients', rm ? rm.activeCustomers : '—', rm ? `${rm.newCustomers} new · ${rm.returningCustomers} returning · ${rm.regulars} regulars (4+)` : 'needs the customers export')}
-      ${tile('Classes full', om ? Math.round(om.occupancyPct) + '%' : '—', om ? `${nf2.format(om.avgBooked).replace(/,0+$/, '')} booked per class · ${mName(om.key)}` : '')}
-      ${tile('Membership sales', memM ? eur(Math.round((memM.byCategory.Membership || 0) * 100)) : '—', memM ? mName(memM.month, true) : '')}
-    </div>
-    ${months.length ? `<div class="card"><h2>Month by month</h2><div class="tablewrap sticky"><table class="t cf"><thead><tr><th class="rl"></th>${months.map((m) => `<th class="r">${mName(m)}</th>`).join('')}</tr></thead><tbody>
-      ${f ? `<tr><th class="rl">New trials</th>${months.map((m) => { const x = get(f.byMonth, 'month', m); return `<td class="r">${x ? x.trials : '·'}</td>`; }).join('')}</tr>
-      <tr><th class="rl">→ bought within 30 days</th>${months.map((m) => { const x = get(f.byMonth, 'month', m); return `<td class="r">${x && x.conv30Pct !== null ? Math.round(x.conv30Pct) + '%' : '·'}</td>`; }).join('')}</tr>
-      <tr><th class="rl">→ pack or membership</th>${months.map((m) => { const x = get(f.byMonth, 'month', m); return `<td class="r">${x && x.commit30Pct !== null ? Math.round(x.commit30Pct) + '%' : '·'}</td>`; }).join('')}</tr>` : ''}
-      ${r ? `<tr><th class="rl">Active clients</th>${months.map((m) => { const x = rByM(m); return `<td class="r">${x ? x.activeCustomers : '·'}</td>`; }).join('')}</tr>
-      <tr><th class="rl">… new / returning</th>${months.map((m) => { const x = rByM(m); return `<td class="r small">${x ? x.newCustomers + ' / ' + x.returningCustomers : '·'}</td>`; }).join('')}</tr>
-      <tr><th class="rl">Regulars (4+ visits)</th>${months.map((m) => { const x = rByM(m); return `<td class="r">${x ? x.regulars : '·'}</td>`; }).join('')}</tr>` : ''}
-      ${o ? `<tr><th class="rl">Booked per class</th>${months.map((m) => { const x = get(o.byMonth, 'key', m); return `<td class="r">${x ? nf2.format(x.avgBooked).replace(/,0+$/, '') : '·'}</td>`; }).join('')}</tr>
-      <tr><th class="rl">Classes full</th>${months.map((m) => { const x = get(o.byMonth, 'key', m); return `<td class="r">${x ? Math.round(x.occupancyPct) + '%' : '·'}</td>`; }).join('')}</tr>
-      <tr><th class="rl">Nearly empty (≤2)</th>${months.map((m) => { const x = get(o.byMonth, 'key', m); return `<td class="r">${x ? Math.round(x.nearlyEmptyPct) + '%' : '·'}</td>`; }).join('')}</tr>` : ''}
-      ${rv ? `<tr><th class="rl">Membership sales</th>${months.map((m) => { const x = get(rv.byMonth, 'month', m); return `<td class="r">${x && x.byCategory.Membership ? eur(Math.round(x.byCategory.Membership * 100)) : '·'}</td>`; }).join('')}</tr>` : ''}
-    </tbody></table></div></div>` : ''}
-    ${o && o.recentBySlot && o.recentBySlot.length ? `<div class="grid2"><div class="card"><h2>Fullest class times<span class="muted small"> · last 8 weeks</span></h2>${slotTable(o.recentBySlot.slice(0, 6))}</div><div class="card"><h2>Emptiest class times<span class="muted small"> · last 8 weeks</span></h2>${slotTable(o.recentBySlot.slice(-6).reverse())}</div></div>` : ''}
-    ${r && r.winBack ? `<div class="card"><div class="row between wrap"><h2>Win-back list${help('People with at least 2 visits who haven\'t booked this month. Start with the ones with the most visits. Only invite people with newsletter consent by email; others personally.')}</h2><div class="row gap wrap"><button class="btn sm" data-act="copyWb" data-v="nl">Copy emails (newsletter yes)</button><button class="btn sm ghost" data-act="copyWb" data-v="all">Copy all emails</button></div></div>
-      <p class="muted small">${r.winBack.count} people · ${r.winBack.strongCount} with 3+ visits and silent for two months</p>
-      <div class="tablewrap"><table class="t"><thead><tr><th>Name</th><th class="r">Visits</th><th>Last month</th><th>Newsletter</th></tr></thead><tbody>${r.winBack.list.slice(0, ui.wbAll ? 999 : 15).map((c) => `<tr><td>${esc(c.name)}</td><td class="r">${c.totalBookings}</td><td>${esc(c.lastActive || '')}</td><td>${c.newsletter ? 'yes' : '—'}</td></tr>`).join('')}</tbody></table></div>
-      ${r.winBack.list.length > 15 && !ui.wbAll ? `<button class="btn sm ghost mt" data-act="wbAll">Show all ${r.winBack.list.length}</button>` : ''}</div>` : ''}`;
+    const cur = LL.mk(today()), upto = asMonth || cur;
+    const f = snap.funnel, r = snap.retention, o = snap.occupancy, rv = snap.revenue, ads = LL.adsSummary(state);
+    const mature = f ? f.byMonth.filter((x) => x.conv30Pct !== null && x.maturedTrials >= 15 && x.month <= upto) : [];
+    const trialsFull = f ? f.byMonth.filter((x) => x.month < cur && x.month <= upto) : [];
+    const yr = cur.slice(0, 4);
+    const rFull = r ? r.byMonth.map((x) => Object.assign({ m: yr + '-' + String(MONS3.indexOf(x.month) + 1).padStart(2, '0') }, x)).filter((x) => x.m < cur && x.m <= upto) : [];
+    const occFull = o ? o.byMonth.filter((x) => x.key < cur && x.key <= upto) : [];
+    const revFull = rv ? rv.byMonth.filter((x) => x.month < cur && x.month <= upto) : [];
+    const mix = {}; let mixTot = 0; (rv ? rv.byMonth : []).forEach((m) => Object.entries(m.byCategory).forEach(([k, v]) => { if (v > 0) { mix[k] = (mix[k] || 0) + v; mixTot += v; } }));
+    const credits = snap.productUsage ? snap.productUsage.filter((x) => !/first|gift/i.test(x.name)).reduce((a, x) => a + x.unitsOutstanding, 0) : null;
+    const cohortNext = r ? r.cohorts.filter((c) => c.activePctByMonth.length > 1 && c.size >= 20).map((c) => ({ c: c.cohort, p: c.activePctByMonth[1] })) : [];
+    const fmt = o ? o.recentByFormat : [];
+    const latino = fmt.find((x) => /latino/i.test(x.key)), lagree = fmt.find((x) => /^lagree burn$/i.test(x.key));
+    let adsTrials = null;
+    if (ads && f && ads.from && ads.to) adsTrials = f.byMonth.filter((x) => x.month >= ads.from.slice(0, 7) && x.month <= ads.to.slice(0, 7)).reduce((a, x) => a + x.trials, 0);
+    return { snap, f, r, o, rv, ads, mature, last: mature[mature.length - 1], prevMature: mature[mature.length - 2], firstMature: mature[0], trialsFull, lastTrials: trialsFull[trialsFull.length - 1], prevTrials: trialsFull[trialsFull.length - 2], firstTrials: trialsFull[0], rFull, lastR: rFull[rFull.length - 1], prevR: rFull[rFull.length - 2], occFull, lastO: occFull[occFull.length - 1], prevO: occFull[occFull.length - 2], revFull, lastRev: revFull[revFull.length - 1], prevRev: revFull[revFull.length - 2], mix, mixTot, credits, cohortNext, latino, lagree, adsTrials, T: state.settings.targets };
   }
-  function slotTable(list) { return `<table class="t"><thead><tr><th>Time</th><th class="r">Booked</th><th class="r">Full</th><th class="r">Classes</th></tr></thead><tbody>${list.map((x) => `<tr><td>${esc(x.key)}</td><td class="r">${nf2.format(x.avgBooked).replace(/,0+$/, '')}</td><td class="r">${Math.round(x.occupancyPct)}%</td><td class="r">${x.classes}</td></tr>`).join('')}</tbody></table>`; }
+  function shortVersion(g) {
+    const out = [];
+    if (g.f) out.push(`Since opening, about ${g.f.totalTrials} people paid for a trial class and ${pc(g.f.attendedPct)} of them showed up.`);
+    if (g.last) out.push(`The step after it is the weak spot: only ${pc(g.last.conv30Pct)} buy anything else within 30 days, and ${pc(g.last.commit30Pct)} a pack or membership (trials from ${mName(g.last.month)}).`);
+    if (g.r) out.push(`${pc(g.r.oneVisitOnlyPct)} of everyone who ever booked came exactly once.`);
+    if (g.firstTrials && g.lastTrials) out.push(`New trials went from ${g.firstTrials.trials} in ${mName(g.firstTrials.month)} to ${g.lastTrials.trials} in ${mName(g.lastTrials.month)}.`);
+    if (g.o) out.push(`Classes run ${pc(g.o.overall.occupancyPct)} full on average${g.latino && g.lagree ? `; Latino Burn averages ${n1(g.latino.avgBooked)} people, Lagree Burn ${n1(g.lagree.avgBooked)}` : ''}.`);
+    if (g.lastRev) out.push(`Memberships bring in about ${eur(Math.round((g.lastRev.byCategory.Membership || 0) * 100))} a month.`);
+    return out;
+  }
+  function focusList(g) {
+    const out = [];
+    if (g.last && g.last.conv30Pct < g.T.conv30) out.push(['Turn trials into regulars', 'Give the trial one clear next step with a deadline (e.g. the pack discount only for new clients, valid 10 days), greet first-timers by name, and follow up personally on day 0, 4 and 9.']);
+    if (g.r && g.r.winBack.count) out.push(['Win people back and keep them', `${g.r.winBack.count} people with 2+ visits haven't booked this month (${g.r.winBack.strongCount} with 3+ visits, silent for two months). Personal notes, and make membership the obvious next step for regulars.`]);
+    if (g.o && g.o.recentBySlot && g.o.recentBySlot.length) { const weak = g.o.recentBySlot.filter((x) => x.classes >= 3 && x.avgBooked <= 2.5).map((x) => x.key); out.push(['Concentrate the schedule', weak.length ? `Weak slots (2.5 people or fewer): ${weak.slice(0, 6).join(', ')}. Cut or merge them, and add classes where they fill.` : 'Add classes where they fill, and watch the slots that stay under 3 people.']); }
+    if (g.ads) out.push(['Refill the top of the funnel, with tracking', `${g.ads.lpvRate !== null ? Math.round((1 - g.ads.lpvRate) * 100) + '% of ad clicks never load the page. ' : ''}Point ads straight to the booking page, set up tracking, then spend more.`]);
+    return out;
+  }
+  function watchRows(g) {
+    const R = (label, now, prev, target, unit, why, higher = true) => ({ label, now, prev, target, unit, why, ok: now === null || now === undefined ? null : higher ? now >= target : now <= target });
+    return [
+      R('Trial → any purchase within 30 days', g.last && g.last.conv30Pct, g.prevMature && g.prevMature.conv30Pct, g.T.conv30, '%', 'The main leak'),
+      R('Trial → pack or membership within 30 days', g.last && g.last.commit30Pct, g.prevMature && g.prevMature.commit30Pct, g.T.commit30, '%', 'Commitment, not just one more class'),
+      R('New trials per month', g.lastTrials && g.lastTrials.trials, g.prevTrials && g.prevTrials.trials, g.T.trials, '', 'Top of the funnel'),
+      R('Returning clients per month', g.lastR && g.lastR.returningCustomers, g.prevR && g.prevR.returningCustomers, g.T.returning, '', 'The base that pays the rent'),
+      R('Booked per regular class (of 12)', g.lastO && g.lastO.avgBooked, g.prevO && g.prevO.avgBooked, g.T.avgBooked, 'x', 'Fuller rooms, fewer empty slots'),
+      R('Membership income per month', g.lastRev && Math.round((g.lastRev.byCategory.Membership || 0) * 100), g.prevRev && Math.round((g.prevRev.byCategory.Membership || 0) * 100), g.T.membership, '€', 'Predictable income'),
+      R('Newsletter opt-in (all clients)', g.r && g.r.newsletterOptInPct, null, g.T.newsletter, '%', 'Permission to email your own clients'),
+    ];
+  }
+  const fmtW = (v, unit) => (v === null || v === undefined ? '—' : unit === '%' ? pc(v) : unit === '€' ? eur(v) : unit === 'x' ? n1(v) : String(v));
+  function watchTable(g, withPrev = true) {
+    return `<table class="t watch"><thead><tr><th>KPI</th><th class="r">Now</th>${withPrev ? '<th class="r">Before</th>' : ''}<th class="r">Target</th><th class="hide-sm">Why it matters</th></tr></thead><tbody>${watchRows(g).map((r) => `<tr><td>${r.label}</td><td class="r b ${r.ok === null ? '' : r.ok ? 'okc' : 'negc'}">${fmtW(r.now, r.unit)}</td>${withPrev ? `<td class="r muted">${fmtW(r.prev, r.unit)}</td>` : ''}<td class="r">${fmtW(r.target, r.unit)}</td><td class="hide-sm muted small">${r.why}</td></tr>`).join('')}</tbody></table>`;
+  }
+  const hbar = (rows, max, fmtv) => `<div class="hbars">${rows.map(([l, v, cl]) => `<div class="hbr"><span class="hl">${esc(l)}</span><span class="htk"><span class="hf ${cl || ''}" style="width:${Math.max(2, (v / (max || 1)) * 100)}%"></span></span><span class="hv">${fmtv(v)}</span></div>`).join('')}</div>`;
+  function viewGrowth() {
+    const g = growthModel();
+    const hasP = !!(state.growth.products && state.growth.products.text), hasC = !!(state.growth.customers && state.growth.customers.text);
+    const sv = shortVersion(g), fl = focusList(g);
+    const what = (items) => `<div class="todo"><b>What helps</b><ul>${items.map((x) => `<li>${x}</li>`).join('')}</ul></div>`;
+    const mixRows = Object.entries(g.mix).sort((a, b) => b[1] - a[1]).map(([k, v]) => [k, (v / g.mixTot) * 100]);
+    return `<div class="card" data-box="short">
+      <div class="row between wrap"><h2>The short version${help('Written from your Eversports exports each time you open the page. The four sections below go into each point.')}</h2><button class="btn sm primary" data-act="report">Export report</button></div>
+      ${!hasP || !hasC ? `<p class="attn-in">For the full picture, import two more Eversports exports: ${hasP ? '' : '<b>Products → Analysis → Export activity & booking data</b>'}${!hasP && !hasC ? ' and ' : ''}${hasC ? '' : '<b>Analytics → Reports → Customers with bookings</b>'} (from opening until today).</p>` : ''}
+      <p class="lead">${sv.join(' ') || 'Import the Eversports exports to see this.'}</p>
+      ${fl.length ? `<h3 class="mt">Where to focus, in this order</h3><ol class="focus">${fl.map(([t, d]) => `<li><b>${t}.</b> ${esc(d)}</li>`).join('')}</ol>` : ''}
+    </div>
+    <div class="card" data-box="watch"><h2>The numbers to watch${help('Now = the latest complete month (for trial conversion: the latest month whose trials have had 30 days). Targets can be changed in Settings.')}</h2>${watchTable(g)}</div>
+    ${g.f ? `<div class="card" data-box="trials"><h2>1 · Trials → regulars</h2>
+      <p class="lead">The first class works: ${pc(g.f.attendedPct)} show up. The step after it doesn't: ${g.last ? pc(g.last.conv30Pct) : '—'} buy again within 30 days.</p>
+      <div class="kpis"><div><b>${g.lastTrials ? g.lastTrials.trials : '—'}</b><span>new trials in ${g.lastTrials ? mName(g.lastTrials.month) : '—'}</span></div><div><b>${g.last ? pc(g.last.conv30Pct) : '—'}</b><span>bought anything within 30 days</span></div><div><b>${g.last ? pc(g.last.commit30Pct) : '—'}</b><span>bought a pack or membership</span></div><div><b>${g.f.medianDaysToSecondPurchase ?? '—'}</b><span>days to 2nd purchase (median)</span></div></div>
+      <div class="grid2 in"><div><h3>Bought again within 30 days, by trial month</h3>${hbar(g.f.byMonth.filter((x) => x.conv30Pct !== null).map((x) => [mName(x.month), x.conv30Pct]), Math.max(g.T.conv30, ...g.f.byMonth.map((x) => x.conv30Pct || 0)), (v) => pc(v))}<p class="muted small">Target ${g.T.conv30}%. Months younger than 30 days aren't counted yet.</p></div>
+      <div><h3>What they buy next</h3>${hbar(Object.entries(g.f.nextProducts).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k, v]) => [k, v]), Math.max(...Object.values(g.f.nextProducts), 1), (v) => String(v))}</div></div>
+      ${what(['One clear next step with a deadline: the pack discount only for new clients, valid 10 days after the trial.', 'Two minutes after every first class: greet by name, ask how it felt, book the second class right there.', 'A short personal follow-up: day 0 thank you + offer, day 4 nudge, day 9 "ends tomorrow".', 'Ask for newsletter consent right after a good first class.'])}
+    </div>` : ''}
+    ${g.r ? `<div class="card" data-box="returning"><h2>2 · Returning clients</h2>
+      <p class="lead">${pc(g.r.oneVisitOnlyPct)} came only once. ${g.cohortNext.length ? `Of each month's new clients, ${Math.round(Math.min(...g.cohortNext.map((x) => x.p)))}–${Math.round(Math.max(...g.cohortNext.map((x) => x.p)))}% still book the month after.` : ''}</p>
+      <div class="kpis"><div><b>${g.lastR ? g.lastR.returningCustomers : '—'}</b><span>returning clients in ${g.lastR ? mName(g.lastR.m) : '—'}</span></div><div><b>${g.lastR ? g.lastR.regulars : '—'}</b><span>regulars (4+ bookings)</span></div><div><b>${pc(g.r.newsletterOptInPct)}</b><span>newsletter opt-in</span></div><div><b>${g.r.winBack.count}</b><span>to win back</span></div></div>
+      <h3>Active clients per month (new / returning)</h3>${hbar(g.rFull.map((x) => [mName(x.m) + ` · ${x.newCustomers}/${x.returningCustomers}`, x.activeCustomers]), Math.max(...g.rFull.map((x) => x.activeCustomers), 1), (v) => String(v))}
+      ${what(['Founder win-back: a personal note with a reason to come back (a returning-member class, a bonus class with a pack).', 'Fix consent: opt-in at booking, a QR code at reception with a small incentive, the question at the first class. Aim for 40%+ of new clients.', 'Make membership the default for anyone coming twice a week or more.', 'Remind people before their packs expire.'])}
+      <details class="mt"><summary><b>Win-back list (${g.r.winBack.count})</b> <span class="muted small">2+ visits, no booking this month</span></summary>
+        <div class="row gap wrap mt"><button class="btn sm" data-act="copyWb" data-v="nl">Copy emails (newsletter yes)</button><button class="btn sm ghost" data-act="copyWb" data-v="all">Copy all emails</button></div>
+        <div class="tablewrap"><table class="t"><thead><tr><th>Name</th><th class="r">Visits</th><th>Last month</th><th>Newsletter</th></tr></thead><tbody>${g.r.winBack.list.slice(0, ui.wbAll ? 999 : 15).map((c) => `<tr><td>${esc(c.name)}</td><td class="r">${c.totalBookings}</td><td>${esc(c.lastActive || '')}</td><td>${c.newsletter ? 'yes' : '—'}</td></tr>`).join('')}</tbody></table></div>
+        ${g.r.winBack.list.length > 15 && !ui.wbAll ? `<button class="btn sm ghost mt" data-act="wbAll">Show all ${g.r.winBack.list.length}</button>` : ''}
+        <p class="muted small">Check consent before emailing people at scale.</p></details>
+    </div>` : ''}
+    ${g.o ? `<div class="card" data-box="full"><h2>3 · How full classes are</h2>
+      <p class="lead">Classes run ${pc(g.o.overall.occupancyPct)} full (${n1(g.o.overall.avgBooked)} of 12 booked on average); ${pc(g.o.overall.nearlyEmptyPct)} have 2 people or fewer.${g.latino && g.lagree ? ` A named format pulls people in: Latino Burn ${n1(g.latino.avgBooked)} vs Lagree Burn ${n1(g.lagree.avgBooked)}.` : ''}</p>
+      <div class="grid2 in"><div><h3>By weekday · last 8 weeks</h3>${hbar(g.o.recentByWeekday.slice().sort((a, b) => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(a.key) - ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(b.key)).map((x) => [x.key, x.avgBooked, x.avgBooked < 3.5 ? 'low' : '']), 12, (v) => n1(v) + ' / 12')}</div>
+      <div><h3>Fullest times · last 8 weeks</h3>${slotTable(g.o.recentBySlot.slice(0, 4))}<h3 class="mt">Emptiest times</h3>${slotTable(g.o.recentBySlot.filter((x) => x.classes >= 3).slice(-4).reverse())}</div></div>
+      ${what(['Cut or merge the weakest slots; keep a few early classes for the early crowd.', 'Add where demand is: another Latino Burn, one more class in the busy evening band.', 'A class of 7 feels alive and sells the next class; a class of 2 does neither, and costs the same instructor fee.'])}
+    </div>` : ''}
+    ${g.rv ? `<div class="card" data-box="mix"><h2>4 · Discounts & recurring income</h2>
+      <p class="lead">${g.rv.packsSoldBelowListPct !== null ? `${pc(g.rv.packsSoldBelowListPct)} of packs were sold below list price. ` : ''}Memberships bring in about ${g.lastRev ? eur(Math.round((g.lastRev.byCategory.Membership || 0) * 100)) : '—'} a month.${g.credits !== null ? ` About ${g.credits} prepaid classes are still open on packs.` : ''}</p>
+      <div class="grid2 in"><div><h3>Revenue mix since opening</h3>${hbar(mixRows, Math.max(...mixRows.map((x) => x[1]), 1), (v) => pc(v))}</div>
+      <div><h3>Membership income per month</h3>${hbar(g.rv.byMonth.map((x) => [mName(x.month), Math.round((x.byCategory.Membership || 0))]), Math.max(...g.rv.byMonth.map((x) => x.byCategory.Membership || 0), 1), (v) => eur(v * 100))}</div></div>
+      ${what(['When a discount is always on, nobody has a reason to buy now: keep it for new clients, with a deadline.', 'A multi-class intro (like Summer Burn) builds the habit better than a single class.', 'Unused prepaid classes are the easiest renewals: remind before they expire.'])}
+    </div>` : ''}
+    ${g.ads ? `<div class="card" data-box="ads"><h2>5 · Ads${help('From the Meta Ads report (by age and gender). Without tracking the app can\'t tell which trials came from ads, so it shows what happens between the ad and the booking page.')}</h2>
+      <p class="lead">${eur(Math.round(g.ads.spend * 100))} spent (${g.ads.from ? dmy(g.ads.from) + '–' + dmy(g.ads.to) : ''}) for ${nf0.format(g.ads.clicks)} link clicks at ${g.ads.cpc ? nf2.format(g.ads.cpc) : '—'} € each. Only ${nf0.format(g.ads.lpv)} landing page views: ${g.ads.lpvRate !== null ? Math.round((1 - g.ads.lpvRate) * 100) + '% of clicks never load the page' : ''}.</p>
+      <div class="kpis"><div><b>${nf0.format(g.ads.reach)}</b><span>reached (sum by group)</span></div><div><b>${g.ads.cpc ? '€ ' + nf2.format(g.ads.cpc) : '—'}</b><span>per click</span></div><div><b>${pc(g.ads.lpvRate * 100)}</b><span>clicks that load the page</span></div><div><b>${pc(g.ads.outsideTarget * 100)}</b><span>of spend outside women 25–54</span></div></div>
+      ${what(['Point ads straight to the Eversports booking page for the first class.', 'Set up the Meta pixel or UTM links plus "How did you hear about us?" at booking.', 'Narrow to women 25–49 within ~15 km; use real class footage, Latino Burn, and you two on camera.', 'Only then increase the budget.'])}
+    </div>` : `<div class="card" data-box="ads"><h2>5 · Ads</h2><p class="muted">Import the Meta Ads report (by age and gender) to see spend, clicks and what reaches the booking page.</p></div>`}
+    ${insightsCard(LL.insights(state, agg))}`;
+  }
+  function exportReport(M) {
+    const g = growthModel(M);
+    const mm = agg.byMonth[M] || {}; const fc = LL.forecast(state, agg);
+    const name = state.settings.studioName || 'Studio';
+    const sv = shortVersion(g), fl = focusList(g), ins = LL.insights(state, agg).filter((x) => x.tone === 'bad').slice(0, 4);
+    const html = `<div class="rep">
+      <div class="pr-head"><h1>${esc(name)}</h1><h2>Monthly report · ${mName(M, true)}</h2><p class="muted small">Made with Lab Ledger on ${dmy(today())}</p></div>
+      <h3>The short version</h3><p>${sv.join(' ')}</p>
+      ${fl.length ? `<p><b>Where to focus, in this order:</b></p><ol>${fl.map(([t, d]) => `<li><b>${t}.</b> ${esc(d)}</li>`).join('')}</ol>` : ''}
+      <h3>Money in ${mName(M, true)}</h3>
+      <table class="rt"><tbody>
+        <tr><td>Sales (Eversports, incl. VAT)</td><td>${eur(mm.sales ? mm.sales.gross : 0)}</td></tr>
+        <tr><td>Money in (bank)</td><td>${mm.groups ? eur(mm.groups.in) : '—'}</td></tr>
+        <tr><td>Running costs</td><td>${mm.groups ? eur(-mm.groups.out) : '—'}</td></tr>
+        <tr><td><b>Result</b></td><td><b>${mm.op !== undefined ? eurS(mm.op) : '—'}</b></td></tr>
+        <tr><td>Cash at month end</td><td>${mm.end !== undefined && mm.end !== null ? eur(mm.end) : '—'}</td></tr>
+        <tr><td>Forecast cash in 3 months</td><td>${fc.months.length ? `${eur(fc.months[fc.months.length - 1].end)} <span class="muted">(${eur(fc.months[fc.months.length - 1].endLow)} to ${eur(fc.months[fc.months.length - 1].endHigh)})</span>` : '—'}</td></tr>
+      </tbody></table>
+      <h3>The numbers to watch</h3>${watchTable(g)}
+      ${ins.length ? `<h3>What to do next month</h3><ul>${ins.map((x) => `<li><b>${esc(x.title)}.</b> ${esc(x.text)}</li>`).join('')}</ul>` : ''}
+      <h3>Data notes</h3><p class="small muted">Sources: bank statements, Eversports revenue, activity, product and customer exports${g.ads ? ', Meta Ads report' : ''}. Trial conversion counts trials that have had 30 days. Occupancy counts Lagree Burn and Latino Burn. Revenue is gross incl. VAT by payment date. Forecast: fixed costs at their real amount, sales at the pace of the last 6 weeks (±15% for the range), VAT estimated.</p>
+    </div>`;
+    const box = $('#print'); box.hidden = false; box.innerHTML = `<div class="pr-bar"><button class="btn primary" data-act="printPlan">Print / save as PDF</button><button class="btn ghost" data-act="closePlan">Close</button></div><div class="pr-body">${html}</div>`;
+    document.body.classList.add('printing'); window.scrollTo(0, 0);
+  }
+  function slotTable(list) { return `<table class="t"><thead><tr><th>Time</th><th class="r">Booked</th><th class="r">Full</th><th class="r">Classes</th></tr></thead><tbody>${list.map((x) => `<tr><td>${esc(x.key)}</td><td class="r">${n1(x.avgBooked)}</td><td class="r">${Math.round(x.occupancyPct)}%</td><td class="r">${x.classes}</td></tr>`).join('')}</tbody></table>`; }
 
   // ---------- Lock ----------
   function viewLock() {
@@ -2790,7 +3239,7 @@ function createAvailabilityForm() {
         </div>`; }).join('') || '<p class="muted">No instructors yet. Import the Eversports activity export or add one.</p>'}</div>
     </div>
     <div class="card">
-      <div class="row between wrap"><h2>Class types & rooms${help('Every class name you use, the room it happens in, and whether it\'s a class or a room rental. “If not taught by a specialist” renames the class when someone else teaches it (e.g. Latino Burn becomes Lagree Burn when Ricardo isn\'t teaching). The instructors’ “Teaches” chips come from this list.')}</h2><button class="btn sm" data-act="addType">+ Add class type</button></div>
+      <div class="row between wrap"><h2>Class types & rooms${help('Every class name you use, the room it happens in, and whether it\'s a class or a room rental. “If not taught by a specialist” renames the class when someone else teaches it (e.g. Latino Burn becomes Lagree Burn when the specialist isn\'t teaching). The instructors’ “Teaches” chips come from this list.')}</h2><button class="btn sm" data-act="addType">+ Add class type</button></div>
       <div class="typelist">${LLS.classTypes(state).map((t) => `<div class="typerow">
         <input class="in" value="${esc(t.name)}" data-act="typeSet" data-v="${esc(t.name)}" data-f="name" aria-label="Name">
         <select data-act="typeSet" data-v="${esc(t.name)}" data-f="room" aria-label="Room">${LLS.rooms(state).map((r) => `<option${(t.room || LLS.roomOf(state, t.name)) === r ? ' selected' : ''}>${esc(r)}</option>`).join('')}</select>
@@ -2821,7 +3270,10 @@ function createAvailabilityForm() {
         <h2>General</h2>
         <label class="fld">Opening day<input class="in" type="date" value="${state.settings.openingDate}" data-act="setSetting" data-f="openingDate"></label>
         <label class="fld">Safety buffer (months of running costs)<input class="in num" inputmode="numeric" value="${state.settings.bufferMonths}" data-act="setSetting" data-f="bufferMonths"></label>
-        <label class="fld">Name on exported schedules<input class="in" value="${esc(state.settings.studioName || '')}" data-act="setSetting" data-f="studioName" placeholder="Studio name"></label>
+        <label class="fld">VAT in the forecast<select class="in" data-act="setSetting" data-f="vatMode"><option value="monthly" ${state.settings.vatMode !== 'off' ? 'selected' : ''}>Filed monthly (UVA)</option><option value="off" ${state.settings.vatMode === 'off' ? 'selected' : ''}>Leave out</option></select></label>
+        <label class="fld">Name on exported schedules and reports<input class="in" value="${esc(state.settings.studioName || '')}" data-act="setSetting" data-f="studioName" placeholder="Studio name"></label>
+        <h2 class="mt">Growth targets${help('Used in Growth → The numbers to watch and in the monthly report. Starting points from the sales diagnosis; change them as you learn.')}</h2>
+        <div class="tgrid">${[['conv30', 'Trial → any purchase within 30 days (%)'], ['commit30', 'Trial → pack or membership within 30 days (%)'], ['trials', 'New trials per month'], ['returning', 'Returning clients per month'], ['avgBooked', 'Booked per regular class'], ['membership', 'Membership income per month (€)'], ['newsletter', 'Newsletter opt-in (%)']].map(([k, l]) => `<label class="fld">${l}<input class="in num" inputmode="decimal" value="${k === 'membership' ? Math.round((state.settings.targets[k] || 0) / 100) : state.settings.targets[k]}" data-act="setTarget" data-f="${k}"></label>`).join('')}</div>
         <h2 class="mt">Backup</h2>
         <p class="muted small">A backup file is <b>not encrypted</b>. Keep it somewhere private. With sync on, the encrypted copy on GitHub is your everyday backup.</p>
         <div class="row gap wrap"><button class="btn" data-act="backup">Download backup</button><label class="btn">Restore from backup<input type="file" accept=".json" id="restore" hidden></label></div>
@@ -2841,40 +3293,54 @@ function createAvailabilityForm() {
       <li><b>Eversports sales:</b> Financials → Reports → <i>Revenue report (based on income & expenses)</i> for last month.</li>
       <li><b>Gift vouchers:</b> Financials → Reports → <i>Voucher sales report</i>, same month.</li>
       <li><b>Classes:</b> Activities → Export activity & booking data → <i>Activity overview of all appointments</i>. Take last month and next month.</li>
-      <li>Open <b>Import</b> and drop all four files in at once. Anything already there is skipped.</li>
+      <li><b>For the Growth page</b> (optional, same drop): Products → Analysis → <i>Export activity & booking data</i>; Analytics → Reports → <i>Customers with bookings</i> (this year); and from Meta Ads Manager the report <i>by age and gender</i> as CSV.</li>
+      <li>Open <b>Setup → Import</b> and drop all files in at once. Anything already there is skipped.</li>
       <li>Look at <b>Overview → Needs a look</b> and sort anything new.</li></ol>`, true)}
-    ${sec('pages', 'What each page shows', `<p><b>Overview:</b> cash in the bank, last month's result, how long the cash lasts, and the next 3 months.</p>
+    ${sec('pages', 'What each page shows', `<p>The app has four sections (top on a computer, bottom bar on the phone): <b>Money</b> (Overview, Cash flow, Transactions), <b>Growth</b> (Clients & funnel, Sales, Events), <b>Studio</b> (Schedule, Team & classes) and <b>Setup</b> (Import, Settings, Help).</p>
+      <p><b>Boxes:</b> tap a box title to fold it away or open it again; the app remembers. <i>Arrange boxes</i> at the bottom of each page lets you move boxes up or down; tap <i>Done arranging</i> when finished.</p>
+      <p><b>Overview:</b> cash in the bank, last month's result, how long the cash lasts, and the next 3 months.</p>
       <p><b>Cash flow:</b> every month by category, like your spreadsheet. The shaded columns on the right are the forecast. Tap an amount to see the payments behind it.</p>
       <p><b>Sales:</b> what you sold by product, compared with what reached the bank.</p>
-      <p><b>Growth:</b> trials, returning clients, how full classes are, the win-back list, and <i>What to work on</i>.</p>
-      <p><b>Events:</b> upcoming events, room rentals and ideas.</p>
+      <p><b>Clients & funnel:</b> the short version, the numbers to watch against your targets, and five sections (trials, returning clients, how full classes are, discounts & recurring income, ads). <i>Export report</i> makes the monthly report as a PDF.</p>
+      <p><b>Events:</b> a calendar of events and room rentals (this month and 3 ahead), the lists, and ideas.</p>
       <p><b>Team & classes:</b> classes per instructor, how full they were, expected pay vs what was paid.</p>
-      <p><b>Schedule:</b> your standard week for the next months: change classes, add events, fill instructors, export for the team.</p>
+      <p><b>Schedule:</b> one week at a time, times on the left: real classes from Eversports, then your standard week. Change classes, add classes, fill instructors, export for the team.</p>
       <p><b>Transactions:</b> every bank payment. Change a category if it's wrong.</p>`)}
     ${sec('result', 'Result, runway, buffer: what they mean', `<p><b>Result</b> = money in from classes minus running costs (rent, instructors, fees…). One-off build-out, certification, VAT refunds and loan money are left out, so you see how the studio itself is doing.</p>
       <p><b>Runway</b> = how many months the cash lasts at the expected pace, loan repayment included.</p>
       <p><b>Safety buffer</b> = the cash you'd like to keep (3 months of running costs) compared with what's in the bank.</p>
-      <p><b>Forecast</b> = the average of the last 3 complete months, with instructor pay from the planned classes.</p>`)}
+      <p><b>Forecast</b>, built line by line:</p><ul>
+        <li><b>Sales</b>: your Eversports sales pace of the last 6 weeks, minus the Eversports fee. The <i>range</i> shows sales 15% lower or higher.</li>
+        <li><b>Fixed costs</b> (rent, loan, insurance, software, bank, licence …): their real amount in the month they are usually due. Yearly bills only appear in their month. The list is under <i>Regular payments the forecast uses</i>.</li>
+        <li><b>Variable costs</b> (supplies, marketing, accounting …): average of recent months.</li>
+        <li><b>Instructors</b>: the classes of the month before × rate, plus social security at the rate you actually paid.</li>
+        <li><b>VAT</b> (filed monthly): 20% of sales and rent income minus the VAT on costs, due on the 15th of the second month after. Change this in Settings.</li>
+        <li><b>Events and room rentals</b>: their agreed payments in the month they are due.</li></ul>`)}
     ${sec('categories', 'Categories explained', `<table class="t"><tbody>${Object.entries(CATS).map(([k, c]) => `<tr><td><b>${c.label}</b></td><td>${esc(CAT_HELP[k] || '')}</td></tr>`).join('')}</tbody></table>
       <p class="muted small mt">To change a payment: Transactions → choose another category → tap “Always sort … as …” so it happens automatically next time.</p>`)}
     ${sec('schedule', 'Schedule: how it works', `<ol class="steps">
-      <li><b>Your standard week is already there</b> for the next months, without instructors. Each class shows its room by colour.</li>
+      <li><b>One week at a time</b>, times on the left in Morning, Midday and Afternoon & evening. Arrows go week by week; the month buttons jump ahead (4 months). On the phone, pick the day at the top.</li>
+      <li><b>Weeks already in Eversports</b> show the real classes with their instructors. Later weeks show your standard week without instructors. Import the activity export again whenever Eversports changes.</li>
       <li><b>Change a class:</b> tap it. Change the name, time, room or instructor, then choose <i>only this day</i> or <i>every week from this day on</i>. Delete works the same way.</li>
-      <li><b>Add a class:</b> tap <i>+ class</i> under the day.</li>
-      <li><b>Instructors:</b> pick them by tapping a class, or tap <b>Fill instructors</b>. With availability answers, the app uses only people who are free and teach that class: unpaid instructors first, then whoever usually has the slot, within each person's max per week. Without answers, everyone keeps their usual slots.</li>
-      <li><b>Specialist classes:</b> Latino Burn is Ricardo's. If someone else gets the slot, it becomes Lagree Burn automatically (Settings → Class types & rooms).</li>
+      <li><b>Add a class:</b> <i>+ Add class</i> at the top. Choose the day, name, time and room.</li>
+      <li><b>Instructors:</b> pick them by tapping a class, or More → <b>Fill open classes from availability</b>. The app uses only people who are free and teach that class: unpaid instructors first, then whoever usually has the slot, within each person's max per week. Without answers, More → <i>Copy usual instructors</i> puts everyone on their usual slots (it asks first). <i>Remove planned instructors</i> clears them again.</li>
+      <li><b>Specialist classes:</b> A format like Latino Burn has one specialist. If someone else gets the slot, it becomes Lagree Burn automatically (Settings → Class types & rooms).</li>
       <li><b>Export for team</b> → Print / save as PDF, or copy the text for WhatsApp. Then create the classes in Eversports.</li></ol>
       <p><b>Availability form:</b> Schedule → More → <i>Google Form script</i>. It builds a form with one question per day listing that day's <b>times</b> (no class names). Run it once in script.google.com and send the link to the team. Each month: in the answers sheet File → Download → CSV, then <b>Import availability</b> on the Schedule page (pick the month first). When your times change, make a new form the same way.</p>
       <p><b>Rooms:</b> red = ${esc(LLS.rooms(state)[0])}, blue = ${esc(LLS.rooms(state)[1] || '')}. An orange ring means two things are booked in the same room at the same time.</p>`)}
     ${sec('events', 'Events & room rentals', `<p><b>Events</b> (tab): add workshops, parties, get-togethers with date, time, room, notes and expected income or costs. They appear in the Schedule, and the money goes into the forecast.</p>
       <p><b>Room rentals</b> (e.g. a teacher renting a room on Saturdays) block the room on each booked date, and the agreed payments appear in the forecast in the month they're due.</p>
+      <p><b>Calendar:</b> the month at a glance; the arrows go up to 3 months ahead. Gold = event, purple = internal, blue = room rental. Tap one to edit it.</p>
       <p><b>Ideas:</b> keep your own list, and see suggestions from your numbers with the reason behind them. <i>Plan it</i> turns an idea into an event.</p>`)}
-    ${sec('growth', 'Growth: what the numbers mean', `<p><b>Trial → bought within 30 days</b>: of the people whose first class was a trial, how many bought anything else within 30 days. <b>Active clients</b>: people with at least one booking that month, split into new and returning. <b>Regulars</b>: 4+ bookings in the month. <b>Classes full</b>: bookings ÷ places.</p>
-      <p>For this page, export two extra files from Eversports once a month (Products → Analysis → Export activity & booking data; Analytics → Reports → Customers with bookings) and drop them into Import. The <b>win-back list</b> shows people with 2+ visits who haven't booked this month. Email only those with newsletter consent; reach the others personally.</p>`)}
+    ${sec('growth', 'Growth: what the numbers mean', `<p><b>The short version</b> sums up the month in a few sentences and says where to focus. <b>The numbers to watch</b> compare the latest month with the month before and your target (green = on target). Targets are in Settings.</p>
+      <p><b>Trial → bought within 30 days</b>: of the people whose first class was a trial, how many bought anything else within 30 days. <b>Active clients</b>: people with at least one booking that month, split into new and returning. <b>Regulars</b>: 4+ bookings in the month. <b>Classes full</b>: bookings ÷ places.</p>
+      <p>For this page, export two extra files from Eversports once a month (Products → Analysis → Export activity & booking data; Analytics → Reports → Customers with bookings) and drop them into Import. The <b>win-back list</b> shows people with 2+ visits who haven't booked this month. Email only those with newsletter consent; reach the others personally.</p>
+      <p><b>Ads</b> come from the Meta report by age and gender: spend, clicks, how many clicks actually load the page, and how much went outside your main audience (women 25–54).</p>
+      <p><b>Export report</b> (top of the page): last month's report with the short version, the money, the numbers to watch and what to do next. Print it or save it as PDF.</p>`)}
     ${sec('team', 'Instructors: paid, unpaid, invoices', `<p>In <b>Settings → Instructors</b> set each person to <i>Paid</i>, <i>Unpaid</i> or <i>Not in tool</i> (hidden from the money, still schedulable). For paid instructors enter the rate per class and the name that appears on the bank statement. <i>Paid from</i> is for someone who starts unpaid and later sends invoices. <b>+ Add instructor</b> adds someone new.</p>`)}
     ${sec('share', 'Sharing with your co-owner', `<p>Both of you use the same app link. In <b>Settings → Sync</b>, each device connects with the same <b>token</b>, <b>Sync ID</b> and <b>passphrase</b>. Changes appear on the other devices within seconds. Share these three through a password manager, not one chat message.</p>`)}
     ${sec('lock', 'Face ID and PIN', `<p><b>Settings → App lock</b>: choose a PIN and tick Face ID / Touch ID. From then on the app asks every time you open it, and after 2 minutes away. Set it up on each device. Forgot the PIN? Remove the app from the device and connect sync again: your data comes back from the encrypted sync file.</p>`)}
-    ${sec('safe', 'Is my data safe?', `<p>Your numbers are stored on your devices and, encrypted, in the studio's GitHub account. Without the passphrase nobody can read them, GitHub included. Files you import never leave your device. Customer names and emails are stored only from the Growth exports (for the win-back list), and only inside this encrypted data. The app code on GitHub contains no data.</p>`)}
+    ${sec('safe', 'Is my data safe?', `<p>Your numbers are stored on your devices and, encrypted, in the studio's GitHub account. Without the passphrase nobody can read them, GitHub included. Files you import never leave your device. Customer names and emails are stored only from the Growth exports (for the win-back list), and only inside this encrypted data. Birthdays, phone numbers and other columns the app doesn't need are dropped on import. The app code on GitHub contains no data.</p>`)}
     ${sec('wrong', 'Something looks wrong?', `<p><b>A payment is in the wrong category:</b> Transactions → change it. <b>Cash doesn't match the bank:</b> import the latest statement PDF; each statement is checked against its own balance. <b>Instructor pay looks off:</b> check Settings → Instructors (status, rate, paid from, bank name). <b>Anything else:</b> take a screenshot and send it to whoever helps you with the app.</p>`)}`;
   }
 
@@ -2894,8 +3360,17 @@ function createAvailabilityForm() {
 
   const newId = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   const ACT = {
+    section: (el) => { const sec = SECTIONS.find((x) => x.k === el.dataset.v); const last = (ui.lastPage || {})[sec.k]; ui.page = last && sec.pages.some((p) => p[0] === last) ? last : sec.pages[0][0]; saveUI(); render(); window.scrollTo(0, 0); },
+    fold: (el, e) => { if (e && e.target.closest('.q, a, button:not(.foldable)')) return; const id = el.dataset.v; ui.collapsed = ui.collapsed || {}; ui.collapsed[id] = !ui.collapsed[id]; if (!ui.collapsed[id]) delete ui.collapsed[id]; saveUI(); const c = document.querySelector(`[data-cid="${CSS.escape(id)}"]`); if (c) c.classList.toggle('collapsed', !!ui.collapsed[id]); },
+    arrange: () => { ui.arrange = !ui.arrange; saveUI(); render(); },
+    arrangeReset: () => { if (ui.order) delete ui.order[ui.page]; saveUI(); render(); },
+    mvBox: (el) => {
+      const ids = [...$('#main').children].filter((x) => x.dataset.bid).map((x) => x.dataset.bid);
+      const i = ids.indexOf(el.dataset.v), j = i + +el.dataset.d; if (j < 0 || j >= ids.length) return;
+      [ids[i], ids[j]] = [ids[j], ids[i]]; ui.order = ui.order || {}; ui.order[ui.page] = ids; saveUI(); render();
+    },
     theme: () => { ui.theme = { auto: 'light', light: 'dark', dark: 'auto' }[ui.theme] || 'auto'; saveUI(); render(); toast('Appearance: ' + ({ auto: 'automatic (follows your device)', light: 'light', dark: 'dark' }[ui.theme]), 1800); },
-    schedMonth: (el) => { ui.schedMonth = el.dataset.v; saveUI(); render(); },
+    schedMonth: (el) => { ui.schedMonth = el.dataset.v; ui.schedWeek = weekStartFor(el.dataset.v); ui.schedDay = ''; saveUI(); render(); },
     slotsFromEv: (el) => {
       state.settings.slots = LLS.slotsFromClasses(state, el.dataset.v); state.settings.updatedAt = Date.now();
       for (const m of schedMonths()) if (state.plans[m] && !Object.values(state.plans[m].classes || {}).some((c) => c.ins)) delete state.plans[m];
@@ -2904,8 +3379,9 @@ function createAvailabilityForm() {
     room: (el) => { ui.room = el.dataset.v; saveUI(); render(); },
     propose: () => {
       const M = ui.schedMonth; const av = LL.live(state.avail).filter((a) => a.month === M).length;
+      if (!av && !confirm(`No availability answers for ${mName(M, true)} yet. Put everyone on their usual slots in the open classes? (You can remove them again under More.)`)) return;
       const r = LLS.propose(state, M, { assumeAll: !av });
-      save(); render(); toast(`${r.total - r.unfilled} of ${r.total} classes have an instructor${r.unfilled ? `, ${r.unfilled} still open (red)` : ''}.${av ? '' : ' No availability answers yet, so everyone kept their usual slots.'}`, 6000);
+      save(); render(); toast(`${r.total - r.unfilled} of ${r.total} classes in ${mName(M, true)} have an instructor${r.unfilled ? `, ${r.unfilled} still open (red)` : ''}.`, 6000);
     },
     clearIns: () => { if (confirm('Remove all instructors from ' + mName(ui.schedMonth, true) + '? Classes stay.')) { LLS.clearInstructors(state, ui.schedMonth); save(); render(); } },
     resetPlan: () => { if (confirm('Go back to the standard week for ' + mName(ui.schedMonth, true) + '? All changes and instructors for this month are removed.')) { LLS.resetPlan(state, ui.schedMonth); save(); render(); } },
@@ -2918,8 +3394,10 @@ function createAvailabilityForm() {
         <div class="row gap mt"><button class="btn primary" data-act="copyScript">Copy script</button><button class="btn" data-act="closeModal">Close</button></div>`);
     },
     copyScript: () => { const t = $('#fsCode'); t.select(); (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).then(() => toast('Copied.'), () => { document.execCommand('copy'); toast('Copied.'); }); },
-    editClass: (el) => { const p = LLS.getPlan(state, ui.schedMonth); const c = p && p.classes[el.dataset.id]; if (c) openModal(classEditor(c)); },
+    editClass: (el) => { const p = LLS.getPlan(state, el.dataset.m || ui.schedMonth); const c = p && p.classes[el.dataset.id]; if (c) openModal(classEditor(c)); },
     newClass: (el) => openModal(classEditor(null, el.dataset.date)),
+    schedWeek: (el) => { ui.schedWeek = new Date(new Date(ui.schedWeek + 'T12:00:00').getTime() + +el.dataset.d * 864e5).toISOString().slice(0, 10); ui.schedDay = ''; saveUI(); render(); },
+    schedDay: (el) => { ui.schedDay = el.dataset.v; saveUI(); render(); },
     closeModal: () => closeModal(),
     saveClass: (el) => {
       const title = $('#ceTitle').value.trim(), start = LLS.hhmm($('#ceStart').value), end = LLS.hhmm($('#ceEnd').value), room = $('#ceRoom').value, ins = $('#ceIns').value;
@@ -2927,19 +3405,25 @@ function createAvailabilityForm() {
       if (!title || !start) { $('#ceErr').textContent = 'A class name and a start time (e.g. 07:40) are needed.'; return; }
       const e2 = end && LLS.mins(end) > LLS.mins(start) ? end : LLS.hhmm(LLS.mins(start) + 50);
       if (!LLS.classTypes(state).some((t) => t.name.toLowerCase() === title.toLowerCase())) { state.settings.classTypes = [...(state.settings.classTypes || []), { id: newId('t'), name: title, room, kind: /rental|miete/i.test(title) ? 'rental' : 'class' }]; state.settings.updatedAt = Date.now(); }
+      const M = el.dataset.m || ui.schedMonth;
       if (el.dataset.id) {
-        const c = LLS.getPlan(state, ui.schedMonth).classes[el.dataset.id];
+        const c = LLS.getPlan(state, M).classes[el.dataset.id];
         const ch = { title, start, end: e2, room }; if (ins !== (c.ins || '')) ch.ins = ins;
-        LLS.updateClass(state, ui.schedMonth, el.dataset.id, ch, scope === 'weekly');
-        if (scope === 'weekly' && ch.ins !== undefined) { const c2 = LLS.getPlan(state, ui.schedMonth).classes[el.dataset.id]; c2.ins = ins; c2.manual = true; }
-      } else LLS.addClass(state, ui.schedMonth, { date: el.dataset.date, start, end: e2, title, room, ins }, scope === 'weekly');
+        LLS.updateClass(state, M, el.dataset.id, ch, scope === 'weekly');
+        if (scope === 'weekly' && ch.ins !== undefined) { const c2 = LLS.getPlan(state, M).classes[el.dataset.id]; c2.ins = ins; c2.manual = true; }
+      } else {
+        const date = ($('#ceDate') && $('#ceDate').value) || el.dataset.date;
+        if (!date) { $('#ceErr').textContent = 'Pick a day.'; return; }
+        LLS.addClass(state, LL.mk(date), { date, start, end: e2, title, room, ins }, scope === 'weekly');
+      }
       closeModal(); save(); render(); toast(scope === 'weekly' ? 'Saved for every week.' : 'Saved.');
     },
     delClass: (el) => {
-      const c = LLS.getPlan(state, ui.schedMonth).classes[el.dataset.id];
+      const M = el.dataset.m || ui.schedMonth;
+      const c = LLS.getPlan(state, M).classes[el.dataset.id];
       const scope = (document.querySelector('input[name=ceScope]:checked') || {}).value || 'once';
       if (!confirm(scope === 'weekly' ? `Delete ${c.title} at ${c.start} every ${DAYS_LONG[LLS.weekday(c.date)]} from ${dShort(c.date)} on?` : `Delete ${c.title} on ${dShort(c.date)} at ${c.start}?`)) return;
-      LLS.deleteClass(state, ui.schedMonth, el.dataset.id, scope === 'weekly'); closeModal(); save(); render();
+      LLS.deleteClass(state, M, el.dataset.id, scope === 'weekly'); closeModal(); save(); render();
     },
     newEvent: () => openModal(eventEditor(null)),
     editEvent: (el) => { const e = state.events[el.dataset.id]; if (e) openModal(eventEditor(e)); },
@@ -2965,6 +3449,8 @@ function createAvailabilityForm() {
       (navigator.clipboard ? navigator.clipboard.writeText(em) : Promise.reject()).then(() => toast(`${em.split(', ').filter(Boolean).length} emails copied.`), () => toast('Copy didn\'t work here.'));
     },
     wbAll: () => { ui.wbAll = true; render(); },
+    evMonth: (el) => { const m0 = LL.mk(today()); const n = LL.addMonths(ui.evMonth || m0, +el.dataset.d); if (n >= m0 && n <= LL.addMonths(m0, 3)) { ui.evMonth = n; saveUI(); render(); } },
+    report: () => { const cur = LL.mk(today()); exportReport(LL.addMonths(cur, -1)); },
     addType: () => { state.settings.classTypes = [...(state.settings.classTypes || []), { id: newId('t'), name: 'New class', room: LLS.rooms(state)[1] || LLS.rooms(state)[0], kind: 'class' }]; state.settings.updatedAt = Date.now(); save(); render(); },
     delType: (el) => { const n = el.dataset.v; const t = (state.settings.classTypes || []).find((x) => x.name === n); if (t) t.deleted = true; else state.settings.classTypes = [...(state.settings.classTypes || []), { id: newId('t'), name: n, deleted: true }]; state.settings.updatedAt = Date.now(); save(); render(); },
     exportPlan: () => exportPlan(),
@@ -2995,7 +3481,7 @@ function createAvailabilityForm() {
     lockOff: async () => { const err = $('#lockSetErr'); try { if (await Lock.checkPin($('#lockOffPin').value)) { Lock.disable(); toast('App lock is off.'); render(); } else err.textContent = 'Wrong PIN.'; } catch (e) { err.textContent = e.message; } },
     unlockBio: async () => { try { if (await Lock.bio()) { Lock.unlock(); render(); if (Sync.on()) syncNow(); } } catch (e) { $('#lockErr').textContent = 'Not recognised. Try again or use your PIN.'; } },
     unlockPin: async () => { const err = $('#lockErr'); try { if (await Lock.checkPin($('#pinIn').value)) { Lock.unlock(); render(); if (Sync.on()) syncNow(); } else { err.textContent = 'Wrong PIN.'; $('#pinIn').value = ''; } } catch (e) { err.textContent = e.message; } },
-    page: (el) => { ui.page = el.dataset.v; if (el.dataset.cat) { ui.txCat = el.dataset.cat; ui.txMonth = ''; } saveUI(); render(); window.scrollTo(0, 0); },
+    page: (el) => { ui.page = el.dataset.v; ui.lastPage = ui.lastPage || {}; ui.lastPage[sectionOf(ui.page).k] = ui.page; if (el.dataset.cat) { ui.txCat = el.dataset.cat; ui.txMonth = ''; } saveUI(); render(); window.scrollTo(0, 0); },
     cfAll: (el) => { ui.cfAll = el.dataset.v === '1'; saveUI(); render(); },
     salesNet: (el) => { ui.salesNet = el.dataset.v === '1'; saveUI(); render(); },
     teamMonth: (el) => { ui.teamMonth = el.dataset.v; saveUI(); render(); },
@@ -3070,9 +3556,14 @@ function createAvailabilityForm() {
       if (f === 'room') for (const sl of state.settings.slots || []) if (sl.title === t.name) sl.room = el.value;
       state.settings.updatedAt = Date.now(); save(); render();
     },
+    setTarget: (el) => { const f = el.dataset.f; const v = parseFloat(String(el.value).replace(',', '.')); if (!isFinite(v)) return; state.settings.targets = Object.assign({}, state.settings.targets, { [f]: f === 'membership' ? Math.round(v * 100) : v }); state.settings.updatedAt = Date.now(); save(); render(); },
     setSetting: (el) => { const f = el.dataset.f; state.settings[f] = f === 'bufferMonths' ? Math.max(0, +el.value || 0) : el.value; state.settings.updatedAt = Date.now(); save(); render(); },
   };
-  document.addEventListener('click', (e) => { const el = e.target.closest('[data-act]'); if (!el || el.tagName === 'SELECT' || (el.tagName === 'INPUT' && el.type !== 'button')) return; const f = ACT[el.dataset.act]; if (f) { e.preventDefault(); f(el); } });
+  document.addEventListener('click', (e) => {
+    let el = e.target.closest('[data-act]'); if (!el || el.tagName === 'SELECT' || (el.tagName === 'INPUT' && el.type !== 'button')) return;
+    if (el.dataset.act === 'fold' && e.target.closest('.q')) el = e.target.closest('.q');
+    const f = ACT[el.dataset.act]; if (f) { e.preventDefault(); f(el, e); }
+  });
   document.addEventListener('change', (e) => { const el = e.target.closest('[data-act]'); if (!el) return; const f = CHANGE[el.dataset.act]; if (f) f(el); });
 
   // tooltips: hover on desktop, tap on touch
