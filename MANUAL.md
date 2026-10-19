@@ -1,6 +1,6 @@
 # Lab Ledger — manual
 
-*Version 1.1*
+*Version 1.2*
 
 Lab Ledger is the studio's finance tool: cash, monthly results, sales, instructor pay and a 3-month forecast. It is one web page (`index.html`) hosted on GitHub Pages. **The code contains no data.** Your numbers live on each device and travel between devices only as an encrypted file in the studio's GitHub account.
 
@@ -75,6 +75,15 @@ Every bank line gets a category automatically. To change one: **Transactions** �
 - **Light / dark** switch (top right), **Help** page (the ? top right), brand colours.
 - Instructors: **+ Add instructor**, **Paid from** (start unpaid, invoice later), **Teaches** (which classes the schedule proposes them for).
 - Update files: a `.json` update dropped into Import adds studio-specific settings once (rules, instructors, weekly classes). Applying it twice does nothing.
+
+## 6b. New in 1.2
+
+- **Schedule**: your standard week is filled in for the next months (no instructors). Tap a class to change name, time, room or instructor, for one day or every week; **+ class** adds one; delete works the same way. **Fill instructors** uses the availability answers (or, without answers, keeps everyone on their usual slots). Specialist formats (Latino Burn) become Lagree Burn when someone else teaches.
+- **Rooms**: The Lagree Room and The Movement Room, colour-coded; double bookings are marked.
+- **Google Form**: Schedule → More → Google Form script. One question per day with that day's **times** only.
+- **Events** tab: events, room rentals (with their payments in the forecast) and ideas, including ideas from your numbers.
+- **Growth** tab: trial funnel, returning clients, how full classes are, win-back list, and *What to work on*. Needs two extra Eversports exports (Products → Analysis → activity & booking data; Analytics → Reports → Customers with bookings).
+- **Settings → Class types & rooms**.
 
 ## 7. Updating the app
 
