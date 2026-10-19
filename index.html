@@ -377,9 +377,9 @@ h3 { font: 600 13px var(--sans); color: var(--muted); text-transform: uppercase;
 @media (max-width: 520px) { .tiles.t5 { grid-template-columns: 1fr; } .typerow { grid-template-columns: 1fr 1fr; } }
 
 /* ---------- 1.3 ---------- */
-:root { --ev-pub: #8E5A00; --ev-int: #6B4C8A; --ev-rent: var(--room2); }
-:root[data-theme="dark"] { --ev-pub: #E3B04B; --ev-int: #B49AD6; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ev-pub: #E3B04B; --ev-int: #B49AD6; } }
+:root { --ev-pub: #5E7A3C; --ev-int: #6B4C8A; --ev-rent: var(--room2); }
+:root[data-theme="dark"] { --ev-pub: #A3C27F; --ev-int: #B49AD6; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ev-pub: #A3C27F; --ev-int: #B49AD6; } }
 /* sections */
 nav#secnav { display: flex; gap: 6px; margin-top: 12px; }
 .sec { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); background: var(--surface); color: var(--ink2); border-radius: 99px; padding: 6px 14px 6px 11px; font: 500 14px var(--sans); cursor: pointer; position: relative; }
@@ -513,6 +513,17 @@ table.watch td:first-child { min-width: 150px; }
 .budget { gap: 0; } .budget .fld { margin: 6px 0; }
 table.bgt { margin-top: 6px; } .bgt td { padding: 4px 6px; }
 .ilog td { overflow-wrap: anywhere; } .ilog td:first-child { white-space: nowrap; } .result li > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+/* 1.5 */
+.locklogo { width: min(300px, 78vw); aspect-ratio: 640 / 178; background: var(--ink); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; margin-bottom: 6px; }
+.prlogo { display: block; height: 46px; width: auto; margin: 0 0 6px; }
+.gc.ev, .gc.ev.r1, .gc.ev.r2 { border: 1px solid var(--line); border-left: 4px solid var(--ev-pub); background: color-mix(in srgb, var(--ev-pub) 13%, var(--surface)); }
+.gc.ev b { color: var(--ink); }
+.gc.ev.int { border-left-color: var(--ev-int); background: color-mix(in srgb, var(--ev-int) 13%, var(--surface)); }
+.gc.blk { border: 1px solid color-mix(in srgb, var(--room2) 35%, var(--line)); border-left: 4px solid var(--room2); background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--room2) 20%, var(--surface)) 0 7px, color-mix(in srgb, var(--room2) 9%, var(--surface)) 7px 14px); }
+.gc.blk b { color: var(--ink); }
+.gc.blk.cont { min-height: 38px; justify-content: center; }
+.gc.blk.cont .gn { font-size: 11px; color: var(--muted); }
+.drow .tcol small { display: block; font-weight: 500; color: var(--muted); }
 
 </style>
 </head>
@@ -763,7 +774,7 @@ table.bgt { margin-top: 6px; } .bgt td { padding: 4px 6px; }
 /* Lab Ledger — data model, import merge, categories, monthly aggregation. No DOM. */
 (function (G) {
   'use strict';
-  const APP_VERSION = '1.4';
+  const APP_VERSION = '1.5';
   const SCHEMA = 1;
 
   // ---------- categories ----------
@@ -823,7 +834,7 @@ table.bgt { margin-top: 6px; } .bgt td { padding: 4px 6px; }
     { m: 'steuerberat|notar|landesgericht|rechtsanw', c: 'accounting' },
     { m: 'lagree fitness|spx fitness', c: 'license' },
     { m: 'westbahn|öbb|oebb|numastays|booking.com|airbnb|ryanair|austrian air', c: 'travel' },
-    { m: 'amazon|ikea|jysk|bauhaus|dm-fil|lidl|spar |billa|hofer|temu|kaufland|zara ?home|deichmann|dehner|blumen|etsy|sklum|kenay|sport-tec|lampenwelt|obi |hornbach|müller|brunos|wolt|colibri|ryzon|sb supply|abraham|sanitino|eufy|dji', c: 'supplies' },
+    { m: 'amazon|ikea|jysk|bauhaus|dm-fil|lidl|spar |billa|hofer|temu|kaufland|zara ?home|deichmann|dehner|blumen|etsy|sklum|kenay|sport-tec|lampenwelt|obi |hornbach|müller|wolt|colibri|ryzon|sb supply|abraham|sanitino|eufy|dji', c: 'supplies' },
   ];
 
   const COLLS = ['bank', 'statements', 'sales', 'vouchers', 'classes', 'avail', 'plans', 'events', 'growth', 'bills', 'tenants'];
@@ -1239,6 +1250,9 @@ table.bgt { margin-top: 6px; } .bgt td { padding: 4px 6px; }
       const t = list[0].title, k = norm(t);
       const dates = [...new Set(list.map((c) => c.date))];
       if (types.has(k) || ignore.has(k) || dates.length > 3 || /^private|first lagree|probe/i.test(t)) continue;
+      if (G.LLS && G.LLS.classTypes(state).some((x) => norm(x.name) === k)) continue;
+      // an event has its own ticket in Eversports; a class booked with packs or memberships is not an event
+      if (!live(state.sales).some((x) => norm(x.product) === k)) continue;
       for (const d of dates) {
         if (linked.has(k) || linked.has(k + '|' + d)) continue;
         const cs = list.filter((c) => c.date === d);
@@ -1557,6 +1571,8 @@ table.bgt { margin-top: 6px; } .bgt td { padding: 4px 6px; }
     if (p.slots && !(st.slots || []).length) st.slots = p.slots;
     if (p.studioName && !st.studioName) st.studioName = p.studioName;
     if (p.address && !st.address) st.address = p.address;
+    if (p.logo) st.logo = p.logo;
+    for (const rx of p.dropEvents || []) { const r = new RegExp(rx, 'i'); for (const e of live(state.events)) if (e.kind !== 'rental' && !/^e-/.test(e.id) && r.test(e.title) && !(e.budget && e.budget.price)) { e.deleted = true; e.updatedAt = now(); } }
     for (const t of p.tenants || []) if (!state.tenants[t.id]) state.tenants[t.id] = Object.assign({ updatedAt: now() }, t);
     for (const b of p.bills || []) if (!state.bills[b.id]) state.bills[b.id] = Object.assign({ updatedAt: now(), created: new Date().toISOString().slice(0, 10) }, b);
     for (const t of p.classTypes || []) { const ex = (st.classTypes || []).find((x) => norm(x.name) === norm(t.name)); if (!ex) st.classTypes = [...(st.classTypes || []), t]; }
@@ -2014,11 +2030,13 @@ table.bgt { margin-top: 6px; } .bgt td { padding: 4px 6px; }
       state.settings.slots = [...(state.settings.slots || []), s]; state.settings.updatedAt = Date.now();
       for (const q of LL.live(state.plans)) {
         upgradePlan(state, q);
-        for (const date of datesOf(q.month)) if (date >= cls.date && weekday(date) === s.day) { const c = classFromSlot(state, s, date); if (date === cls.date && cls.ins) { c.ins = cls.ins; c.manual = true; } q.classes[c.id] = c; }
+        const until = coveredUntil(state);
+        for (const date of datesOf(q.month)) if (date >= cls.date && weekday(date) === s.day) { const c = classFromSlot(state, s, date); if (until && date <= until) { c.manual = true; c.added = true; } if (date === cls.date && cls.ins) { c.ins = cls.ins; c.manual = true; } q.classes[c.id] = c; }
         touch(q);
       }
     } else {
-      const c = { id: uid('c'), date: cls.date, start: cls.start, end: cls.end, title: cls.title, room: cls.room || roomOf(state, cls.title), ins: cls.ins || '', manual: !!cls.ins, slot: null };
+      // added by hand: always kept, also on days that Eversports already covers
+      const c = { id: uid('c'), date: cls.date, start: cls.start, end: cls.end, title: cls.title, room: cls.room || roomOf(state, cls.title), ins: cls.ins || '', manual: true, added: true, slot: null };
       p.classes[c.id] = c; touch(p);
     }
   }
@@ -3116,7 +3134,7 @@ function createAvailabilityForm() {
     }
     return out;
   }
-  const PARTS = [['Morning', 0, 12 * 60], ['Midday', 12 * 60, 17 * 60], ['Afternoon & evening', 17 * 60, 24 * 60]];
+  const PARTS = [['Morning', 0, 14 * 60], ['Evening', 14 * 60, 24 * 60]];
   function weekStartFor(m) {
     const cur = LLS.weekKey(today());
     if (LL.mk(today()) === m) return cur;
@@ -3157,25 +3175,33 @@ function createAvailabilityForm() {
       const list = [...all.filter((c) => c.date === d).map((c) => ({ k: c.id, start: c.start, end: c.end, room: c.room })), ...evs.filter((e) => e.date === d && e.start && e.room).map((e) => ({ k: 'e' + e.ev.id + d, start: e.start, end: e.end, room: e.room }))];
       for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) if (list[i].room === list[j].room && LLS.overlaps(list[i], list[j])) { conflict.add(list[i].k); conflict.add(list[j].k); }
     }
-    const cell = (c) => { const rental = LLS.kindOf(state, c.title) === 'rental'; return `<button class="gc ${roomCls(c.room)}${!c.ins && !rental ? ' open' : ''}${conflict.has(c.id) ? ' conf' : ''}" data-act="editClass" data-id="${c.id}" data-m="${LL.mk(c.date)}"><span class="gn">${esc(c.title)}</span><b>${c.ins ? esc(insName(c.ins)) : rental ? '' : 'open'}</b></button>`; };
-    const evCell = (e) => `<button class="gc ev ${roomCls(e.room)}${conflict.has('e' + e.ev.id + e.date) ? ' conf' : ''}" data-act="editEvent" data-id="${e.ev.id}"><span class="gn">${e.ev.kind === 'rental' ? 'Room rental' : e.ev.internal ? 'Internal event' : 'Event'}${e.end ? ' · until ' + e.end : ''}</span><b>${esc(e.ev.kind === 'rental' ? e.title.replace(/^Room rental\s*·\s*/i, '') : e.title)}</b></button>`;
-    const items = [...all.map((c) => ({ date: c.date, t: c.start, h: cell(c) })), ...evs.filter((e) => e.start).map((e) => ({ date: e.date, t: e.start, h: evCell(e) }))];
+    const isRental = (c) => LLS.kindOf(state, c.title) === 'rental';
+    const cell = (c) => `<button class="gc ${roomCls(c.room)}${!c.ins ? ' open' : ''}${conflict.has(c.id) ? ' conf' : ''}" data-act="editClass" data-id="${c.id}" data-m="${LL.mk(c.date)}"><span class="gn">${esc(c.title)}</span><b>${c.ins ? esc(insName(c.ins)) : 'open'}</b></button>`;
+    const evCell = (e) => `<button class="gc ev${e.ev.internal ? ' int' : ''}${conflict.has('e' + e.ev.id + e.date) ? ' conf' : ''}" data-act="editEvent" data-id="${e.ev.id}"><span class="gn">${e.ev.internal ? 'Internal event' : 'Event'}${e.start ? ' · ' + e.start + (e.end ? '–' + e.end : '') : ''}</span><b>${esc(e.ev.title)}</b></button>`;
+    // room rentals: a blocker over their whole time
+    const blocks = [
+      ...all.filter(isRental).map((c) => ({ date: c.date, start: c.start, end: c.end || LLS.hhmm(LLS.mins(c.start) + 60), title: c.title, room: c.room, act: `data-act="editClass" data-id="${c.id}" data-m="${LL.mk(c.date)}"` })),
+      ...evs.filter((e) => e.ev.kind === 'rental' && e.start).map((e) => ({ date: e.date, start: e.start, end: e.end || LLS.hhmm(LLS.mins(e.start) + 60), title: e.ev.title, room: e.room, act: `data-act="editEvent" data-id="${e.ev.id}"`, conf: conflict.has('e' + e.ev.id + e.date) })),
+    ];
+    const blk = (b, first) => `<button class="gc blk${first ? '' : ' cont'}${b.conf ? ' conf' : ''}" ${b.act}>${first ? `<span class="gn">${b.start}–${b.end}${b.room ? ' · ' + esc(b.room.replace(/^The /, '')) : ''}</span><b>${esc(b.title)}</b>` : '<span class="gn">blocked</span>'}</button>`;
+    const items = [...all.filter((c) => !isRental(c)).map((c) => ({ date: c.date, t: c.start, h: cell(c) })), ...evs.filter((e) => e.start && e.ev.kind !== 'rental').map((e) => ({ date: e.date, t: e.start, h: evCell(e) }))];
     const allDay = evs.filter((e) => !e.start);
-    const times = [...new Set(items.map((x) => x.t))].sort((a, b) => LLS.mins(a) - LLS.mins(b));
+    const times = [...new Set([...items.map((x) => x.t), ...blocks.map((b) => b.start)])].sort((a, b) => LLS.mins(a) - LLS.mins(b));
+    const blocksAt = (d, t) => blocks.filter((b) => b.date === d && LLS.mins(t) >= LLS.mins(b.start) && LLS.mins(t) < LLS.mins(b.end)).map((b) => blk(b, t === b.start)).join('');
     const narrow = window.innerWidth < 760;
     if (!ui.schedDay || !dates.includes(ui.schedDay)) ui.schedDay = dates.includes(today()) ? today() : dates[0];
     let grid;
     if (!narrow) {
       grid = `<div class="tablewrap"><table class="sg"><thead><tr><th class="tcol"></th>${dates.map((d) => `<th class="${d === today() ? 'today' : ''}">${dShort(d)}</th>`).join('')}</tr></thead><tbody>
         ${allDay.length ? `<tr class="allday"><th class="tcol">Events</th>${dates.map((d) => `<td>${allDay.filter((e) => e.date === d).map(evCell).join('')}</td>`).join('')}</tr>` : ''}
-        ${PARTS.map(([label, a, b]) => { const ts = times.filter((t) => LLS.mins(t) >= a && LLS.mins(t) < b); return ts.length ? `<tr class="part"><th colspan="8">${label}</th></tr>` + ts.map((t) => `<tr><th class="tcol">${t}</th>${dates.map((d) => `<td>${items.filter((x) => x.date === d && x.t === t).map((x) => x.h).join('')}</td>`).join('')}</tr>`).join('') : ''; }).join('')}
+        ${PARTS.map(([label, a, b]) => { const ts = times.filter((t) => LLS.mins(t) >= a && LLS.mins(t) < b); return ts.length ? `<tr class="part"><th colspan="8">${label}</th></tr>` + ts.map((t) => `<tr><th class="tcol">${t}</th>${dates.map((d) => `<td>${blocksAt(d, t)}${items.filter((x) => x.date === d && x.t === t).map((x) => x.h).join('')}</td>`).join('')}</tr>`).join('') : ''; }).join('')}
       </tbody></table></div>`;
     } else {
       const d = ui.schedDay;
-      const di = items.filter((x) => x.date === d);
+      const di = [...items.filter((x) => x.date === d), ...blocks.filter((b) => b.date === d).map((b) => ({ t: b.start, label: `${b.start}<small>–${b.end}</small>`, h: blk(b, true) }))];
       grid = `<div class="daychips">${dates.map((x) => `<button class="chip${x === d ? ' on' : ''}" data-act="schedDay" data-v="${x}">${DAYS[LLS.weekday(x)]}<small>${+x.slice(8, 10)}.</small></button>`).join('')}</div>
         ${allDay.filter((e) => e.date === d).map((e) => `<div class="drow"><span class="tcol">★</span>${evCell(e)}</div>`).join('')}
-        ${PARTS.map(([label, a, b]) => { const rows = di.filter((x) => LLS.mins(x.t) >= a && LLS.mins(x.t) < b).sort((x, y) => LLS.mins(x.t) - LLS.mins(y.t)); return rows.length ? `<div class="dpart">${label}</div>` + rows.map((x) => `<div class="drow"><span class="tcol">${x.t}</span>${x.h}</div>`).join('') : ''; }).join('') || '<p class="muted">No classes this day.</p>'}`;
+        ${PARTS.map(([label, a, b]) => { const rows = di.filter((x) => LLS.mins(x.t) >= a && LLS.mins(x.t) < b).sort((x, y) => LLS.mins(x.t) - LLS.mins(y.t)); return rows.length ? `<div class="dpart">${label}</div>` + rows.map((x) => `<div class="drow"><span class="tcol">${x.label || x.t}</span>${x.h}</div>`).join('') : ''; }).join('') || '<p class="muted">Nothing planned this day.</p>'}`;
     }
     const covered = until && dates[0] <= until;
     return `<div class="card schedcard" data-box="schedule">
@@ -3191,7 +3217,7 @@ function createAvailabilityForm() {
       <div class="weeknav"><button class="btn sm" data-act="schedWeek" data-d="-7" aria-label="Previous week" ${W <= wFirst ? 'disabled' : ''}>‹</button><b>${+dates[0].slice(8, 10)}.${+dates[0].slice(5, 7)}. – ${+dates[6].slice(8, 10)}.${+dates[6].slice(5, 7)}.${dates[6].slice(0, 4)}</b><button class="btn sm" data-act="schedWeek" data-d="7" ${W >= wLast ? 'disabled' : ''} aria-label="Next week">›</button>
         <span class="chips">${months.map((m) => `<button class="chip${mons.includes(m) ? ' on' : ''}" data-act="schedMonth" data-v="${m}">${mName(m)}</button>`).join('')}</span></div>
       <p class="muted small">${covered ? 'From Eversports (real classes). ' : 'Standard week, planned. '}${open ? `<span class="negc">${open} classes in ${mName(M)} without instructor.</span> ` : ''}${av.length ? `${av.length} availability answers for ${mName(M)}${missing.length ? `, missing: ${missing.map((i) => esc(i.name)).join(', ')}` : ''}.` : ''}</p>
-      <div class="legend"><span><i class="sw r1"></i>${esc(LLS.rooms(state)[0].replace(/^The /, ''))}</span><span><i class="sw r2"></i>${esc((LLS.rooms(state)[1] || '').replace(/^The /, ''))}</span><span><i class="sw open-sw"></i>no instructor</span><span><i class="sw conf-sw"></i>room double-booked</span></div>
+      <div class="legend"><span><i class="sw r1"></i>${esc(LLS.rooms(state)[0].replace(/^The /, ''))}</span><span><i class="sw r2"></i>${esc((LLS.rooms(state)[1] || '').replace(/^The /, ''))}</span><span><i class="sw open-sw"></i>no instructor</span><span><i class="sw conf-sw"></i>room double-booked</span><span><i class="sw pub-sw"></i>event</span><span><i class="sw rent-sw"></i>room rental</span></div>
       ${grid}
     </div>`;
   }
@@ -3239,7 +3265,7 @@ function createAvailabilityForm() {
     const M = ui.schedMonth; const weeks = LLS.planWeeks(state, M);
     const name = state.settings.studioName || 'Schedule';
     const per = {}; const evs = eventsOn(M);
-    let html = `<div class="pr-head"><h1>${esc(name)}</h1><h2>Schedule ${mName(M, true)}</h2></div>`;
+    let html = `<div class="pr-head">${prLogo(name)}<h2>Schedule ${mName(M, true)}</h2></div>`;
     for (const w of weeks) {
       const all7 = [...Array(7)].map((_, i) => new Date(new Date(w.start + 'T12:00:00').getTime() + i * 864e5).toISOString().slice(0, 10));
       html += `<table class="pr-week"><thead><tr>${all7.map((d) => `<th>${w.days[d] ? dShort(d) : ''}</th>`).join('')}</tr></thead><tbody><tr>${all7.map((d) => `<td>${(w.days[d] || []).map((c) => { const n = c.ins ? insName(c.ins) : LLS.kindOf(state, c.title) === 'rental' ? '' : 'open'; if (c.ins) (per[n] = per[n] || []).push(`${dShort(d)} ${c.start} ${c.title}`); return `<div class="pc ${roomCls(c.room)}"><span>${c.start} · ${esc(c.title)}</span><b>${esc(n)}</b></div>`; }).join('')}${evs.filter((e) => e.date === d).map((e) => `<div class="pc ev"><span>${e.start || ''} ★ ${esc(e.title)}</span></div>`).join('')}</td>`).join('')}</tr></tbody></table>`;
@@ -3460,7 +3486,7 @@ function createAvailabilityForm() {
     const name = state.settings.studioName || 'Studio';
     const sv = shortVersion(g), fl = focusList(g), ins = LL.insights(state, agg).filter((x) => x.tone === 'bad').slice(0, 4);
     const html = `<div class="rep">
-      <div class="pr-head"><h1>${esc(name)}</h1><h2>Monthly report · ${mName(M, true)}</h2><p class="muted small">Made with Lab Ledger on ${dmy(today())}</p></div>
+      <div class="pr-head">${prLogo(name)}<h2>Monthly report · ${mName(M, true)}</h2><p class="muted small">Made with Lab Ledger on ${dmy(today())}</p></div>
       <h3>The short version</h3><p>${sv.join(' ')}</p>
       ${fl.length ? `<p><b>Where to focus, in this order:</b></p><ol>${fl.map(([t, d]) => `<li><b>${t}.</b> ${esc(d)}</li>`).join('')}</ol>` : ''}
       <h3>Money in ${mName(M, true)}</h3>
@@ -3482,8 +3508,11 @@ function createAvailabilityForm() {
   function slotTable(list) { return `<table class="t"><thead><tr><th>Time</th><th class="r">Booked</th><th class="r">Full</th><th class="r">Classes</th></tr></thead><tbody>${list.map((x) => `<tr><td>${esc(x.key)}</td><td class="r">${n1(x.avgBooked)}</td><td class="r">${Math.round(x.occupancyPct)}%</td><td class="r">${x.classes}</td></tr>`).join('')}</tbody></table>`; }
 
   // ---------- Lock ----------
+  const logoUri = () => { const l = state.settings.logo || ''; return /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(l) ? l : ''; };
+  const prLogo = (name) => (logoUri() ? `<img class="prlogo" src="${logoUri()}" alt="${esc(name)}">` : `<h1>${esc(name)}</h1>`);
   function viewLock() {
-    return `<section class="lockscreen"><div class="lockmark">L</div><h1>Lab Ledger</h1><p class="muted">Locked</p>
+    const lg = logoUri();
+    return `<section class="lockscreen">${lg ? `<div class="locklogo" role="img" aria-label="${esc(state.settings.studioName || 'Logo')}" style="-webkit-mask-image:url(${lg});mask-image:url(${lg})"></div><p class="muted">Lab Ledger · locked</p>` : '<div class="lockmark">L</div><h1>Lab Ledger</h1><p class="muted">Locked</p>'}
       ${Lock.hasBio() ? '<button class="btn primary big-b" data-act="unlockBio">Unlock with Face ID / Touch ID</button>' : ''}
       <div class="pinrow"><input class="in pin" id="pinIn" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" aria-label="PIN"><button class="btn" data-act="unlockPin">Unlock</button></div>
       <p id="lockErr" class="negc small"></p></section>`;
@@ -3594,7 +3623,7 @@ function createAvailabilityForm() {
     ${sec('categories', 'Categories explained', `<table class="t"><tbody>${Object.entries(CATS).map(([k, c]) => `<tr><td><b>${c.label}</b></td><td>${esc(CAT_HELP[k] || '')}</td></tr>`).join('')}</tbody></table>
       <p class="muted small mt">To change a payment: Transactions → choose another category → tap “Always sort … as …” so it happens automatically next time.</p>`)}
     ${sec('schedule', 'Schedule: how it works', `<ol class="steps">
-      <li><b>One week at a time</b>, times on the left in Morning, Midday and Afternoon & evening. Arrows go week by week; the month buttons jump ahead (4 months). On the phone, pick the day at the top.</li>
+      <li><b>One week at a time</b>, times on the left in Morning and Evening. Events are green, room rentals are a striped blue block over their whole time. Arrows go week by week; the month buttons jump ahead (4 months). On the phone, pick the day at the top.</li>
       <li><b>Weeks already in Eversports</b> show the real classes with their instructors. Later weeks show your standard week without instructors. Import the activity export again whenever Eversports changes.</li>
       <li><b>Change a class:</b> tap it. Change the name, time, room or instructor, then choose <i>only this day</i> or <i>every week from this day on</i>. Delete works the same way.</li>
       <li><b>Add a class:</b> <i>+ Add class</i> at the top. Choose the day, name, time and room.</li>
@@ -3607,7 +3636,7 @@ function createAvailabilityForm() {
       <p><b>Budget:</b> ticket price and people, catering (per person and/or fixed), the Lagree class (the instructor's rate, €0 if unpaid), other costs and other income. The app shows the result, costs per person and how many people you need to break even, live while you type. The money goes into the forecast in the event's month; after the event the real numbers from Eversports and the bank take over. Link the Eversports ticket to see how many were actually sold.</p>
       <p><b>Found in Eversports:</b> one-off classes (pop-ups, specials) that aren't a regular class type. <i>Add</i> puts them in your events with tickets and revenue; <i>Ignore</i> hides them.</p>
       <p><b>Room rentals</b> (e.g. a teacher renting a room on Saturdays) block the room on each booked date, and the agreed payments appear in the forecast in the month they're due.</p>
-      <p><b>Calendar:</b> the month at a glance; the arrows go up to 3 months ahead. Gold = event, purple = internal, blue = room rental. Tap one to edit it.</p>
+      <p><b>Calendar:</b> the month at a glance; the arrows go up to 3 months ahead. Green = event, purple = internal, blue = room rental. Tap one to edit it.</p>
       <p><b>Ideas:</b> keep your own list, and see suggestions from your numbers with the reason behind them. <i>Plan it</i> turns an idea into an event.</p>`)}
     ${sec('growth', 'Growth: what the numbers mean', `<p><b>The short version</b> sums up the month in a few sentences and says where to focus. <b>The numbers to watch</b> compare the latest month with the month before and your target (green = on target). Targets are in Settings.</p>
       <p><b>Trial → bought within 30 days</b>: of the people whose first class was a trial, how many bought anything else within 30 days. <b>Active clients</b>: people with at least one booking that month, split into new and returning. <b>Regulars</b>: 4+ bookings in the month. <b>Classes full</b>: bookings ÷ places.</p>
@@ -3694,6 +3723,7 @@ function createAvailabilityForm() {
         const date = ($('#ceDate') && $('#ceDate').value) || el.dataset.date;
         if (!date) { $('#ceErr').textContent = 'Pick a day.'; return; }
         LLS.addClass(state, LL.mk(date), { date, start, end: e2, title, room, ins }, scope === 'weekly');
+        ui.schedWeek = LLS.weekKey(date); ui.schedDay = date; ui.schedMonth = LL.mk(date); saveUI(); // show the week it was added to
       }
       closeModal(); save(); render(); toast(scope === 'weekly' ? 'Saved for every week.' : 'Saved.');
     },

@@ -1,6 +1,6 @@
 # Lab Ledger — manual
 
-*Version 1.4*
+*Version 1.5*
 
 Lab Ledger is the studio's finance tool: cash, monthly results, sales, instructor pay and a 3-month forecast. It is one web page (`index.html`) hosted on GitHub Pages. **The code contains no data.** Your numbers live on each device and travel between devices only as an encrypted file in the studio's GitHub account.
 
@@ -107,6 +107,13 @@ Every bank line gets a category automatically. To change one: **Transactions** �
 - **Schedule**: the class field is a dropdown with every class type, plus *Other… type a name*.
 - **Team**: this month and the next 3 always show; classes without an instructor are estimated with whoever usually teaches them.
 - **Availability form**: grid with six time windows (Early 6:30–8:00, Morning 8–10, Late morning 10–12:30, Afternoon 12:30–17, Evening 17–18:30, Late evening 18:30–21) and *Dates I'm away*. A class counts if it starts inside a ticked window. Old answers still import.
+
+## 6e. New in 1.5
+
+- **Schedule**: two sections, Morning (before 14:00) and Evening. Room rentals are a striped block over their whole time; events are green boxes in the same style as classes.
+- **Adding classes fixed**: a class added with *+ Add class* now always stays, also on days Eversports already covers, and the schedule jumps to that week.
+- **Found in Eversports** only lists one-offs with their own ticket (regular classes booked with packs are not events).
+- **Logo** on the lock screen (adapts to light and dark) and on exported schedules and reports. It comes with the update file, not with the app code.
 
 ## 7. Updating the app
 
